@@ -121,7 +121,7 @@ var active_character
 var active_skill
 
 func use_skill_explore(character, skill):
-	var reqs = [{code = 'is_at_location', value = active_location.id}]
+	var reqs = [{code = 'is_at_location', value = active_location.id, check = true}]
 	active_character = character
 	active_skill = skill
 	input_handler.ShowSlaveSelectPanel(self, 'use_e_combat_skill', reqs)

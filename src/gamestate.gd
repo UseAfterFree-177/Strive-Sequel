@@ -297,7 +297,7 @@ func valuecheck(dict):
 		'unique_character_at_mansion':
 			var character = get_unique_slave(dict.value)
 			if character == null:return false
-			return character.checkreqs([{code = 'is_free'}])
+			return character.checkreqs([{code = 'is_free', check = true}])
 		'has_money_for_scene_slave':
 			return money >= input_handler.scene_characters[dict.value].calculate_price()
 		'random':

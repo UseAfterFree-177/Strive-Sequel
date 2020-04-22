@@ -797,21 +797,33 @@ func get_sex_features():
 	if vaginal_virgin == false || anal_virgin == false:
 		mouth_virgin = false
 
-func checkreqs(array, ignore_npc_stats_gear = false):
-	var check = true
-	for i in array:
-		if i.has('orflag'):
-			check = check or valuecheck(i, ignore_npc_stats_gear)
-		else:
-			check = check and valuecheck(i, ignore_npc_stats_gear)
-	return check
 
-func valuecheck(i, ignore_npc_stats_gear = false):
+func process_check(check): #compatibility stub
+	return checkreqs(check) 
+
+
+func checkreqs(arg, ignore_npc_stats_gear = false): #additional flag is never used
+	if typeof(arg) == TYPE_ARRAY:
+		var check = true
+		for i in arg:
+			if i.has('orflag'):
+				check = check or valuecheck(i, ignore_npc_stats_gear)
+			else:
+				check = check and valuecheck(i, ignore_npc_stats_gear)
+		return check
+	else:
+		return valuecheck(arg, ignore_npc_stats_gear)
+
+func valuecheck(ch, ignore_npc_stats_gear = false): #additional flag is never used
+	var i = ch.duplicate()
 	var check = true
 	match i.code:
 		'stat':
-			if ignore_npc_stats_gear == false || !i.type in ['physics','wits','charm','sexuals']:
-				check = input_handler.operate(i.operant, self.get_stat(i.type), i.value)
+			if typeof(i.value) == TYPE_ARRAY: i.value = calculate_number_from_string_array(i.value)
+			check = input_handler.operate(i.operant, self.get_stat(i.stat), i.value)
+		'stat_index':
+			if typeof(i.value) == TYPE_ARRAY: i.value = calculate_number_from_string_array(i.value)
+			check = input_handler.operate(i.operant, self.get_stat(i.stat)[i.index], i.value)
 		'has_profession':
 			check = professions.has(i.value) == i.check
 		'has_any_profession':
@@ -822,28 +834,31 @@ func valuecheck(i, ignore_npc_stats_gear = false):
 		'race_is_beast':
 			check = races.racelist[race].tags.has('beast') == i.check
 		'is_shortstack':
-			check = height in ['tiny','petite']
+			check = (height in ['tiny','petite']) == i.check
 		'gear_equiped':
-			if ignore_npc_stats_gear == false:
-				if i.has('param'): check = check_gear_equipped(i.value, i.param)
-				else: check = check_gear_equipped(i.value)
+			if i.has('param'): check = check_gear_equipped(i.value, i.param)
+			else: check = check_gear_equipped(i.value)
 		'global_profession_limit':
-			check = check_profession_limit(i.name, i.value)
+			check = check_profession_limit(i.profession, i.value)
 		'race':
-			check = input_handler.operate(i.operant, race, i.value)
+			check = (race == i.race) == i.check
 		'one_of_races':
 			check = race in i.value
 		'is_free':
-			check = travel_time == 0 && location == 'mansion' && tags.has('selected') == false
+			check = (travel_time == 0 && location == 'mansion' && tags.has('selected') == false) == i.check
 		'is_at_location':
-			if variables.allow_remote_intereaction == true: check = true
-			else: check = travel_time == 0 && location == i.value
+			if variables.allow_remote_intereaction == true and i.check: check = true
+			else: check = (travel_time == 0 && location == i.value) == i.check
 		'is_id':
 			check = input_handler.operate(i.operant, id, i.value)
 		'long_tail':
-			check = globals.longtails.has(tail)
+			check = globals.longtails.has(tail) == i.check
 		'long_ears':
-			check = globals.longears.has(ears)
+			check = globals.longears.has(ears) == i.check
+		'is_humanoid':
+			check = (racegroup == 'humanoid') == i.check
+		'is_dead':
+			check = (is_active != i.check)
 		'cant_spawn_naturally':
 			check = !ignore_npc_stats_gear
 		'sex':
@@ -853,19 +868,20 @@ func valuecheck(i, ignore_npc_stats_gear = false):
 		'rules':
 			check = globals.globalsettings[i.type] == i.check
 		'bodypart':
-			check = input_handler.operate(i.operant, get(i.name), i.value)
+			check = input_handler.operate(i.operant, get(i.part), i.value)
 		'trait':
-			check = traits.has(i.value) or sex_traits.has(i.value)
+			check = (traits.has(i.trait) or sex_traits.has(i.trait)) == i.check
 		'disabled':
 			check = !i.check
 		'has_status':
-			check = has_status(i.value)
+			check = has_status(i.status) == i.check
 		'slave_type':
 			check = input_handler.operate(i.operant, slave_class, i.value)
 		'population':
 			check = input_handler.operate(i.operant, state.characters.size(), i.value)
 		'random':
-			check = globals.rng.randf()*100 <= calculate_number_from_string_array(i.value)
+			if typeof(i.value) == TYPE_ARRAY: i.value = calculate_number_from_string_array(i.value)
+			check = globals.rng.randf()*100 <= i.value
 	return check
 
 func decipher_reqs(reqs, colorcode = false):
@@ -887,14 +903,16 @@ func decipher_reqs(reqs, colorcode = false):
 			text += text2 + '\n'
 	return globals.TextEncoder(text.substr(0, text.length()-1))
 
-func decipher_single(i):
+func decipher_single(ch):
+	var i = ch.duplicate()
 	var text2 = ''
 	match i.code:
 		'stat':
-			if i.type.find("factor") > 0:
-				text2 += globals.statdata[i.type].name + ': ' + globals.descriptions.factor_descripts[i.value] + " "
+			if typeof(i.value) == TYPE_ARRAY: i.value = calculate_number_from_string_array(i.value)
+			if i.stat.find("factor") > 0:
+				text2 += globals.statdata[i.stat].name + ': ' + globals.descriptions.factor_descripts[i.value] + " "
 			else:
-				text2 += globals.statdata[i.type].name + ': ' + str(i.value) + " "
+				text2 += globals.statdata[i.stat].name + ': ' + str(i.value) + " "
 			match i.operant:
 				'gte':
 					text2 += "or higher"
@@ -902,17 +920,17 @@ func decipher_single(i):
 					text2 += "or lower"
 		'has_profession':
 			if i.check == true:
-				text2 += 'Has Class: ' + Skilldata.professions[i.value].name
+				text2 += 'Has Class: ' + Skilldata.professions[i.profession].name
 			else:
-				text2 += 'Has NO Class: ' + Skilldata.professions[i.value].name
+				text2 += 'Has NO Class: ' + Skilldata.professions[i.profession].name
 		'has_any_profession':
 			text2 += "Has any of Classes: "
 			for k in i.value:
 				text2 += Skilldata.professions[k].name + ", "
 			text2 = text2.substr(0, text2.length()-2)
 		'race':
-			if i.operant == 'eq':
-				text2 += 'Race: ' + races.racelist[i.value].name
+			if i.check:
+				text2 += 'Race: ' + races.racelist[i.race].name
 			else:
 				continue
 		'race_is_beast':
@@ -920,10 +938,10 @@ func decipher_single(i):
 				text2 += 'Only for bestial races.'
 			else:
 				continue
-		'gear_equiped':
+		'gear_equiped': #to fix non-default param
 			text2 += 'Must have ' + Items.itemlist[i.value].name + "."
 		'global_profession_limit':
-			text2 += 'Only ' + str(i.value) + " " + Skilldata.professions[i.name].name + " allowed."
+			text2 += 'Only ' + str(i.value) + " " + Skilldata.professions[i.profession].name + " allowed."
 		'one_of_races':
 			text2 += "Only for: "
 			for k in i.value:
@@ -944,7 +962,7 @@ func check_gear_equipped(gearname, param = 'itembase'):
 		if i == null:
 			continue
 		var tempgear = state.items[i]
-		if tempgear.get(param)== gearname:
+		if tempgear.get(param) == gearname:
 			return true
 	return false
 
@@ -2203,46 +2221,6 @@ func calculate_number_from_string_array(arr):
 #			endvalue += float(modvalue)
 #		firstrun = false
 #	return endvalue
-
-func process_check(check):
-	if typeof(check) == TYPE_ARRAY:
-		var res = true
-		for ch in check:
-			res = res and simple_check(ch)
-		return res
-	else: return simple_check(check)
-
-func simple_check(req):#Gear, Race, Types, Resists, stats, trait
-	var result
-	match req.type:
-		'chance':
-			result = (randf()*100 < req.value);
-		'stats':
-			result = input_handler.operate(req.operant, get_stat(req.name), req.value)
-		'stat_index':
-			result = input_handler.operate(req.operant, get_stat(req.name)[req.index], req.value)
-		'gear':
-			if req.has('param'): result = check_gear_equipped(req.value, req.param)
-			else: result = check_gear_equipped(req.value)
-		'race':
-			result = (req.value == race);
-		'race_group':
-			match req.value:
-				'humanoid':
-					result = racegroup == 'humanoid'
-				'non-humanoid':
-					result = racegroup != 'humanoid'
-		'trait':
-			result = traits.has(req.value) or sex_traits.has(req.value)
-		'not_trait':
-			result = !(traits.has(req.value) or sex_traits.has(req.value))
-		'class':
-			result = professions.has(req.value)
-		'not_class':
-			result = !professions.has(req.value)
-		'dead':
-			result = !is_active
-	return result
 
 var shield = 0 setget set_shield
 

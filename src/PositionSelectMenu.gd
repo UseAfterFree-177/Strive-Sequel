@@ -27,7 +27,7 @@ var pos
 
 func selectfighter(position):
 	pos = 'pos'+str(position)
-	var reqs = [{code = 'is_at_location', value = active_location.id}]
+	var reqs = [{code = 'is_at_location', value = active_location.id, check = true}]
 	if variables.allow_remote_intereaction == true: reqs = []
 	input_handler.ShowSlaveSelectPanel(self, 'slave_position_selected', reqs, true)
 

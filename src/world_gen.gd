@@ -1125,7 +1125,7 @@ func make_quest(questcode):
 			tempdata.erase('conditions')
 			tempdata.erase('mandatory_conditions')
 			tempdata.statreqs.append({code = 'is_master', check = false})
-			tempdata.statreqs.append({code = 'is_free'})
+			tempdata.statreqs.append({code = 'is_free', check = true})
 		else:
 			tempdata.type = tempdata.type[randi()%tempdata.type.size()] 
 		requirements_number -= 1

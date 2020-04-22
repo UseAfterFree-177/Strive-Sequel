@@ -218,7 +218,7 @@ func lockpick_attempt(person):
 		input_handler.add_random_chat_message(person, 'lockpick_failure')
 
 func select_person_for_next_event(code):
-	var reqs = [{code = 'is_at_location', value = input_handler.active_location.id}]
+	var reqs = [{code = 'is_at_location', value = input_handler.active_location.id, check = true}]
 	stored_scene = code
 	input_handler.ShowSlaveSelectPanel(self, 'event_person_selected', reqs)
 

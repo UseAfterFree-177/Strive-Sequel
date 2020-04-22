@@ -227,7 +227,7 @@ var char_dmg_stats = ['no_stat//prev value', 'hp', 'mp', 'lust', 'obedience', 'f
 var ss_dmg_stats = ['value']
 var damagestat_list = ['no_stat', 'hp', 'mp', 'lust', 'obedience', 'fear', 'loyal', 'fatigue', 'exhaustion',  'energy', 'physics_bonus', 'taunt', 'shield', 'damage_hp', 'restore_mana']#possibly incomplete
 var condtypes = ['conditional static//oneshot', 'random', 'skill', 'caster', 'target', 'owner(skill)', 'owner(character)']
-var char_condtypes = ['stats', 'stat_index', 'gear', 'race', 'trait', 'class', 'dead']
+#var char_condtypes = ['stats', 'stat_index', 'gear', 'race', 'trait', 'class', 'dead']
 var ops = ['==', '!=', '>=', '>', '<=', '<', 'has', '!has']
 var real_ops = ['eq', 'neq', 'gte', 'gt', 'lte', 'lt', 'has', 'hasno']
 var skill_condstats = ['name', 'type', 'ability_type', 'manacost', 'tags', 'damage_type']

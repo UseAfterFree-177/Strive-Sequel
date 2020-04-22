@@ -254,7 +254,7 @@ var data = {
 	lich_enc_talk6 = {
 		variations = [
 		{reqs = [
-			{type = 'master_check', value = [{code = 'stat', type = 'physics_factor', operant = 'gte', value = 4}]},
+			{type = 'master_check', value = [{code = 'stat', stat = 'physics_factor', operant = 'gte', value = 4}]},
 			{type = 'group_size', operant = 'gte', value = 5, orflag = true}],
 		image = null,
 		tags = ['dialogue_scene'],
@@ -375,7 +375,7 @@ var data = {
 	lich_aire_talk4 = {
 		variations = [
 		{reqs = [
-		{type = 'master_check', value = [{code = 'stat', type = 'charm_factor', operant = 'gte', value = 4}]},
+		{type = 'master_check', value = [{code = 'stat', stat = 'charm_factor', operant = 'gte', value = 4}]},
 		],
 		image = null,
 		character = 'aire',
