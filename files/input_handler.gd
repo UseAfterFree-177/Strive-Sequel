@@ -189,7 +189,7 @@ func GetItemTooltip():  #get_spec_node(input_handler.NODE_ITEMTOOLTIP)
 		tooltipnode = node.get_node('itemtooltip')
 		node.remove_child(tooltipnode)
 	else:
-		tooltipnode = load("res://files/Simple Tooltip/Imagetooltip.tscn").instance()
+		tooltipnode = load("res://src/scenes/Imagetooltip.tscn").instance()
 		tooltipnode.name = 'itemtooltip'
 	node.add_child(tooltipnode)
 	return tooltipnode
@@ -412,7 +412,7 @@ func GetSoundNode(): #get_spec_node(input_handler.NODE_SOUND)
 func GetEventNode(): #get_spec_node(input_handler.NODE_EVENT)
 	var node
 	if get_tree().get_root().has_node('EventNode') == false:
-		node = load("res://files/TextScene/TextSystem.tscn").instance()
+		node = load("res://src/scenes/TextSystem.tscn").instance()
 		get_tree().get_root().add_child(node)
 		#node.set_as_toplevel(true)
 		node.name = 'EventNode'
@@ -1106,7 +1106,7 @@ var node_data = {
 	NODE_CONFIRMPANEL : {name = 'ConfirmPanel', mode = 'scene', scene = preload("res://src/ConfirmPanel.tscn"), calls = 'Show'},
 	NODE_SLAVESELECT : {name = 'SlaveSelectMenu', mode = 'scene', scene = preload("res://src/SlaveSelectMenu.tscn")},
 	NODE_SKILLSELECT : {name = 'SelectSkillMenu', mode = 'scene', scene = preload("res://src/SkillSelectMenu.tscn")},
-	NODE_EVENT : {name = 'EventNode', mode = 'scene', scene = preload("res://files/TextScene/TextSystem.tscn")},
+	NODE_EVENT : {name = 'EventNode', mode = 'scene', scene = preload("res://src/scenes/TextSystem.tscn")},
 	NODE_MUSIC : {name = 'music', mode = 'node', node = AudioStreamPlayer, args = {'bus':"Music"}},
 	NODE_SOUND : {name = 'sound', mode = 'node', no_return = true, node = AudioStreamPlayer, args = {'bus':"Sound"}},
 	NODE_BACKGROUND_SOUND : {name = 'BGSound', mode = 'node', node = AudioStreamPlayer, args = {'bus':"Sound"}},
@@ -1115,7 +1115,7 @@ var node_data = {
 	NODE_TEXTEDIT : {name = 'texteditnode', mode = 'scene', scene = preload("res://src/TextEditField.tscn")},
 	NODE_SLAVETOOLTIP : {name = 'slavetooltip', mode = 'scene', scene = preload("res://src/SlaveTooltip.tscn")},
 	NODE_SKILLTOOLTIP : {name = 'skilltooltip', mode = 'scene', scene = preload("res://src/SkillToolTip.tscn")},
-	NODE_ITEMTOOLTIP : {name = 'itemtooltip', mode = 'scene', scene = preload("res://files/Simple Tooltip/Imagetooltip.tscn")},
+	NODE_ITEMTOOLTIP : {name = 'itemtooltip', mode = 'scene', scene = preload("res://src/scenes/Imagetooltip.tscn")},
 	NODE_TEXTTOOLTIP : {name = 'texttooltip', mode = 'scene', scene = preload("res://src/TextTooltipPanel.tscn")},
 	NODE_CHARCREATE : {name = 'charcreationpanel', mode = 'scene', scene = preload("res://src/CharacterCreationPanel.tscn"), calls = 'open'},
 	NODE_SLAVEPANEL : {name = 'slavepanel', mode = 'scene', scene = preload("res://src/scenes/SlavePanel.tscn")},

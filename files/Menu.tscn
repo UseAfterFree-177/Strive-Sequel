@@ -13,16 +13,16 @@
 [ext_resource path="res://MainFont.tres" type="DynamicFont" id=11]
 [ext_resource path="res://assets/images/gui/MainScreen/Quit.png" type="Texture" id=12]
 [ext_resource path="res://assets/images/gui/MainScreen/QuitSelect.png" type="Texture" id=13]
-[ext_resource path="res://files/buttons/mainmenu/patreonlogo.png" type="Texture" id=14]
+[ext_resource path="res://assets/images/buttons/mainmenu/patreonlogo.png" type="Texture" id=14]
 [ext_resource path="res://assets/images/gui/Discord_Logo.png" type="Texture" id=15]
-[ext_resource path="res://files/buttons/mainmenu/itchio.jpg" type="Texture" id=16]
-[ext_resource path="res://files/Options.tscn" type="PackedScene" id=17]
-[ext_resource path="res://src/SaveLoadPanel.tscn" type="PackedScene" id=18]
-[ext_resource path="res://src/WarnScreen.tscn" type="PackedScene" id=19]
-[ext_resource path="res://src/ModPanel.tscn" type="PackedScene" id=20]
-[ext_resource path="res://files/MainTheme.tres" type="Theme" id=21]
-[ext_resource path="res://assets/images/gui/exclamation.png" type="Texture" id=22]
-[ext_resource path="res://assets/fonts/BLKCHCRY.TTF" type="DynamicFontData" id=23]
+[ext_resource path="res://assets/images/buttons/mainmenu/itchio.jpg" type="Texture" id=16]
+[ext_resource path="res://assets/fonts/BLKCHCRY.TTF" type="DynamicFontData" id=17]
+[ext_resource path="res://files/Options.tscn" type="PackedScene" id=18]
+[ext_resource path="res://src/SaveLoadPanel.tscn" type="PackedScene" id=19]
+[ext_resource path="res://src/WarnScreen.tscn" type="PackedScene" id=20]
+[ext_resource path="res://src/ModPanel.tscn" type="PackedScene" id=21]
+[ext_resource path="res://files/MainTheme.tres" type="Theme" id=22]
+[ext_resource path="res://assets/images/gui/exclamation.png" type="Texture" id=23]
 
 [sub_resource type="StyleBoxEmpty" id=1]
 
@@ -37,7 +37,7 @@ size = 60
 use_mipmaps = true
 use_filter = true
 extra_spacing_bottom = -10
-font_data = ExtResource( 23 )
+font_data = ExtResource( 17 )
 
 [node name="Menu" type="Node"]
 script = ExtResource( 1 )
@@ -181,10 +181,10 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Options" parent="." instance=ExtResource( 17 )]
+[node name="Options" parent="." instance=ExtResource( 18 )]
 visible = false
 
-[node name="saveloadpanel" parent="." instance=ExtResource( 18 )]
+[node name="saveloadpanel" parent="." instance=ExtResource( 19 )]
 visible = false
 margin_left = 594.0
 margin_top = 212.0
@@ -223,14 +223,14 @@ margin_right = 431.0
 margin_bottom = 340.0
 text = "Confirm"
 
-[node name="WarnScreen" parent="." instance=ExtResource( 19 )]
+[node name="WarnScreen" parent="." instance=ExtResource( 20 )]
 visible = false
 margin_left = 3.01477
 margin_top = 9.04404
 margin_right = 1923.01
 margin_bottom = 1089.04
 
-[node name="mod_panel" parent="." instance=ExtResource( 20 )]
+[node name="mod_panel" parent="." instance=ExtResource( 21 )]
 visible = false
 anchor_left = 0.5
 anchor_top = 0.5
@@ -247,7 +247,7 @@ margin_left = 520.29
 margin_top = 143.903
 margin_right = 1456.29
 margin_bottom = 884.903
-theme = ExtResource( 21 )
+theme = ExtResource( 22 )
 
 [node name="PresetContainer" type="ScrollContainer" parent="NewGamePanel"]
 margin_left = 24.2455
@@ -283,7 +283,7 @@ margin_left = 751.0
 margin_top = 85.0
 margin_right = 814.0
 margin_bottom = 141.0
-texture = ExtResource( 22 )
+texture = ExtResource( 23 )
 expand = true
 stretch_mode = 6
 
@@ -722,3 +722,4 @@ Fixed tutorial window issues
 Fixed interaction menu bug
 0.1.0
 Release"
+

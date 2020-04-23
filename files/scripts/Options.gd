@@ -1,4 +1,4 @@
-extends "res://files/Close Panel Button/ClosingPanel.gd"
+extends "res://src/scenes/ClosingPanel.gd"
 
 #warning-ignore-all:return_value_discarded
 var cheats = ['instant_travel','skip_combat','free_upgrades','instant_upgrades','invincible_player','show_enemy_hp','social_skill_unlimited_charges']

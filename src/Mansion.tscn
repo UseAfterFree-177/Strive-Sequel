@@ -5,21 +5,21 @@
 [ext_resource path="res://assets/images/backgrounds/mansion.png" type="Texture" id=3]
 [ext_resource path="res://assets/textures/generic_button.tres" type="Theme" id=4]
 [ext_resource path="res://files/MainTheme.tres" type="Theme" id=5]
-[ext_resource path="res://files/buttons/main screen/timer_panel.png" type="Texture" id=6]
+[ext_resource path="res://assets/images/buttons/main screen/timer_panel.png" type="Texture" id=6]
 [ext_resource path="res://Roundo-Medium.otf" type="DynamicFontData" id=7]
-[ext_resource path="res://files/buttons/main screen/speedfast0.png" type="Texture" id=8]
-[ext_resource path="res://files/buttons/main screen/speedfast2.png" type="Texture" id=9]
-[ext_resource path="res://files/buttons/main screen/speedfast1.png" type="Texture" id=10]
-[ext_resource path="res://files/buttons/main screen/speednorm0.png" type="Texture" id=11]
-[ext_resource path="res://files/buttons/main screen/speednorm2.png" type="Texture" id=12]
-[ext_resource path="res://files/buttons/main screen/speednorm1.png" type="Texture" id=13]
-[ext_resource path="res://files/buttons/main screen/speedstop0.png" type="Texture" id=14]
-[ext_resource path="res://files/buttons/main screen/speedstop2.png" type="Texture" id=15]
-[ext_resource path="res://files/buttons/main screen/speedstop1.png" type="Texture" id=16]
+[ext_resource path="res://assets/images/buttons/main screen/speedfast0.png" type="Texture" id=8]
+[ext_resource path="res://assets/images/buttons/main screen/speedfast2.png" type="Texture" id=9]
+[ext_resource path="res://assets/images/buttons/main screen/speedfast1.png" type="Texture" id=10]
+[ext_resource path="res://assets/images/buttons/main screen/speednorm0.png" type="Texture" id=11]
+[ext_resource path="res://assets/images/buttons/main screen/speednorm2.png" type="Texture" id=12]
+[ext_resource path="res://assets/images/buttons/main screen/speednorm1.png" type="Texture" id=13]
+[ext_resource path="res://assets/images/buttons/main screen/speedstop0.png" type="Texture" id=14]
+[ext_resource path="res://assets/images/buttons/main screen/speedstop2.png" type="Texture" id=15]
+[ext_resource path="res://assets/images/buttons/main screen/speedstop1.png" type="Texture" id=16]
 [ext_resource path="res://assets/images/gui/menu/buttonhl.png" type="Texture" id=17]
 [ext_resource path="res://assets/images/gui/menu/buttonpressed.png" type="Texture" id=18]
 [ext_resource path="res://assets/images/gui/menu/buttonnorm.png" type="Texture" id=19]
-[ext_resource path="res://files/buttons/main screen/hourprogress.png" type="Texture" id=20]
+[ext_resource path="res://assets/images/buttons/main screen/hourprogress.png" type="Texture" id=20]
 [ext_resource path="res://assets/images/iconsitems/gold.png" type="Texture" id=21]
 [ext_resource path="res://assets/images/iconsitems/food_old.png" type="Texture" id=22]
 [ext_resource path="res://assets/images/gui/panels/paneltransperent.png" type="Texture" id=23]
@@ -152,9 +152,6 @@ margin_right = 710.0
 margin_bottom = 1068.0
 theme = ExtResource( 4 )
 text = "Upgrades"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="InteractButton" type="Button" parent="."]
 margin_left = 263.235
@@ -358,9 +355,6 @@ margin_left = 10.0
 margin_top = 235.0
 margin_right = 423.0
 margin_bottom = 675.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="ScrollContainer" type="ScrollContainer" parent="TaskProgress"]
 margin_left = 4.0
@@ -754,3 +748,4 @@ expand = true
 
 [node name="CharacterDislocationPanel" parent="." instance=ExtResource( 43 )]
 visible = false
+

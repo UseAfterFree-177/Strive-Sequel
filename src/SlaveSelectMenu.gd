@@ -1,4 +1,4 @@
-extends "res://files/Close Panel Button/ClosingPanel.gd"
+extends "res://src/scenes/ClosingPanel.gd"
 
 var target_func
 var target_node

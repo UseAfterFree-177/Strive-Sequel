@@ -1048,7 +1048,7 @@ func RomanNumberConvert(value):
 
 func AddPanelOpenCloseAnimation(node):
 	if node.get_script() == null:
-		node.set_script(load("res://files/Close Panel Button/ClosingPanel.gd"))
+		node.set_script(load("res://src/scenes/ClosingPanel.gd"))
 	node._ready()
 
 var text_characters = []

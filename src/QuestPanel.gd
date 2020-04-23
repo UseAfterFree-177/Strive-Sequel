@@ -1,4 +1,4 @@
-extends "res://files/Close Panel Button/ClosingPanel.gd"
+extends "res://src/scenes/ClosingPanel.gd"
 #warning-ignore-all:return_value_discarded
 
 var selectedquest
