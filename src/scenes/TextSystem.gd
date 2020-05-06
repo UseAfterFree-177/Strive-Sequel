@@ -18,7 +18,7 @@ var Delay = 0
 var ReceiveInput = false
 
 var debug
-# var SceneData = load("res://files/DialoguesData.gd").new()
+# var SceneData = load("res://src/DialoguesData.gd").new()
 
 var ColorsByNames = {
 	narrator = "FFFFFF",

@@ -1705,6 +1705,14 @@ var effect_table = {
 		],
 		buffs = []
 	},
+	e_res = {
+		type = 'oneshot',
+		target = 'target',
+		args = [{obj = 'parent_args', param = 0}],
+		atomic = ['a_res'],
+		buffs = [],
+		sub_effects = []
+	},
 	#temp items
 	e_leather_collar_effect = {
 		type = 'static',

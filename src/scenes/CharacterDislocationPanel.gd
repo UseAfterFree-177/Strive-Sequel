@@ -27,9 +27,9 @@ func open_character_dislocation():
 	var travelers = []
 	for i in state.character_order:
 		var person = state.characters[i]
-		if !person.location in ['mansion','travel'] && populatedlocations.has(person.location) == false:
-			populatedlocations.append(person.location)
-		elif person.location == 'travel':
+		if !person.travel.location in ['mansion','travel'] && populatedlocations.has(person.travel.location) == false:
+			populatedlocations.append(person.travel.location)
+		elif person.travel.location == 'travel':
 			travelers.append(person)
 	
 	globals.ClearContainer($TravelersContainer/VBoxContainer)
@@ -37,13 +37,13 @@ func open_character_dislocation():
 	for i in travelers:
 		var newbutton = globals.DuplicateContainerTemplate($TravelersContainer/VBoxContainer)
 		newbutton.text = i.get_short_name()
-		if i.travel_target.location != 'mansion':
-			newbutton.text += " - " + world_gen.get_location_from_code(i.travel_target.location).name
+		if i.travel.travel_target.location != 'mansion':
+			newbutton.text += " - " + world_gen.get_location_from_code(i.travel.travel_target.location).name
 		else:
 			newbutton.text += " - " + tr("MANSION")
-		newbutton.get_node("Progress").value = i.initial_travel_time - i.travel_time
-		newbutton.get_node("Progress").max_value = i.initial_travel_time
-		newbutton.get_node("Progress/Label").text = 'Until arrival: ' + str(ceil(i.travel_time/i.travel_tick())) + " hours"
+		newbutton.get_node("Progress").value = i.travel.initial_travel_time - i.travel.travel_time
+		newbutton.get_node("Progress").max_value = i.travel.initial_travel_time
+		newbutton.get_node("Progress/Label").text = 'Until arrival: ' + str(ceil(i.travel.travel_time/i.travel_per_tick())) + " hours"
 		globals.connectslavetooltip(newbutton, i)
 		newbutton.connect('pressed',self,'cancel_travel', [i])
 	
@@ -56,7 +56,7 @@ func open_character_dislocation():
 	update_location_list()
 
 func cancel_travel(person):
-	if person.travel_target.location != 'mansion':
+	if person.travel.travel_target.location != 'mansion':
 		return_confirm(person)
 	else:
 		input_handler.SystemMessage(person.translate("[name] is already heading back to Mansion."))
@@ -68,27 +68,7 @@ func return_confirm(person):
 	input_handler.get_spec_node(input_handler.NODE_CONFIRMPANEL, [self, 'return_character', person.translate('Send [name] back to Mansion?')])
 
 func return_character():
-	var person = returnperson
-	var active_area
-	var active_location
-	if person.location == 'travel':
-		active_area = state.areas[state.location_links[person.travel_target.location].area]
-		active_location = state.areas[state.location_links[person.travel_target.location].area][state.location_links[person.travel_target.location].category][person.travel_target.location]
-	else:
-		active_area = state.areas[state.location_links[person.location].area]
-		active_location = state.areas[state.location_links[person.location].area][state.location_links[person.location].category][person.location]
-	var location = world_gen.get_location_from_code(active_location)
-	if active_location.has("group"):
-		for i in active_location.group:
-			if active_location.group[i] == person.id:
-				active_location.group.erase(i)
-				break
-	if variables.instant_travel == false:
-		person.location = 'travel'
-		person.travel_target = {area = '', location = 'mansion'}
-		person.travel_time = max(1, abs(round(active_area.travel_time + active_location.travel_time - person.travel_time)))
-	else:
-		person.location = 'mansion'
+	returnperson.return_to_mansion()
 	open_character_dislocation()
 	input_handler.update_slave_list()
 
@@ -119,8 +99,6 @@ func update_location_list():
 			$DestinationButton.select($DestinationButton.get_item_count()-1)
 	
 	array.clear()
-	
-	
 	
 	for i in state.areas[destination_area].locations.values() + state.areas[destination_area].questlocations.values():
 		array.append(i)
@@ -167,20 +145,20 @@ func update_character_dislocation():
 	globals.ClearContainer($ScrollContainer/VBoxContainer)
 	for i in state.character_order:
 		var person = state.characters[i]
-		if person.location == dislocation_area:
+		if person.check_location(dislocation_area):
 			char_array.append(i)
 	#char_array.sort_custom(self, 'sort_dislocation')
 	for i in char_array:
 		var newbutton = globals.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
 		var person = state.characters[i]
 		newbutton.get_node("Label").text = person.get_full_name()
-		var obed_text = str(person.obedience)
+		var obed_text = str(person.get_stat('obedience'))
 		var obed_color
-		if person.obedience <= 0:
+		if person.get_stat('obedience') <= 0:
 			obed_color = globals.hexcolordict.red
 		else:
 			obed_color = globals.hexcolordict.green
-		if person.loyalty >= 100 || person.submission >= 100 || state.get_master() == person:
+		if person.is_controllable():
 			obed_text = "∞"
 			obed_color = globals.hexcolordict.green
 		newbutton.get_node("obed").text = obed_text
@@ -196,7 +174,7 @@ func update_character_dislocation():
 	elif destination == 'mansion':
 		text += "\n\nTarget Location: " + tr("MANSION")
 		if selected_travel_characters.size() > 0 :
-			text += "\nTravel Time: " + str(ceil(state.characters[selected_travel_characters[0]].calculate_travel_time(dislocation_area, 'mansion').time / state.characters[selected_travel_characters[0]].travel_tick())) + " hours."
+			text += "\nTravel Time: " + str(ceil(globals.calculate_travel_time(dislocation_area, 'mansion').time / state.characters[selected_travel_characters[0]].travel_per_tick())) + " hours."
 	else:
 		var location = world_gen.get_location_from_code(destination)
 		text += "\n\nTarget Location: \n[color=yellow]" + location.name + "[/color]" 
@@ -210,9 +188,9 @@ func update_character_dislocation():
 			'skirmish':
 				pass
 		if selected_travel_characters.size() > 0 :
-			var travel_time = state.characters[selected_travel_characters[0]].calculate_travel_time(destination, dislocation_area) 
-			text += "\n\nTravel Time: " + str(ceil(travel_time.time/ state.characters[selected_travel_characters[0]].travel_tick())) + " hours."
-			obed_cost = ceil(travel_time.obed_cost/state.characters[selected_travel_characters[0]].travel_tick())
+			var travel_time = globals.calculate_travel_time(destination, dislocation_area) 
+			text += "\n\nTravel Time: " + str(ceil(travel_time.time/ state.characters[selected_travel_characters[0]].travel_per_tick())) + " hours."
+			obed_cost = ceil(travel_time.obed_cost/state.characters[selected_travel_characters[0]].travel_per_tick())
 			text += "\nObedience Cost: " + str(obed_cost)
 	
 	var can_travel = true
@@ -222,9 +200,9 @@ func update_character_dislocation():
 	else:
 		for i in selected_travel_characters:
 			var person = state.characters[i]
-			if person.loyalty >= 100 || person.submission >= 100 || state.get_master() == person:
+			if person.is_controllable():
 				continue
-			if person.obedience < obed_cost:
+			if person.get_stat('obedience') < obed_cost:
 				can_travel = false
 	
 	$DescriptText.bbcode_text = text
@@ -244,18 +222,18 @@ func travel_confirm():
 		var person = state.characters[i]
 		person.remove_from_task(true)
 		person.process_event(variables.TR_MOVE)
-		var travel_cost = person.calculate_travel_time(destination,dislocation_area)
-		if person.loyalty < 100 && person.submission < 100 && state.get_master() != person:
-			person.obedience -= ceil((travel_cost.obed_cost/person.travel_tick()))
+		var travel_cost = globals.calculate_travel_time(destination,dislocation_area)
+		if !person.is_controllable():
+			person.add_stat('obedience', -ceil((travel_cost.obed_cost/person.travel_per_tick())))
 		if variables.instant_travel == false:
-			person.work = 'travel'
-			person.location = 'travel'
-			person.travel_target = {area = destination_area, location = destination}
-			person.travel_time = travel_cost.time
+			person.xp_module.work = 'travel'
+			person.travel.location = 'travel'
+			person.travel.travel_target = {area = destination_area, location = destination}
+			person.travel.travel_time = travel_cost.time
 		else:
-			person.work = 'travel'
-			person.location = destination
-			person.area = destination_area
+			person.xp_module.work = 'travel'
+			person.travel.location = destination
+			person.travel.area  = destination_area
 	input_handler.update_slave_list()
 	selected_travel_characters.clear()
 	update_location_list()

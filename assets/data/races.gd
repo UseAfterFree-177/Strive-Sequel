@@ -1,14 +1,21 @@
 extends Node
 
 #warning-ignore-all:unused_class_variable
+var race_groups = {
+	halfbreeds = ['HalfkinCat','HalfkinWolf','HalfkinFox','HalfkinBunny','HalfkinTanuki'],
+	beast = ['BeastkinCat','BeastkinWolf','BeastkinFox','BeastkinBunny','BeastkinTanuki'],
+	monster = ['Lamia','Scylla','Centaur','Nereid','Arachna','Slime','Harpy','Taurus','Dragonkin'],
+	rare = ['DarkElf','Drow','Goblin','Gnome','Kobold','Dwarf','Seraph','Demon'],
+}
+
 
 func get_progress_task(character, temptask, tempsubtask, count_crit = false):
 	var task = tasklist[temptask]
 	var subtask = task.production[tempsubtask]
 	var value = call(subtask.progress_function, character)
 	var item
-	if character.gear.tool != null:
-		item = state.items[character.gear.tool]
+	if character.equipment.gear.tool != null:
+		item = state.items[character.equipment.gear.tool]
 	if item != null && task.has('worktool') && task.worktool in item.toolcategory:
 		if item.bonusstats.has("task_efficiency_tool"):
 			value = value + value*item.bonusstats.task_efficiency_tool

@@ -1,0 +1,979 @@
+[gd_scene load_steps=56 format=2]
+
+[ext_resource path="res://src/scenes/RightClickReactButton.gd" type="Script" id=1]
+[ext_resource path="res://assets/images/gui/menu/linebuttonpressed.png" type="Texture" id=2]
+[ext_resource path="res://assets/images/gui/craftgui/craft_slider.png" type="Texture" id=3]
+[ext_resource path="res://assets/images/gui/universal/scrollbar presed.png" type="Texture" id=4]
+[ext_resource path="res://assets/images/panel.png" type="Texture" id=5]
+[ext_resource path="res://assets/images/gui/universal/scrollbar.png" type="Texture" id=6]
+[ext_resource path="res://assets/images/gui/universal/input.png" type="Texture" id=7]
+[ext_resource path="res://assets/images/gui/universal/checkbox-.png" type="Texture" id=8]
+[ext_resource path="res://assets/images/gui/universal/spinbox.png" type="Texture" id=9]
+[ext_resource path="res://assets/images/gui/panels/arrows.png" type="Texture" id=10]
+[ext_resource path="res://assets/images/gui/universal/input blocked.png" type="Texture" id=11]
+[ext_resource path="res://assets/images/gui/menu/linebutton.png" type="Texture" id=12]
+[ext_resource path="res://assets/images/gui/universal/scrollbar2.png" type="Texture" id=13]
+[ext_resource path="res://assets/images/gui/universal/checkbox+.png" type="Texture" id=14]
+[ext_resource path="res://assets/images/gui/slavepanel/CharScreen_0012_character-panel.png" type="Texture" id=15]
+[ext_resource path="res://assets/images/gui/menu/linebuttonhl.png" type="Texture" id=16]
+[ext_resource path="res://assets/images/gui/barv.png" type="Texture" id=17]
+[ext_resource path="res://assets/images/gui/craftgui/craft_slider1.png" type="Texture" id=18]
+[ext_resource path="res://assets/images/raceshades/Scylla_F.png" type="Texture" id=19]
+[ext_resource path="res://assets/images/gui/gui icons/down-hl.png" type="Texture" id=20]
+[ext_resource path="res://assets/images/gui/gui icons/up.png" type="Texture" id=21]
+[ext_resource path="res://assets/images/gui/gui icons/down.png" type="Texture" id=22]
+[ext_resource path="res://assets/images/gui/gui icons/up-press.png" type="Texture" id=23]
+[ext_resource path="res://assets/images/gui/gui icons/down-press.png" type="Texture" id=24]
+[ext_resource path="res://assets/images/gui/gui icons/growth_factor.png" type="Texture" id=25]
+[ext_resource path="res://assets/images/iconsclasses/Whore.png" type="Texture" id=26]
+[ext_resource path="res://assets/images/gui/exclamation.png" type="Texture" id=27]
+[ext_resource path="res://assets/images/gui/gui icons/up-hl.png" type="Texture" id=28]
+[ext_resource path="res://assets/fonts/RoundoShadow40.font" type="BitmapFont" id=29]
+[ext_resource path="res://src/scenes/CharacterCreationPanel.gd" type="Script" id=30]
+
+[sub_resource type="StyleBoxTexture" id=1]
+texture = ExtResource( 12 )
+region_rect = Rect2( 0, 0, 548, 45 )
+margin_left = 8.1225
+margin_right = 7.71504
+margin_top = 6.3175
+margin_bottom = 7.93337
+modulate_color = Color( 0.431373, 0.172549, 0.172549, 1 )
+
+[sub_resource type="StyleBoxTexture" id=2]
+
+[sub_resource type="StyleBoxTexture" id=3]
+texture = ExtResource( 16 )
+region_rect = Rect2( 0, 0, 548, 45 )
+margin_left = 8.1225
+margin_right = 7.71504
+margin_top = 6.3175
+margin_bottom = 7.93337
+
+[sub_resource type="StyleBoxTexture" id=4]
+texture = ExtResource( 12 )
+region_rect = Rect2( 0, 0, 548, 45 )
+margin_left = 8.1225
+margin_right = 7.71504
+margin_top = 6.3175
+margin_bottom = 7.93337
+
+[sub_resource type="StyleBoxTexture" id=5]
+texture = ExtResource( 2 )
+region_rect = Rect2( 0, 0, 548, 47 )
+margin_left = 8.1225
+margin_right = 7.71504
+margin_top = 6.3175
+margin_bottom = 7.93337
+
+[sub_resource type="StyleBoxTexture" id=6]
+
+[sub_resource type="StyleBoxTexture" id=7]
+
+[sub_resource type="StyleBoxTexture" id=8]
+
+[sub_resource type="StyleBoxTexture" id=9]
+
+[sub_resource type="StyleBoxTexture" id=10]
+texture = ExtResource( 3 )
+region_rect = Rect2( 0, 0, 615, 25 )
+margin_left = 9.43112
+margin_right = 11.1734
+margin_top = 4.19002
+margin_bottom = 2.79335
+
+[sub_resource type="StyleBoxTexture" id=11]
+
+[sub_resource type="StyleBoxTexture" id=12]
+texture = ExtResource( 7 )
+region_rect = Rect2( 0, 0, 35.876, 30 )
+margin_left = 3.9409
+margin_right = 4.07989
+margin_top = 5.28295
+margin_bottom = 3.77354
+
+[sub_resource type="StyleBoxTexture" id=13]
+texture = ExtResource( 11 )
+region_rect = Rect2( 0, 0, 36.2431, 30 )
+margin_left = 3.49201
+margin_right = 6.59175
+margin_top = 2.64148
+margin_bottom = 1.80748
+
+[sub_resource type="StyleBoxTexture" id=14]
+texture = ExtResource( 5 )
+region_rect = Rect2( -0.0170555, -0.928366, 501.52, 502.371 )
+margin_left = 66.0
+margin_right = 67.4645
+margin_top = 66.728
+margin_bottom = 62.8257
+
+[sub_resource type="StyleBoxTexture" id=15]
+texture = ExtResource( 15 )
+region_rect = Rect2( 0, 0, 669, 841 )
+margin_left = 28.772
+margin_right = 31.5303
+margin_top = 25.1661
+margin_bottom = 26.3892
+
+[sub_resource type="StyleBoxTexture" id=16]
+texture = ExtResource( 13 )
+region_rect = Rect2( 0, 0, 15, 50 )
+margin_top = 10.0
+margin_bottom = 10.0
+expand_margin_top = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id=17]
+texture = ExtResource( 4 )
+region_rect = Rect2( 0, 0, 15, 50 )
+margin_top = 10.0
+margin_bottom = 10.0
+expand_margin_top = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id=18]
+texture = ExtResource( 4 )
+region_rect = Rect2( 0, 0, 15, 50 )
+margin_top = 10.0
+margin_bottom = 10.0
+expand_margin_top = 10.0
+expand_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id=19]
+texture = ExtResource( 6 )
+region_rect = Rect2( 0, 0, 21, 266 )
+margin_top = 10.0
+margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id=20]
+texture = ExtResource( 17 )
+region_rect = Rect2( 0, 0, 16, 84 )
+margin_top = 15.0
+margin_bottom = 15.0
+
+[sub_resource type="Theme" id=21]
+Button/colors/font_color = Color( 0, 0, 0, 1 )
+Button/colors/font_color_disabled = Color( 1, 1, 1, 0.607843 )
+Button/colors/font_color_hover = Color( 0, 0, 0, 1 )
+Button/colors/font_color_pressed = Color( 0, 0, 0, 1 )
+Button/constants/hseparation = 2
+Button/fonts/font = null
+Button/styles/disabled = SubResource( 1 )
+Button/styles/focus = SubResource( 2 )
+Button/styles/hover = SubResource( 3 )
+Button/styles/normal = SubResource( 4 )
+Button/styles/pressed = SubResource( 5 )
+CheckBox/colors/font_color = Color( 0.878431, 0.878431, 0.878431, 1 )
+CheckBox/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
+CheckBox/colors/font_color_hover = Color( 0.941176, 0.941176, 0.941176, 1 )
+CheckBox/colors/font_color_hover_pressed = Color( 1, 1, 1, 1 )
+CheckBox/colors/font_color_pressed = Color( 1, 1, 1, 1 )
+CheckBox/constants/check_vadjust = 0
+CheckBox/constants/hseparation = 4
+CheckBox/fonts/font = null
+CheckBox/icons/checked = ExtResource( 14 )
+CheckBox/icons/radio_checked = null
+CheckBox/icons/radio_unchecked = null
+CheckBox/icons/unchecked = ExtResource( 8 )
+CheckBox/styles/disabled = null
+CheckBox/styles/focus = null
+CheckBox/styles/hover = SubResource( 6 )
+CheckBox/styles/hover_pressed = SubResource( 7 )
+CheckBox/styles/normal = SubResource( 8 )
+CheckBox/styles/pressed = SubResource( 9 )
+HSlider/icons/grabber = ExtResource( 18 )
+HSlider/icons/grabber_disabled = ExtResource( 18 )
+HSlider/icons/grabber_highlight = ExtResource( 18 )
+HSlider/icons/tick = null
+HSlider/styles/focus = null
+HSlider/styles/grabber_area = null
+HSlider/styles/grabber_disabled = null
+HSlider/styles/grabber_highlight = null
+HSlider/styles/slider = SubResource( 10 )
+LineEdit/colors/clear_button_color = Color( 1, 1, 1, 1 )
+LineEdit/colors/clear_button_color_pressed = Color( 1, 1, 1, 1 )
+LineEdit/colors/cursor_color = Color( 0.941176, 0.941176, 0.941176, 1 )
+LineEdit/colors/font_color = Color( 0, 0, 0, 1 )
+LineEdit/colors/font_color_selected = Color( 0.419608, 0.360784, 0.360784, 1 )
+LineEdit/colors/selection_color = Color( 0.988235, 0.509804, 0.509804, 1 )
+LineEdit/constants/minimum_spaces = 12
+LineEdit/fonts/font = null
+LineEdit/icons/clear = null
+LineEdit/styles/focus = SubResource( 11 )
+LineEdit/styles/normal = SubResource( 12 )
+LineEdit/styles/read_only = SubResource( 13 )
+OptionButton/colors/font_color = Color( 0, 0, 0, 1 )
+OptionButton/colors/font_color_disabled = Color( 0.9, 0.9, 0.9, 0.2 )
+OptionButton/colors/font_color_hover = Color( 0, 0, 0, 1 )
+OptionButton/colors/font_color_pressed = Color( 0, 0, 0, 1 )
+OptionButton/constants/arrow_margin = 2
+OptionButton/constants/hseparation = 2
+OptionButton/fonts/font = null
+OptionButton/icons/arrow = ExtResource( 10 )
+OptionButton/styles/disabled = null
+OptionButton/styles/focus = null
+OptionButton/styles/hover = null
+OptionButton/styles/normal = null
+OptionButton/styles/pressed = null
+Panel/styles/panel = SubResource( 14 )
+Panel/styles/panelf = null
+Panel/styles/panelnc = null
+SpinBox/icons/updown = ExtResource( 9 )
+TooltipLabel/colors/font_color = Color( 1, 1, 1, 1 )
+TooltipLabel/colors/font_color_shadow = Color( 0, 0, 0, 0.1 )
+TooltipLabel/constants/shadow_offset_x = 1
+TooltipLabel/constants/shadow_offset_y = 1
+TooltipLabel/fonts/font = null
+TooltipPanel/styles/panel = SubResource( 15 )
+VScrollBar/icons/decrement = null
+VScrollBar/icons/decrement_highlight = null
+VScrollBar/icons/increment = null
+VScrollBar/icons/increment_highlight = null
+VScrollBar/styles/grabber = SubResource( 16 )
+VScrollBar/styles/grabber_highlight = SubResource( 17 )
+VScrollBar/styles/grabber_pressed = SubResource( 18 )
+VScrollBar/styles/scroll = SubResource( 19 )
+VScrollBar/styles/scroll_focus = null
+VSeparator/constants/separation = 4
+VSeparator/styles/separator = SubResource( 20 )
+
+[sub_resource type="StyleBoxTexture" id=22]
+
+[sub_resource type="StyleBoxTexture" id=23]
+texture = ExtResource( 2 )
+region_rect = Rect2( 0, 0, 548, 47 )
+margin_left = 10.0
+margin_right = 10.0
+margin_top = 10.0
+margin_bottom = 10.0
+
+[sub_resource type="StyleBoxTexture" id=24]
+texture = ExtResource( 12 )
+region_rect = Rect2( 0, 0, 548, 45 )
+margin_left = 10.0
+margin_right = 10.0
+margin_top = 10.0
+margin_bottom = 10.0
+modulate_color = Color( 0.662745, 0.333333, 0.333333, 1 )
+
+[sub_resource type="StyleBoxTexture" id=25]
+texture = ExtResource( 12 )
+region_rect = Rect2( 0, 0, 548, 45 )
+margin_left = 10.0
+margin_right = 10.0
+margin_top = 10.0
+margin_bottom = 10.0
+
+[node name="CharacterCreation" type="Panel"]
+margin_left = 50.0
+margin_top = 28.0
+margin_right = 1876.0
+margin_bottom = 1025.0
+theme = SubResource( 21 )
+script = ExtResource( 30 )
+
+[node name="introduction" type="RichTextLabel" parent="."]
+margin_left = 37.0
+margin_top = 32.0
+margin_right = 385.0
+margin_bottom = 117.0
+custom_fonts/normal_font = ExtResource( 29 )
+custom_colors/default_color = Color( 0.886275, 0.745098, 0.0156863, 1 )
+text = "Create your Master Character"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+margin_left = 38.3467
+margin_top = 120.828
+margin_right = 382.347
+margin_bottom = 686.828
+custom_constants/separation = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+margin_right = 344.0
+margin_bottom = 24.0
+text = "SLAVEPARTNAME"
+align = 1
+
+[node name="name" type="LineEdit" parent="VBoxContainer"]
+margin_top = 30.0
+margin_right = 344.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 0, 40 )
+placeholder_text = "SLAVEPARTNAME"
+
+[node name="Label2" type="Label" parent="VBoxContainer"]
+margin_top = 76.0
+margin_right = 344.0
+margin_bottom = 100.0
+text = "SLAVEPARTSURNAME"
+align = 1
+
+[node name="surname" type="LineEdit" parent="VBoxContainer"]
+margin_top = 106.0
+margin_right = 344.0
+margin_bottom = 146.0
+rect_min_size = Vector2( 0, 40 )
+placeholder_text = "Surname"
+
+[node name="Label3" type="Label" parent="VBoxContainer"]
+margin_top = 152.0
+margin_right = 344.0
+margin_bottom = 176.0
+text = "SLAVEPARTNICKNAME"
+align = 1
+
+[node name="nickname" type="LineEdit" parent="VBoxContainer"]
+margin_top = 182.0
+margin_right = 344.0
+margin_bottom = 222.0
+rect_min_size = Vector2( 0, 40 )
+placeholder_text = "Optional"
+placeholder_alpha = 0.5
+
+[node name="Label4" type="Label" parent="VBoxContainer"]
+margin_top = 228.0
+margin_right = 344.0
+margin_bottom = 252.0
+text = "SLAVEPARTSEX"
+align = 1
+
+[node name="sex" type="OptionButton" parent="VBoxContainer"]
+margin_top = 258.0
+margin_right = 344.0
+margin_bottom = 308.0
+rect_min_size = Vector2( 0, 50 )
+text = "SLAVEPARTSEX"
+
+[node name="Label5" type="Label" parent="VBoxContainer"]
+margin_top = 314.0
+margin_right = 344.0
+margin_bottom = 338.0
+text = "SLAVEPARTAGE"
+align = 1
+
+[node name="age" type="OptionButton" parent="VBoxContainer"]
+margin_top = 344.0
+margin_right = 344.0
+margin_bottom = 394.0
+rect_min_size = Vector2( 0, 50 )
+text = "Age"
+
+[node name="Label6" type="Label" parent="VBoxContainer"]
+margin_top = 400.0
+margin_right = 344.0
+margin_bottom = 424.0
+text = "SLAVEPARTRACE"
+align = 1
+
+[node name="race" type="Button" parent="VBoxContainer"]
+margin_top = 430.0
+margin_right = 344.0
+margin_bottom = 480.0
+rect_min_size = Vector2( 0, 50 )
+text = "Race"
+
+[node name="Label7" type="Label" parent="VBoxContainer"]
+margin_top = 486.0
+margin_right = 344.0
+margin_bottom = 510.0
+text = "SLAVEPARTSEXTRAIT"
+align = 1
+
+[node name="sextrait" type="Button" parent="VBoxContainer"]
+margin_top = 516.0
+margin_right = 344.0
+margin_bottom = 566.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="Label8" type="Label" parent="VBoxContainer"]
+margin_top = 572.0
+margin_right = 344.0
+margin_bottom = 596.0
+mouse_filter = 0
+text = "SLAVEPARTPERSONALITY"
+align = 1
+
+[node name="personality" type="OptionButton" parent="VBoxContainer"]
+margin_top = 602.0
+margin_right = 344.0
+margin_bottom = 652.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="bodyparts" type="VBoxContainer" parent="."]
+margin_left = 447.0
+margin_top = 21.0
+margin_right = 749.0
+margin_bottom = 737.0
+
+[node name="skin_label" type="Label" parent="bodyparts"]
+margin_right = 302.0
+margin_bottom = 24.0
+text = "SLAVEPARTSKIN"
+align = 1
+
+[node name="skin" type="OptionButton" parent="bodyparts"]
+margin_top = 28.0
+margin_right = 302.0
+margin_bottom = 72.2509
+rect_min_size = Vector2( 0, 40 )
+
+[node name="hair_length_label" type="Label" parent="bodyparts"]
+margin_top = 76.0
+margin_right = 302.0
+margin_bottom = 100.0
+text = "SLAVEPARTHAIR_LENGTH"
+align = 1
+
+[node name="hair_length" type="OptionButton" parent="bodyparts"]
+margin_top = 104.0
+margin_right = 302.0
+margin_bottom = 148.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="hair_color_label" type="Label" parent="bodyparts"]
+margin_top = 152.0
+margin_right = 302.0
+margin_bottom = 176.0
+text = "SLAVEPARTHAIR_COLOR"
+align = 1
+
+[node name="hair_color" type="OptionButton" parent="bodyparts"]
+margin_top = 180.0
+margin_right = 302.0
+margin_bottom = 224.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="eye_color_label" type="Label" parent="bodyparts"]
+margin_top = 228.0
+margin_right = 302.0
+margin_bottom = 252.0
+text = "SLAVEPARTEYE_COLOR"
+align = 1
+
+[node name="eye_color" type="OptionButton" parent="bodyparts"]
+margin_top = 256.0
+margin_right = 302.0
+margin_bottom = 300.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="eye_shape_label" type="Label" parent="bodyparts"]
+margin_top = 304.0
+margin_right = 302.0
+margin_bottom = 328.0
+text = "SLAVEPARTEYE_SHAPE"
+align = 1
+
+[node name="eye_shape" type="OptionButton" parent="bodyparts"]
+margin_top = 332.0
+margin_right = 302.0
+margin_bottom = 376.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="ears_label" type="Label" parent="bodyparts"]
+margin_top = 380.0
+margin_right = 302.0
+margin_bottom = 404.0
+text = "SLAVEPARTEARS"
+align = 1
+
+[node name="ears" type="OptionButton" parent="bodyparts"]
+margin_top = 408.0
+margin_right = 302.0
+margin_bottom = 452.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="horns_label" type="Label" parent="bodyparts"]
+margin_top = 456.0
+margin_right = 302.0
+margin_bottom = 480.0
+text = "SLAVEPARTHORNS"
+align = 1
+
+[node name="horns" type="OptionButton" parent="bodyparts"]
+margin_top = 484.0
+margin_right = 302.0
+margin_bottom = 528.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="tail_label" type="Label" parent="bodyparts"]
+margin_top = 532.0
+margin_right = 302.0
+margin_bottom = 556.0
+text = "SLAVEPARTTAIL"
+align = 1
+
+[node name="tail" type="OptionButton" parent="bodyparts"]
+margin_top = 560.0
+margin_right = 302.0
+margin_bottom = 604.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="wings_label" type="Label" parent="bodyparts"]
+margin_top = 608.0
+margin_right = 302.0
+margin_bottom = 632.0
+text = "SLAVEPARTWINGS"
+align = 1
+
+[node name="wings" type="OptionButton" parent="bodyparts"]
+margin_top = 636.0
+margin_right = 302.0
+margin_bottom = 680.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="height_label" type="Label" parent="bodyparts"]
+margin_top = 684.0
+margin_right = 302.0
+margin_bottom = 708.0
+text = "SLAVEPARTHEIGHT"
+align = 1
+
+[node name="height" type="OptionButton" parent="bodyparts"]
+margin_top = 712.0
+margin_right = 302.0
+margin_bottom = 756.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="bodyparts2" type="VBoxContainer" parent="."]
+margin_left = 827.0
+margin_top = 21.0
+margin_right = 1105.0
+margin_bottom = 737.0
+
+[node name="penis_size_label" type="Label" parent="bodyparts2"]
+margin_right = 278.0
+margin_bottom = 24.0
+text = "SLAVEPARTPENIS_SIZE"
+align = 1
+
+[node name="penis_size" type="OptionButton" parent="bodyparts2"]
+margin_top = 28.0
+margin_right = 278.0
+margin_bottom = 72.2509
+rect_min_size = Vector2( 0, 40 )
+
+[node name="penis_type_label" type="Label" parent="bodyparts2"]
+margin_top = 76.0
+margin_right = 278.0
+margin_bottom = 100.0
+text = "SLAVEPARTPENIS_TYPE"
+align = 1
+
+[node name="penis_type" type="OptionButton" parent="bodyparts2"]
+margin_top = 104.0
+margin_right = 278.0
+margin_bottom = 148.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="balls_size_label" type="Label" parent="bodyparts2"]
+margin_top = 152.0
+margin_right = 278.0
+margin_bottom = 176.0
+text = "SLAVEPARTBALLS_SIZE"
+align = 1
+
+[node name="balls_size" type="OptionButton" parent="bodyparts2"]
+margin_top = 180.0
+margin_right = 278.0
+margin_bottom = 224.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="tits_size_label" type="Label" parent="bodyparts2"]
+margin_top = 228.0
+margin_right = 278.0
+margin_bottom = 252.0
+text = "SLAVEPARTTITS_SIZE"
+align = 1
+
+[node name="tits_size" type="OptionButton" parent="bodyparts2"]
+margin_top = 256.0
+margin_right = 278.0
+margin_bottom = 300.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="ass_size_label" type="Label" parent="bodyparts2"]
+margin_top = 304.0
+margin_right = 278.0
+margin_bottom = 328.0
+text = "SLAVEPARTASS_SIZE"
+align = 1
+
+[node name="ass_size" type="OptionButton" parent="bodyparts2"]
+margin_top = 332.0
+margin_right = 278.0
+margin_bottom = 376.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="vaginal_virgin" type="CheckBox" parent="bodyparts2"]
+margin_top = 380.0
+margin_right = 278.0
+margin_bottom = 420.0
+rect_min_size = Vector2( 0, 40 )
+text = "SLAVEPARTVAGINAL_VIRGIN"
+clip_text = true
+
+[node name="penis_virgin" type="CheckBox" parent="bodyparts2"]
+margin_top = 424.0
+margin_right = 278.0
+margin_bottom = 464.0
+rect_min_size = Vector2( 0, 40 )
+text = "SLAVEPARTPENIS_VIRGIN"
+clip_text = true
+
+[node name="anal_virgin" type="CheckBox" parent="bodyparts2"]
+margin_top = 468.0
+margin_right = 278.0
+margin_bottom = 508.0
+rect_min_size = Vector2( 0, 40 )
+text = "SLAVEPARTANAL_VIRGIN"
+clip_text = true
+
+[node name="diet_label" type="Label" parent="bodyparts2"]
+margin_top = 512.0
+margin_right = 278.0
+margin_bottom = 536.0
+text = "SLAVEDIET"
+align = 1
+
+[node name="diet" type="Button" parent="bodyparts2"]
+margin_top = 540.0
+margin_right = 278.0
+margin_bottom = 590.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="class_label" type="Label" parent="bodyparts2"]
+margin_top = 594.0
+margin_right = 278.0
+margin_bottom = 618.0
+text = "SLAVESTARTINGCLASS"
+align = 1
+
+[node name="class" type="Button" parent="bodyparts2"]
+margin_top = 622.0
+margin_right = 278.0
+margin_bottom = 672.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="type_label" type="Label" parent="bodyparts2"]
+margin_top = 676.0
+margin_right = 278.0
+margin_bottom = 700.0
+mouse_filter = 1
+custom_colors/font_color = Color( 0.141176, 1, 0.858824, 1 )
+text = "SLAVETYPE"
+align = 1
+
+[node name="TextureRect" type="TextureRect" parent="bodyparts2/type_label"]
+margin_left = 218.0
+margin_top = -5.0
+margin_right = 254.0
+margin_bottom = 29.0
+texture = ExtResource( 27 )
+expand = true
+stretch_mode = 6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="slave_class" type="OptionButton" parent="bodyparts2"]
+margin_top = 704.0
+margin_right = 278.0
+margin_bottom = 748.251
+rect_min_size = Vector2( 0, 40 )
+
+[node name="StatsContainer" type="HBoxContainer" parent="."]
+margin_left = 25.0
+margin_top = 776.0
+margin_right = 877.0
+margin_bottom = 966.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button" type="Panel" parent="StatsContainer"]
+visible = false
+margin_right = 100.0
+margin_bottom = 190.0
+rect_min_size = Vector2( 100, 150 )
+size_flags_vertical = 3
+custom_styles/panel = SubResource( 22 )
+
+[node name="up" type="TextureButton" parent="StatsContainer/Button"]
+margin_left = 28.0001
+margin_top = 73.0001
+margin_right = 68.0001
+margin_bottom = 113.0
+texture_normal = ExtResource( 21 )
+texture_pressed = ExtResource( 23 )
+texture_hover = ExtResource( 28 )
+expand = true
+stretch_mode = 5
+
+[node name="down" type="TextureButton" parent="StatsContainer/Button"]
+margin_left = 28.0001
+margin_top = 143.0
+margin_right = 68.0001
+margin_bottom = 183.0
+texture_normal = ExtResource( 22 )
+texture_pressed = ExtResource( 24 )
+texture_hover = ExtResource( 20 )
+expand = true
+stretch_mode = 5
+
+[node name="icon" type="TextureRect" parent="StatsContainer/Button"]
+margin_left = 29.4346
+margin_top = 20.1974
+margin_right = 69.4346
+margin_bottom = 60.1974
+texture = ExtResource( 25 )
+expand = true
+stretch_mode = 6
+
+[node name="Label" type="Label" parent="StatsContainer/Button"]
+margin_left = 29.1975
+margin_top = 118.401
+margin_right = 66.1975
+margin_bottom = 142.401
+text = "1"
+align = 1
+
+[node name="descript" type="RichTextLabel" parent="."]
+margin_left = 1176.99
+margin_top = 27.7593
+margin_right = 1790.99
+margin_bottom = 724.759
+bbcode_enabled = true
+
+[node name="totalstatlabel" type="Label" parent="."]
+margin_left = 253.864
+margin_top = 954.445
+margin_right = 682.864
+margin_bottom = 984.445
+
+[node name="RaceSelection" type="Panel" parent="."]
+visible = false
+margin_left = 533.0
+margin_top = 38.0
+margin_right = 1363.0
+margin_bottom = 739.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="RaceSelection"]
+margin_left = 27.7925
+margin_top = 27.4965
+margin_right = 376.792
+margin_bottom = 691.497
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RaceSelection/ScrollContainer"]
+margin_right = 348.999
+size_flags_horizontal = 3
+
+[node name="Button" type="Button" parent="RaceSelection/ScrollContainer/VBoxContainer"]
+visible = false
+margin_right = 349.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 40 )
+toggle_mode = true
+
+[node name="TextureRect" type="TextureRect" parent="RaceSelection"]
+self_modulate = Color( 1, 1, 1, 0.407843 )
+margin_left = 418.0
+margin_top = 51.0
+margin_right = 793.0
+margin_bottom = 688.0
+texture = ExtResource( 19 )
+stretch_mode = 7
+
+[node name="RichTextLabel" type="RichTextLabel" parent="RaceSelection"]
+margin_left = 420.0
+margin_top = 68.0
+margin_right = 797.0
+margin_bottom = 671.0
+bbcode_enabled = true
+
+[node name="TraitSelection" type="Panel" parent="."]
+visible = false
+margin_left = 715.0
+margin_top = 32.0
+margin_right = 1127.0
+margin_bottom = 828.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TraitSelection"]
+margin_left = 28.0
+margin_top = 72.0
+margin_right = 377.0
+margin_bottom = 755.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TraitSelection/ScrollContainer"]
+margin_right = 349.0
+size_flags_horizontal = 3
+
+[node name="Button" type="Button" parent="TraitSelection/ScrollContainer/VBoxContainer"]
+visible = false
+margin_right = 349.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 40 )
+toggle_mode = true
+
+[node name="ConfirmButton" type="Button" parent="."]
+margin_left = 1528.02
+margin_top = 908.67
+margin_right = 1795.02
+margin_bottom = 968.67
+text = "CONFIRM"
+
+[node name="CancelButton" type="Button" parent="."]
+margin_left = 1238.02
+margin_top = 908.67
+margin_right = 1505.02
+margin_bottom = 968.67
+text = "CANCEL"
+
+[node name="DietPanel" type="Panel" parent="."]
+visible = false
+margin_left = 755.0
+margin_top = 308.0
+margin_right = 1189.0
+margin_bottom = 687.0
+
+[node name="Button" type="Button" parent="DietPanel"]
+margin_left = 82.6316
+margin_top = 313.053
+margin_right = 355.632
+margin_bottom = 358.053
+text = "Close"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DietPanel"]
+margin_left = 78.0
+margin_top = 139.0
+margin_right = 367.0
+margin_bottom = 294.0
+custom_constants/separation = 11
+
+[node name="meat" type="Label" parent="DietPanel/VBoxContainer"]
+margin_right = 289.0
+margin_bottom = 24.0
+text = "Meat"
+
+[node name="OptionButton" type="OptionButton" parent="DietPanel/VBoxContainer/meat"]
+margin_left = 195.822
+margin_top = -3.095
+margin_right = 293.822
+margin_bottom = 26.905
+rect_min_size = Vector2( 145, 0 )
+text = "Like"
+items = [ "Neutral", null, false, 0, null, "Like", null, false, 1, null, "Hate", null, false, 2, null ]
+selected = 1
+
+[node name="fish" type="Label" parent="DietPanel/VBoxContainer"]
+margin_top = 35.0
+margin_right = 289.0
+margin_bottom = 59.0
+text = "Fish"
+
+[node name="OptionButton" type="OptionButton" parent="DietPanel/VBoxContainer/fish"]
+margin_left = 195.822
+margin_top = -3.095
+margin_right = 293.822
+margin_bottom = 26.905
+rect_min_size = Vector2( 145, 0 )
+text = "Like"
+items = [ "Neutral", null, false, 0, null, "Like", null, false, 1, null, "Hate", null, false, 2, null ]
+selected = 1
+
+[node name="vege" type="Label" parent="DietPanel/VBoxContainer"]
+margin_top = 70.0
+margin_right = 289.0
+margin_bottom = 94.0
+text = "Vegetables"
+
+[node name="OptionButton" type="OptionButton" parent="DietPanel/VBoxContainer/vege"]
+margin_left = 195.822
+margin_top = -3.095
+margin_right = 293.822
+margin_bottom = 26.905
+rect_min_size = Vector2( 145, 0 )
+text = "Like"
+items = [ "Neutral", null, false, 0, null, "Like", null, false, 1, null, "Hate", null, false, 2, null ]
+selected = 1
+
+[node name="grain" type="Label" parent="DietPanel/VBoxContainer"]
+margin_top = 105.0
+margin_right = 289.0
+margin_bottom = 129.0
+text = "Grains"
+
+[node name="OptionButton" type="OptionButton" parent="DietPanel/VBoxContainer/grain"]
+margin_left = 195.822
+margin_top = -3.095
+margin_right = 293.822
+margin_bottom = 26.905
+rect_min_size = Vector2( 145, 0 )
+text = "Like"
+items = [ "Neutral", null, false, 0, null, "Like", null, false, 1, null, "Hate", null, false, 2, null ]
+selected = 1
+
+[node name="RichTextLabel" type="RichTextLabel" parent="DietPanel"]
+margin_left = 49.0
+margin_top = 26.0
+margin_right = 353.0
+margin_bottom = 118.0
+text = "Select 1 Liked and at least 1 Hated food types."
+
+[node name="ClassPanel" type="Panel" parent="."]
+visible = false
+margin_left = 576.988
+margin_top = 73.844
+margin_right = 1222.99
+margin_bottom = 865.844
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ClassPanel"]
+margin_left = 25.0
+margin_top = 172.0
+margin_right = 620.0
+margin_bottom = 748.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ClassPanel/ScrollContainer"]
+margin_right = 595.0
+size_flags_horizontal = 3
+
+[node name="Button" type="Button" parent="ClassPanel/ScrollContainer/VBoxContainer"]
+visible = false
+margin_right = 595.0
+margin_bottom = 110.0
+rect_min_size = Vector2( 0, 110 )
+custom_styles/hover = SubResource( 23 )
+custom_styles/pressed = SubResource( 23 )
+custom_styles/disabled = SubResource( 24 )
+custom_styles/normal = SubResource( 25 )
+script = ExtResource( 1 )
+
+[node name="icon" type="TextureRect" parent="ClassPanel/ScrollContainer/VBoxContainer/Button"]
+margin_left = 4.6731
+margin_top = 5.0
+margin_right = 104.673
+margin_bottom = 105.0
+texture = ExtResource( 26 )
+expand = true
+stretch_mode = 6
+
+[node name="name" type="Label" parent="ClassPanel/ScrollContainer/VBoxContainer/Button"]
+margin_left = 156.146
+margin_top = 40.0016
+margin_right = 490.146
+margin_bottom = 64.0016
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Class Name"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="ClassPanel"]
+margin_left = 36.1733
+margin_top = 31.52
+margin_right = 625.173
+margin_bottom = 142.52
+text = "Select starting character class. Other classes can be learned later. "

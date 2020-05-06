@@ -1,6 +1,6 @@
 extends Node
 
-var professions = load("res://src/classes.gd").new().professions
+var professions = load("res://assets/data/classes.gd").new().professions
 
 var Skilllist = {
 	praise = { 
@@ -2653,7 +2653,7 @@ var Skilllist = {
 	},
 	i_res = {#
 		code = 'i_res',
-		new_syntax = true,
+#		new_syntax = true,
 		descript = '',
 		icon = null,
 		type = 'combat', 

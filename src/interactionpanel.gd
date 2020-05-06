@@ -773,7 +773,7 @@ func startsequence(actors):
 		newmember.consent = person.consent
 		newmember.name = person.get_short_name()
 		newmember.sex_traits = person.sex_traits + person.negative_sex_traits
-		if person.gear.crotch != null && state.items[person.gear.crotch].itembase == 'strapon':
+		if person.eqipment.gear.crotch != null && state.items[person.eqipment.gear.crotch].itembase == 'strapon':
 			newmember.strapon = true
 		newmember.lewd = 100
 		for i in newmember.sex_traits:
@@ -837,10 +837,10 @@ func rebuildparticipantslist():
 		newnode.get_node("name").set_text(i.person.translate('[name]'))
 		newnode.get_node("name").connect("pressed",self,"slavedescription",[i])
 		newnode.set_meta("person", i)
-		newnode.get_node("container/sex").set_texture(globals.sexicons[i.person.sex])
+		newnode.get_node("container/sex").set_texture(images.sexicons[i.person.sex])
 		newnode.get_node("container/sex").set_tooltip(i.person.sex)
 		newnode.get_node('container/arousal').value = i.sens
-		newnode.get_node("portrait").texture = globals.loadimage(i.person.icon_image)
+		newnode.get_node("portrait").texture = i.person.get_icon()
 		newnode.get_node("portrait").connect("mouse_entered",self,'showbody',[i])
 		newnode.get_node("portrait").connect("mouse_exited",self,'hidebody')
 		newnode.get_node("container/items").connect("pressed", self, "open_item_list", [i])
@@ -1158,11 +1158,11 @@ func count_action_consent(action, giver, taker):
 			taker_consent -= 5
 			taker_text += "Anal: -5\n"
 	
-	if giver.person.traits.has('undead') || giver.person.unique in ['dog','horse'] :
+	if giver.person.check_trait('undead') || giver.person.get_stat('unique') in ['dog','horse'] :
 		if !taker.sex_traits.has('deviant'):
 			taker_consent -= 15
 			taker_text += "Repulsive partner: -15\n"
-	if taker.person.traits.has('undead') || taker.person.unique in ['dog','horse'] :
+	if taker.person.check_trait('undead') || taker.person.get_stat('unique') in ['dog','horse'] :
 		if !giver.sex_traits.has('deviant'):
 			giver_consent -= 15
 			giver_text += "Repulsive partner: -15\n"
@@ -1455,9 +1455,9 @@ func slavedescription(member):
 var nakedspritesdict = [] #globals.gallery.nakedsprites
 
 func showbody(i):
-	if globals.loadimage(i.person.body_image) != null:
+	if i.person.get_body_image() != null:
 		$Panel/bodyimage.visible = true
-		$Panel/bodyimage.texture = globals.loadimage(i.person.body_image)
+		$Panel/bodyimage.texture = i.person.get_body_image()
 
 func hidebody():
 	$Panel/bodyimage.visible = false
@@ -2097,7 +2097,7 @@ func output(scenescript, valid_lines, givers, takers):
 
 func impregnationcheck(person1, person2):
 	var valid = true
-	if person1.unique in ['dog','horse'] || person2.unique in ['dog','horse']:
+	if person1.get_stat('unique') in ['dog','horse'] || person2.get_stat('unique') in ['dog','horse']:
 		valid = false
 	return valid
 	
@@ -2645,7 +2645,7 @@ func pheromones(member):
 	if member.effects.has('pheromones'):
 		text = "\n" + member.name +" is already under effect of pheromones."
 	else:
-		if member.person.race in globals.race_groups.halfbreeds + globals.race_groups.beast:
+		if member.person.get_stat('race') in races.race_groups.halfbreeds + races.race_groups.beast:
 			member.effects.append("pheromones")
 			member.lewdmod += 1
 			member.consent = 100
