@@ -690,7 +690,9 @@ func chooseimage(type):
 func sex_traits_open():
 	$SexTraitsPanel.show()
 	globals.ClearContainer($SexTraitsPanel/ScrollContainer/VBoxContainer)
-	for i in person.statlist.unlocked_sex_traits:
+	var array = person.statlist.unlocked_sex_traits.duplicate()
+	array.sort_custom(self, 'sort_traits')
+	for i in array:
 		var newbutton = globals.DuplicateContainerTemplate($SexTraitsPanel/ScrollContainer/VBoxContainer)
 		newbutton.pressed = person.check_trait(i)
 		newbutton.text = Traitdata.sex_traits[i].name
@@ -703,6 +705,12 @@ func update_trait_capacity():
 	$SexTraitsPanel/TraitCapacity.text = text
 	for i in $SexTraitsPanel/ScrollContainer/VBoxContainer.get_children():
 		i.disabled = person.get_stat('sexuals_factor')+1 - person.statlist.sex_traits.size() <= 0 && i.pressed == false
+
+func sort_traits(first,second):
+	if Traitdata.sex_traits[first].name >= Traitdata.sex_traits[second].name:
+		return false
+	else:
+		return true
 
 func toggle_trait(trait_status, trait):
 	match trait_status:

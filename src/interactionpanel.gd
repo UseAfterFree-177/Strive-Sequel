@@ -2193,7 +2193,6 @@ func endencounter():
 			i.consentgain += i.new_consented_partners*2
 			consenttext[i.person.id] += '\nConsented to new partners: +' + str(i.new_consented_partners*2)
 		
-		
 		if floor(i.consented_actions.keys().size()/3) > 0:
 			i.consentgain += floor(i.consented_actions.keys().size())/3
 			consenttext[i.person.id] += "\nAccepted Variety: +" + str(floor(i.consented_actions.keys().size())/3)
@@ -2221,8 +2220,6 @@ func endencounter():
 		
 		expgain = expgain*bonus
 		
-		
-		
 		i.person.base_exp += expgain
 		text += "; Experience gained: " + str(expgain)
 		if i.orgasms > 0:
@@ -2234,7 +2231,6 @@ func endencounter():
 		var temptext = consenttext[i.person.id]
 		consenttext[i.person.id] = "Total: "
 		
-		
 		if i.consentgain > 0:
 			consenttext[i.person.id] += '+'
 		else:
@@ -2242,7 +2238,6 @@ func endencounter():
 		consenttext[i.person.id] += str(i.consentgain) + temptext
 		i.person.consent += i.consentgain
 		text += "\n"
-	
 	
 	ongoingactions.clear()
 	
@@ -2264,7 +2259,7 @@ func endencounter():
 		for i in sex_traits:
 			check = check_acquire_reqs(p, sex_traits[i].acquire_reqs)
 			chance = (randf()*100 < (5 + 5 * p.person.sexuals_factor))
-			if chance && check && !p.sex_traits.has(i):# || (true && check):
+			if chance && check && !p.unlocked_sex_traits.has(i):
 				p.person.unlocked_sex_traits.append(i)
 				text += p.name + " learned trait: " + Traitdata.sex_traits[i].name + "\n"
 	### Removing Dislikes
@@ -2281,11 +2276,9 @@ func endencounter():
 						continue
 					check = check_acquire_reqs(p, sex_traits[i].reqs)
 					chance = (randf()*100 < (5 + 5 * p.person.sexuals_factor))
-					if (chance && check) :#|| (true && check):
-						#print("Trait Removed: " + i)
+					if (chance && check) :
 						p.person.negative_sex_traits.erase(i)
 						text += p.name + " lost trait: " + Traitdata.sex_traits[i].name + "\n"
-	
 	
 	get_node("Control").show()
 	get_node("Control/Panel/RichTextLabel").set_bbcode(text)

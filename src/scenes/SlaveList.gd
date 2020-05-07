@@ -63,6 +63,8 @@ func update_button(newbutton):
 	
 	if person.get_next_class_exp() <= person.xp_module.base_exp:
 		newbutton.get_node("HBoxContainer/explabel").set("custom_colors/font_color", Color(globals.hexcolordict.levelup_text_color))
+	else:
+		newbutton.get_node("HBoxContainer/explabel").set("custom_colors/font_color", Color(1,1,1))
 	if !person.check_location('mansion'):
 		if person.check_location('travel'):
 			newbutton.get_node('HBoxContainer/job').text = 'Relocating: in ' + str(ceil(person.travel.travel_time / person.travel_per_tick())) + " hours. " 

@@ -285,6 +285,7 @@ var faction_actions = {
 func enter_guild(guild):
 	active_area = state.areas[guild.area]
 	active_faction = guild
+	$ShopPanel.hide()
 	input_handler.active_faction = guild
 	globals.ClearContainer($CityGui/ScrollContainer/VBoxContainer)
 	var newbutton
@@ -401,6 +402,8 @@ func open_shop(shop):
 		'location':
 			active_shop = active_location.shop
 	shopcategory = 'buy'
+	$ShopPanel/HBoxContainer/buy.pressed = true
+	$ShopPanel/HBoxContainer/sell.pressed = false
 	update_shop_list()
 
 var tempitems = []
