@@ -116,10 +116,6 @@ var gui = {
 	alt_back = load("res://assets/images/gui/text scene/textfieldpanel.png"), #stub
 };
 
-var GFX = {
-	slash = load("res://assets/images/gfx/slash-effect.png"),
-	fire = load("res://assets/sfx/fire_effect.png"),
-}
 
 var icons = {
 	quest_dungeon = load('res://assets/images/gui/quest_dungeon.png'),
@@ -192,4 +188,35 @@ var sexicons = {
 	male = load("res://assets/images/sexicons/male.png"),
 	female = load("res://assets/images/sexicons/female.png"),
 	futa = load("res://assets/images/sexicons/futa.png"),
+}
+
+var quest_icons = {
+	complete_location = load("res://assets/images/gui/quest_encounter.png"),
+	complete_dungeon = load("res://assets/images/gui/quest_dungeon.png"),
+	reputation = load("res://assets/images/gui/quest_reputation.png"),
+}
+
+var cursors = {
+	default = load("res://assets/images/gui/universal/cursordefault.png"),
+	attack = load("res://assets/images/gui/universal/cursorfight.png"),
+	support = load("res://assets/images/gui/universal/cursorsupport.png"),
+}
+
+var GFX = {
+	slash = load("res://assets/images/gfx/slash-effect.png"),
+	fire = load("res://assets/sfx/fire_effect.png"),
+}
+
+var GFX_sprites = {
+	strike = 'res://assets/sfx/hit_animation/strike.tscn',
+	arrow = 'res://assets/sfx/arrow.tscn',
+	water_attack = 'res://assets/sfx/water_attack.tscn',
+	firebolt = 'res://assets/sfx/hit_animation/firebolt.tscn',
+	flame = 'res://assets/sfx/hit_animation/flame.tscn',
+	earth_spike = "res://assets/sfx/hit_animation/earth_spike.tscn",
+	decay = "res://assets/sfx/hit_animation/DecayEffect.tscn",
+	}
+
+var GFX_particles = {
+	heal = "res://assets/sfx/HealEffect.tscn",
 }

@@ -1,6 +1,6 @@
 extends base_effect
 class_name area_effect
-
+#not used
 #area effects stable version - may be subject to reworking
 #area effects can't own sub_effects (cause those can not be linked to applied objects as one-to-one), only buffs and atomic effects
 #area effects can't be initial effects

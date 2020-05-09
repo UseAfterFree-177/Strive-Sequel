@@ -458,7 +458,6 @@ texture_pressed = ExtResource( 14 )
 texture_hover = ExtResource( 20 )
 
 [node name="NumberSelectPanel" type="TextureRect" parent="."]
-editor/display_folded = true
 visible = false
 margin_left = 197.0
 margin_top = 206.0

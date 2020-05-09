@@ -22,14 +22,14 @@ func get_weapon_range():
 	if gear.rhand == null:
 		return 'melee'
 	else:
-		var weapon = state.items[gear.rhand]
+		var weapon = game_res.items[gear.rhand]
 		return weapon.weaponrange
 
 func check_gear_equipped(gearname, param = 'itembase'):
 	for i in gear.values():
 		if i == null:
 			continue
-		var tempgear = state.items[i]
+		var tempgear = game_res.items[i]
 		if tempgear.get(param) == gearname:
 			return true
 	return false
@@ -41,15 +41,15 @@ func equip(item, item_prev_id = null):
 		input_handler.SystemMessage(tr("INVALIDREQS"))
 		if item_prev_id == null:
 			return
-		state.items[item_prev_id].amount += 1
+		game_res.items[item_prev_id].amount += 1
 		item.amount = 0
 		return
 	for i in item.multislots:
 		if gear[i] != null:
-			unequip(state.items[gear[i]])
+			unequip(game_res.items[gear[i]])
 	for i in item.slots:
 		if gear[i] != null:
-			unequip(state.items[gear[i]])
+			unequip(game_res.items[gear[i]])
 		gear[i] = item.id
 	item.owner = parent.id
 	#adding bonuses
@@ -63,7 +63,7 @@ func equip(item, item_prev_id = null):
 func unequip(item):
 	var duplicate = globals.check_duplicates(item.itembase, item.parts)
 	if duplicate != null:
-		var duplicate_item = state.items[duplicate]
+		var duplicate_item = game_res.items[duplicate]
 		if duplicate_item.owner == null:
 			if duplicate != item.id:
 				duplicate_item.amount += 1
@@ -89,7 +89,7 @@ func unequip(item):
 func clear_eqip():
 	for i in gear:
 		if gear[i] != null:
-			unequip(state.items[gear[i]])
+			unequip(game_res.items[gear[i]])
 
 func get_weapon_element():
 	#for testing

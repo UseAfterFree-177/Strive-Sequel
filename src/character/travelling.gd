@@ -9,8 +9,8 @@ var initial_travel_time = 0 setget set_travel_time
 
 func travel_per_tick():
 	var value = 1
-	if state.upgrades.has('stables'):
-		value = 1 + variables.stable_boost_per_level * state.upgrades.stables
+	if game_res.upgrades.has('stables'):
+		value = 1 + variables.stable_boost_per_level * game_res.upgrades.stables
 	return value
 
 func calculate_estimated_travel_time(t_time):
@@ -34,16 +34,16 @@ func tick():
 			travel_time = 0
 			area = travel_target.area
 			location = travel_target.location
-			state.emit_signal("slave_arrived", self)
+			game_party.emit_signal("slave_arrived", self)
 			input_handler.PlaySound("ding")
 			if location == 'mansion':
 				parent.return_to_task()
-				state.text_log_add("travel", parent.get_short_name() + " returned to mansion. ")
+				globals.text_log_add("travel", parent.get_short_name() + " returned to mansion. ")
 			else:
 #					if state.capitals.has(location):
 #						state.text_log_add("travel", get_short_name() + " arrived at location: " + state.areas[state.capitals[location].area].capital_name)
 #					else:
-				state.text_log_add("travel", parent.get_short_name() + " arrived at location: " + state.areas[state.location_links[location].area][state.location_links[location].category][location].name)
+				globals.text_log_add("travel", parent.get_short_name() + " arrived at location: " + game_world.areas[game_world.location_links[location].area][game_world.location_links[location].category][location].name)
 
 func make_location_description():
 	var text = ''
@@ -52,13 +52,13 @@ func make_location_description():
 	if location == 'travel':
 		if travel_target.location == 'mansion':
 			active_location_name = 'Mansion'
-			active_area_name = state.starting_area
+			active_area_name = game_world.starting_area
 		else:
-			active_area_name = state.areas[state.location_links[travel_target.location].area].name
-			active_location_name = state.areas[state.location_links[travel_target.location].area][state.location_links[location].category][travel_target.location].name
+			active_area_name = game_world.areas[game_world.location_links[travel_target.location].area].name
+			active_location_name = game_world.areas[game_world.location_links[travel_target.location].area][game_world.location_links[location].category][travel_target.location].name
 	else:
-		active_area_name = state.areas[state.location_links[location].area].name
-		active_location_name = state.areas[state.location_links[location].area][state.location_links[location].category][travel_target.location].name
+		active_area_name = game_world.areas[game_world.location_links[location].area].name
+		active_location_name = game_world.areas[game_world.location_links[location].area][game_world.location_links[location].category][travel_target.location].name
 	
 	if location == 'travel':
 		text = '[name] currently relocating to [color=yellow]' + active_location_name + "[/color], which is located at [color=aqua]" + active_area_name + "[/color]. [He] will be there in " + str(ceil(travel_time / travel_per_tick())) + ' hours.'
@@ -70,11 +70,11 @@ func return_to_mansion():
 	var active_area
 	var active_location
 	if location == 'travel':
-		active_area = state.areas[state.location_links[travel_target.location].area]
-		active_location = state.areas[state.location_links[travel_target.location].area][state.location_links[travel_target.location].category][travel_target.location]
+		active_area = game_world.areas[game_world.location_links[travel_target.location].area]
+		active_location = game_world.areas[game_world.location_links[travel_target.location].area][game_world.location_links[travel_target.location].category][travel_target.location]
 	else:
-		active_area = state.areas[state.location_links[location].area]
-		active_location = state.areas[state.location_links[location].area][state.location_links[location].category][location]
+		active_area = game_world.areas[game_world.location_links[location].area]
+		active_location = game_world.areas[game_world.location_links[location].area][game_world.location_links[location].category][location]
 	
 	if active_location.has("group"):
 		for i in active_location.group:
@@ -85,5 +85,14 @@ func return_to_mansion():
 		location = 'travel'
 		travel_target = {area = '', location = 'mansion'}
 		travel_time = max(1, abs(round(active_area.travel_time + active_location.travel_time - travel_time)))
+	else:
+		location = 'mansion'
+
+func recruit():
+	if variables.instant_travel == false:
+		travel_target = {area = '', location = 'mansion'}
+		travel_time = input_handler.active_area.travel_time + input_handler.active_location.travel_time
+		parent.set_work('travel')
+		location = 'travel'
 	else:
 		location = 'mansion'

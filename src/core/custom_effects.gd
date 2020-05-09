@@ -5,7 +5,7 @@ var person
 func hairdye(character):
 	person = character
 	var node = input_handler.get_spec_node(input_handler.NODE_TEXTEDIT) #input_handler.GetTextEditNode()
-	node.open(self, 'set_hair_color', person.hair_color, person.translate("Select new hair color for [name]"))
+	node.open(self, 'set_hair_color', person.get_stat('hair_color'), person.translate("Select new hair color for [name]"))
 
 func set_hair_color(text):
 	person.set_stat('hair_color', text)
@@ -14,6 +14,7 @@ func set_hair_color(text):
 func minorus_potion(character):
 	person = character
 	input_handler.interactive_message("minorus_potion_select",'custom_effect', {})
+
 func majorus_potion(character):
 	person = character
 	input_handler.interactive_message("majorus_potion_select",'custom_effect', {})
@@ -26,6 +27,7 @@ func minorus_tits():
 	else:
 		input_handler.interactive_message("potion_no_effect", '', {})
 	input_handler.update_slave_panel()
+
 func minorus_ass():
 	var character = person
 	if !character.get_stat('ass_size') in ['masculine','flat']:
@@ -34,6 +36,7 @@ func minorus_ass():
 	else:
 		input_handler.interactive_message("potion_no_effect", '', {})
 	input_handler.update_slave_panel()
+
 func minorus_balls():
 	var character = person
 	if !character.get_stat('balls_size') in ['small']:
@@ -42,6 +45,7 @@ func minorus_balls():
 	else:
 		input_handler.interactive_message("potion_no_effect", '', {})
 	input_handler.update_slave_panel()
+
 func minorus_penis():
 	var character = person
 	if !character.get_stat('penis_size') in ['small']:
@@ -59,6 +63,7 @@ func majorus_tits():
 	else:
 		input_handler.interactive_message("potion_no_effect", '', {})
 	input_handler.update_slave_panel()
+
 func majorus_ass():
 	var character = person
 	if !character.get_stat('ass_size') in ['huge']:
@@ -67,6 +72,7 @@ func majorus_ass():
 	else:
 		input_handler.interactive_message("potion_no_effect", '', {})
 	input_handler.update_slave_panel()
+
 func majorus_balls():
 	var character = person
 	if !character.get_stat('balls_size') in ['big']:
@@ -75,6 +81,7 @@ func majorus_balls():
 	else:
 		input_handler.interactive_message("potion_no_effect", '', {})
 	input_handler.update_slave_panel()
+
 func majorus_penis():
 	var character = person
 	if !character.get_stat('penis_size') in ['big']:
@@ -93,7 +100,7 @@ func writ_of_exemption_use():
 	var character = person
 	var acceptance_req = 100
 	var acceptance_chance = 0
-	state.remove_item("writ_of_exemption", 1)
+	game_res.remove_item("writ_of_exemption", 1)
 	input_handler.get_spec_node(input_handler.NODE_INVENTORY, [{mode = 'character', person = person}]).hide()
 	input_handler.scene_characters = [person]
 	if character.get_stat('loyalty') == 100 && character.get_stat('submission') == 100:
@@ -107,7 +114,7 @@ func writ_of_exemption_use():
 		character.add_stat('loyalty', 25)
 	else:
 		input_handler.interactive_message("writ_of_exemption_failure",'char_translate',character)
-		state.remove_slave(character)
+		game_party.remove_slave(character)
 	input_handler.update_slave_panel()
 	input_handler.rebuild_slave_list()
 

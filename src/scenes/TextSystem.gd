@@ -1,5 +1,5 @@
 extends Control
-
+#not used
 onready var TextField = $Panel/DisplayText
 onready var ImageSprite = $CharImage
 onready var ChoiceContainer = $ChoicePanel/VBoxContainer
@@ -36,10 +36,10 @@ var choicedict = {
 
 func _process(delta):
 	if TextField.get_total_character_count() > TextField.visible_characters:
-		if globals.globalsettings.textspeed >= 200:
+		if input_handler.globalsettings.textspeed >= 200:
 			ShownCharacters = TextField.get_total_character_count()
 		else:
-			ShownCharacters += delta*globals.globalsettings.textspeed
+			ShownCharacters += delta*input_handler.globalsettings.textspeed
 		TextField.visible_characters = ShownCharacters
 	if Delay > 0:
 		Delay -= delta
@@ -82,7 +82,7 @@ func _input(event):
 
 func _ready():
 	set_process(false)
-	globals.AddPanelOpenCloseAnimation($LogPanel)
+	input_handler.AddPanelOpenCloseAnimation($LogPanel)
 #warning-ignore:return_value_discarded
 	$Panel/Log.connect("pressed",self,'OpenLog')
 #warning-ignore:return_value_discarded
@@ -184,7 +184,7 @@ func AdvanceScene():
 				ReceiveInput = false
 			'background':
 				if NewEffect.has('time'):
-					input_handler.SmoothTextureChange($Background, images.backgrounds[NewEffect.value], NewEffect.time)
+					core_animations.SmoothTextureChange($Background, images.backgrounds[NewEffect.value], NewEffect.time)
 				else:
 					$Background.texture = images.backgrounds[NewEffect.value]
 				$Background.update()
@@ -216,7 +216,7 @@ func AdvanceScene():
 					else:
 						$Panel/CharPortrait.texture = images.portraits[NewEffect.portrait]
 				#$Panel/TextShade.bbcode_text = text
-				if ColorsByNames.has(NewEffect.source) && globals.globalsettings.textmonocolor == false:
+				if ColorsByNames.has(NewEffect.source) && input_handler.globalsettings.textmonocolor == false:
 					text = "[color=#" + ColorsByNames[NewEffect.source] + ']' + text + '[/color]'
 				if !debug:
 					if NewEffect.source != 'narrator':
@@ -270,9 +270,9 @@ func SpriteDo(node, value, args):
 		'set':
 			node.texture = images.sprites[args]
 		'unfade':
-			input_handler.UnfadeAnimation(node, args)
+			core_animations.UnfadeAnimation(node, args)
 		'fade':
-			input_handler.FadeAnimation(node, args)
+			core_animations.FadeAnimation(node, args)
 		'hide':
 			node.texture = null
 
@@ -340,9 +340,9 @@ func blackscreentransition(duration = 0.5):
 	TextField.bbcode_text = ''
 	$Panel/CharPortrait.modulate.a = 0
 	$Panel/DisplayName.modulate.a = 0
-	input_handler.UnfadeAnimation($BlackScreen, duration)
+	core_animations.UnfadeAnimation($BlackScreen, duration)
 	input_handler.emit_signal("ScreenChanged")
-	input_handler.FadeAnimation($BlackScreen, duration, duration)
+	core_animations.FadeAnimation($BlackScreen, duration, duration)
 
 func blackscreenturnon(args = null):
 	$BlackScreen.visible = true
@@ -354,19 +354,19 @@ func blackscreenturnoff(args = null):
 
 func blackscreenfade(duration = 0.5):
 	input_handler.emit_signal("ScreenChanged")
-	input_handler.FadeAnimation($BlackScreen, duration)
+	core_animations.FadeAnimation($BlackScreen, duration)
 
 func blackscreenunfade(duration = 0.5):
 	input_handler.emit_signal("ScreenChanged")
-	input_handler.UnfadeAnimation($BlackScreen, duration)
+	core_animations.UnfadeAnimation($BlackScreen, duration)
 
 func shakeanim(duration = 0.2):
 	input_handler.emit_signal("ScreenChanged")
-	input_handler.ShakeAnimation(self, duration)
+	core_animations.ShakeAnimation(self, duration)
 
 func shakespr(duration = 0.2):
 	input_handler.emit_signal("ScreenChanged")
-	input_handler.ShakeAnimation(ImageSprite, duration)
+	core_animations.ShakeAnimation(ImageSprite, duration)
 
 func GuiDo(value):
 	match value:

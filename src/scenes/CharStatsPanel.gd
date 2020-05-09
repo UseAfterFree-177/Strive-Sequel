@@ -11,8 +11,8 @@ func _ready():
 		newlabel.show()
 		newvalue.show()
 	for i in $"base stats".get_children():
-		if globals.statdata.has(i.name.replace("label_","")):
-			globals.connecttexttooltip(i, globals.statdata[i.name.replace("label_", "")].descript)
+		if statdata.statdata.has(i.name.replace("label_","")):
+			globals.connecttexttooltip(i, statdata.statdata[i.name.replace("label_", "")].descript)
 
 func open(character = Slave.new()):
 	$name.text = character.get_short_name()
@@ -30,8 +30,8 @@ func open(character = Slave.new()):
 		if variables.resists_list.has(i.name):
 			i.text = str(tmp[i.name])
 			if tmp[i.name] > 0:
-				i.set("custom_colors/font_color", globals.hexcolordict.yellow)
+				i.set("custom_colors/font_color", variables.hexcolordict.yellow)
 			elif tmp[i.name] < 0:
-				i.set("custom_colors/font_color", globals.hexcolordict.green)
+				i.set("custom_colors/font_color", variables.hexcolordict.green)
 			else:
-				i.set("custom_colors/font_color", globals.hexcolordict.white)
+				i.set("custom_colors/font_color", variables.hexcolordict.white)

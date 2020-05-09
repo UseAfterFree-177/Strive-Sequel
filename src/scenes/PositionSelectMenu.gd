@@ -39,7 +39,7 @@ func slave_position_selected(character):
 	character = character.id
 	var positiontaken = false
 	var oldheroposition = null
-	if active_location.group.has(pos) && state.characters[active_location.group[pos]].check_location(active_location.id, true):
+	if active_location.group.has(pos) && game_party.characters[active_location.group[pos]].check_location(active_location.id, true):
 		positiontaken = true
 	
 	for i in active_location.group:
@@ -56,8 +56,8 @@ func slave_position_selected(character):
 
 func build_location_group():
 	for i in positiondict:
-		if active_location.group.has('pos'+str(i)) && state.characters[active_location.group['pos'+str(i)]] != null:
-			var character = state.characters[active_location.group['pos'+str(i)]]
+		if active_location.group.has('pos'+str(i)) && game_party.characters[active_location.group['pos'+str(i)]] != null:
+			var character = game_party.characters[active_location.group['pos'+str(i)]]
 			get_node(positiondict[i]+"/Image").texture = character.get_icon()
 			get_node(positiondict[i]+"/Image").show()
 			get_node(positiondict[i]+"/Image/hp").text = str(floor(character.hp)) + '/' + str(floor(character.hpmax))
@@ -67,8 +67,8 @@ func build_location_group():
 			get_node(positiondict[i]+"/Image").hide()
 
 func start_combat():
-	if input_handler.check_location_group() == false:
+	if globals.check_location_group() == false:
 		input_handler.SystemMessage("Select at least 1 character to fight. ")
 		return
 	hide()
-	input_handler.StartCombat(input_handler.current_enemy_group)
+	globals.StartCombat(input_handler.current_enemy_group)

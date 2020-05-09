@@ -46,19 +46,18 @@ var stats = {
 }
 
 
-
-func applyeffect(effect, caster, target):
-	
-	var value = effect.value
-	
-	if effect.has('casterreq'):
-		if globals.evaluate(effect.casterreq) == false:
-			return
-	if effect.has('targetreq'):
-		if globals.evaluate(effect.targetreq) == false:
-			return
-	
-	
+#not used
+#func applyeffect(effect, caster, target):
+#
+#	var value = effect.value
+#
+#	if effect.has('casterreq'):
+#		if globals.evaluate(effect.casterreq) == false:
+#			return
+#	if effect.has('targetreq'):
+#		if globals.evaluate(effect.targetreq) == false:
+#			return
+#
 
 var Parts = {
 	ToolHandle = {name = tr("TOOLHANDLE"), code = 'ToolHandle', icon = load("res://assets/images/iconsitems/parts/handle.png")},

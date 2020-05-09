@@ -28,7 +28,7 @@ func update():
 	if require_gold == false:
 		$Button.disabled = $HSlider.value == 0 
 	else:
-		$Button.disabled = $HSlider.value == 0 || state.money < $HSlider.value * cost
+		$Button.disabled = $HSlider.value == 0 || game_res.money < $HSlider.value * cost
 	$RichTextLabel.bbcode_text = showntext.replace("$n", str($HSlider.value)).replace("$m", str($HSlider.value*cost))
 
 func confirm_number_selection():

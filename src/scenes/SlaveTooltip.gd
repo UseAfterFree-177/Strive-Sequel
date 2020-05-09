@@ -55,7 +55,7 @@ func showup(node, person):
 		get_node("VBoxContainer/"+ i ).max_value = person.get_stat(i+'max')
 		get_node("VBoxContainer/"+ i ).value = person.get_stat(i)
 		get_node("VBoxContainer/"+ i + '/Label').text = str(floor(person.get_stat(i))) + "/" + str(floor(person.get_stat(i+'max')))
-	text = "Type: [color=yellow]" + person.translate(globals.slave_class_names[person.get_stat('slave_class')]) + "[/color]\n"
+	text = "Type: [color=yellow]" + person.translate(statdata.slave_class_names[person.get_stat('slave_class')]) + "[/color]\n"
 	if person.is_players_character == true:
 		if person.get_work() != '':
 			text += "Occupation: " + races.tasklist[person.get_work()].name
@@ -73,7 +73,7 @@ func showup(node, person):
 				text += "∞}"
 	$job.bbcode_text = globals.TextEncoder(text) 
 	
-	globals.ClearContainer($GridContainer)
+	input_handler.ClearContainer($GridContainer)
 	if person.xp_module.professions.size() > 5:
 		$GridContainer/Button.rect_min_size = Vector2(50,50)
 		$GridContainer/Button/Label.hide()
@@ -81,7 +81,7 @@ func showup(node, person):
 		$GridContainer/Button.rect_min_size = Vector2(100,100)
 		$GridContainer/Button/Label.show()
 	for i in person.xp_module.professions:
-		var newnode = globals.DuplicateContainerTemplate($GridContainer)
+		var newnode = input_handler.DuplicateContainerTemplate($GridContainer)
 		newnode.texture = Skilldata.professions[i].icon
 		newnode.get_node("Label").text = Skilldata.professions[i].name
 	
@@ -93,10 +93,10 @@ func showup(node, person):
 	else:
 		$VBoxContainer/lust.show()
 	
-	globals.ClearContainer($buffs)
+	input_handler.ClearContainer($buffs)
 	
 	for i in person.get_mansion_buffs():
-		var newnode = globals.DuplicateContainerTemplate($buffs)
+		var newnode = input_handler.DuplicateContainerTemplate($buffs)
 		newnode.texture = i.icon
 		if i.get_duration() != null and i.get_duration() >= 0:
 			newnode.get_node("Label").text = str(i.get_duration())
@@ -129,4 +129,4 @@ func cooldown():
 func hide():
 	parentnode = null
 	set_process(false)
-	input_handler.FadeAnimation(self, 0.2)
+	core_animations.FadeAnimation(self, 0.2)

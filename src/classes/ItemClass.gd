@@ -90,21 +90,18 @@ func CreateGear(ItemName = '', dictparts = {}, bonus = {}):
 	var itemtemplate = Items.itemlist[ItemName]
 	var tempname = itemtemplate.name
 	
-	
 	geartype = itemtemplate.geartype
 	if itemtemplate.has('weaponrange'):
 		weaponrange = itemtemplate.weaponrange
 	itemtype = itemtemplate.itemtype
 	if itemtemplate.tags.has('tool'):
 		toolcategory = itemtemplate.tool_category
-		
 	
 	for i in itemtemplate.basestats:
 		if bonusstats.has(i):
 			bonusstats[i] += itemtemplate.basestats[i]
 		else:
 			bonusstats[i] = itemtemplate.basestats[i]
-	
 	
 	if itemtemplate.has('effects'):
 		for e in itemtemplate.effects:
@@ -130,7 +127,7 @@ func CreateGear(ItemName = '', dictparts = {}, bonus = {}):
 				for i in materialeffects:
 					materialeffects[i] = float(materialeffects[i]) / 2
 			materials.append(material.code)
-			globals.AddOrIncrementDict(parteffectdict, materialeffects)
+			input_handler.AddOrIncrementDict(parteffectdict, materialeffects)
 #		if parteffectdict.has('durabilitymod'):
 #			durability *= parteffectdict.durabilitymod
 		for i in parteffectdict:
@@ -148,7 +145,6 @@ func CreateGear(ItemName = '', dictparts = {}, bonus = {}):
 			if bonusstats.has(i):
 				bonusstats[i] *= itemtemplate.basemods[i]
 	
-	
 	if itemtemplate.icon != null:
 		if itemtemplate.has("alticons"):
 			var alticon = false
@@ -162,8 +158,6 @@ func CreateGear(ItemName = '', dictparts = {}, bonus = {}):
 				icon = itemtemplate.icon.get_path()
 		else:
 			icon = itemtemplate.icon.get_path()
-	
-	
 	
 	if mode == 'normal':
 		#durability = round(durability)
@@ -191,7 +185,7 @@ func CreateGear(ItemName = '', dictparts = {}, bonus = {}):
 func substractitemcost():
 	var itemtemplate = Items.itemlist[itembase]
 	for i in parts:
-		state.materials[parts[i]] -= itemtemplate.parts[i]
+		game_res.materials[parts[i]] -= itemtemplate.parts[i]
 
 func set_icon(node):
 	var icon_texture
@@ -217,7 +211,6 @@ func set_icon(node):
 			node.material.set_shader_param(part, color)
 
 
-
 func tooltiptext():
 	var text = ''
 	text += '[center]' + name + '[/center]\n'
@@ -235,7 +228,7 @@ func tooltiptext():
 	if toolcategory != null:
 		text += tr("TOOLWORKCATEGORY") + ": " 
 		for i in toolcategory:
-			text += globals.worktoolnames[i] +", "
+			text += statdata.worktoolnames[i] +", "
 		text = text.substr(0, text.length()-2) 
 	if description != null:
 		text += description
@@ -248,16 +241,16 @@ func tooltiptext():
 			if bonusstats[i] != 0:
 				var value = bonusstats[i]
 				var change = ''
-				if globals.statdata[i].has('percent'):
+				if statdata.statdata[i].has('percent'):
 					value = value*100
-				text += globals.statdata[i].name + ': {color='
+				text += statdata.statdata[i].name + ': {color='
 				if value > 0:
 					change = '+'
 					text += 'green|' + change
 				else:
 					text += 'red|'
 				value = str(value)
-				if globals.statdata[i].has('percent'):
+				if statdata.statdata[i].has('percent'):
 					value = value + '%'
 				text += value + '}\n'
 		text += tooltipeffects()
@@ -288,7 +281,7 @@ func repairwithmaterials():
 	durability = maxdurability
 	
 	for i in materialsdict:
-		state.materials[i] -= materialsdict[i]
+		game_res.materials[i] -= materialsdict[i]
 
 func canrepairwithmaterials(): #checks if item can be repaired at present state and returns the problem
 	var canrepair = true
@@ -296,7 +289,7 @@ func canrepairwithmaterials(): #checks if item can be repaired at present state 
 	var materialsdict = counterepairmaterials()
 	
 	for i in materialsdict:
-		if state.materials[i] < materialsdict[i]:
+		if game_res.materials[i] < materialsdict[i]:
 			canrepair = false
 			text += tr("NOTENOUGH") + ' [color=yellow]' + Items.materiallist[i].name + '[/color]'
 	
@@ -340,7 +333,6 @@ func counterepairmaterials():
 	for i in requiredmaterialsdict:
 		requiredmaterialsdict[i] *= multiplier * durabilitymultiplier
 		requiredmaterialsdict[i] = ceil(requiredmaterialsdict[i])
-	
 	
 	return requiredmaterialsdict
 

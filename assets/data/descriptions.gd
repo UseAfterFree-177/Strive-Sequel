@@ -165,6 +165,7 @@ func piercing():
 		text += '[His] cock has a [color=aqua]stud[/color] in it. '
 
 	if text != '':
+		#posible bug
 		if globals.state.descriptsettings.piercing == true || showmode != 'default':
 			text = "\n\n[url=piercing][color=#d1b970]Piercing:[/color][/url] " + text
 		else:
@@ -197,6 +198,7 @@ func tattoo():
 		if tmp.ass != 'none' && tmp1.ass == true:
 			text += tattoosdescript.ass.start + '[color=yellow]' + tattoooptions[tmp.ass].name + '[/color]' + tattoosdescript.ass.end + tattoooptions[tmp.ass].descript + '. '
 	if text != '':
+		#possible bug
 		if globals.state.descriptsettings.tattoo == true || showmode != 'default': 
 			text = "\n\n[url=tattoo][color=#d1b970]Tattoos:[/color][/url] " + text
 		else:
@@ -524,7 +526,7 @@ func get_class_reqs(newperson, classdata):
 func get_class_bonuses(newperson, classdata):
 	var text = ''
 	for i in classdata.statchanges:
-		text += globals.statdata[i].name + ": "
+		text += statdata.statdata[i].name + ": "
 		if classdata.statchanges[i]  > 0:
 			text += "+"
 		text += str(classdata.statchanges[i]) + "\n"

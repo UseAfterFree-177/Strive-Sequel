@@ -44,6 +44,7 @@ func deserialize(tmp):
 	req_skill = template.req_skill
 
 func process_event(ev):
+	if !is_applied: return
 	if triggered_event.has(ev) and ready:
 		if !req_skill or (self_args.has('skill') and self_args['skill'] != null):
 			#check conditions

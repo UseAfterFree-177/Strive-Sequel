@@ -10,10 +10,10 @@ func open(loot, message):
 	popup()
 	lootdata = loot
 	$Panel/RichTextLabel.bbcode_text = message
-	globals.ClearContainer($Panel/ScrollContainer/GridContainer)
+	input_handler.ClearContainer($Panel/ScrollContainer/GridContainer)
 	var newbutton
 	for i in loot.items:
-		newbutton = globals.DuplicateContainerTemplate($Panel/ScrollContainer/GridContainer)
+		newbutton = input_handler.DuplicateContainerTemplate($Panel/ScrollContainer/GridContainer)
 		i.set_icon(newbutton)
 		newbutton.get_node("Label").text = str(i.amount)
 		if i.amount <= 1:
@@ -21,8 +21,8 @@ func open(loot, message):
 		globals.connectitemtooltip(newbutton, i)
 		globals.AddItemToInventory(i)
 	for i in loot.materials:
-		newbutton = globals.DuplicateContainerTemplate($Panel/ScrollContainer/GridContainer)
+		newbutton = input_handler.DuplicateContainerTemplate($Panel/ScrollContainer/GridContainer)
 		newbutton.texture = Items.materiallist[i].icon
 		newbutton.get_node("Label").text = str(loot.materials[i])
 		globals.connectmaterialtooltip(newbutton, Items.materiallist[i])
-		state.materials[i] += loot.materials[i]
+		game_res.materials[i] += loot.materials[i]

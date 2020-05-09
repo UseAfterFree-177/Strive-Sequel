@@ -84,7 +84,7 @@ func assign_to_task(taskcode, taskproduct, iterations = -1):
 	var task = races.tasklist[taskcode]
 	#check if task is existing and add slave to it if it does
 	var taskexisted = false
-	for i in state.active_tasks:
+	for i in game_party.active_tasks:
 		if i.code == taskcode && i.product == taskproduct:
 			taskexisted = true
 			i.workers.append(self.id)
@@ -97,12 +97,12 @@ func assign_to_task(taskcode, taskproduct, iterations = -1):
 	var dict = {code = taskcode, product = taskproduct, progress = 0, threshhold = task.production[taskproduct].progress_per_item, workers = [], iterations = iterations, messages = [], mod = task.mod}
 	dict.workers.append(self.id)
 	work = taskcode
-	state.active_tasks.append(dict)
-	state.emit_signal("task_added")
+	game_party.active_tasks.append(dict)
+	game_party.emit_signal("task_added")
 
 func remove_from_task(remember = false):
 	if work != '':
-		for i in state.active_tasks:
+		for i in game_party.active_tasks:
 			if i.code == work:
 				i.workers.erase(self.id)
 	if remember == true && work != 'travel':
@@ -118,7 +118,7 @@ func get_work():
 
 func work_tick():
 	var currenttask
-	for i in state.active_tasks:
+	for i in game_party.active_tasks:
 		if i.workers.has(self.id):
 			currenttask = i
 	
@@ -129,7 +129,7 @@ func work_tick():
 	
 	if parent.statlist.is_uncontrollable() && !parent.has_profession('master'):
 		if !messages.has("refusedwork"):
-			state.text_log_add('work', parent.get_short_name() + ": Refused to work")
+			globals.text_log_add('work', parent.get_short_name() + ": Refused to work")
 			messages.append("refusedwork")
 		return
 	if parent.get_stat('obedience') > 0: #new work stat. If <= 0 and loyal/sub < 100, refuse to work
@@ -140,19 +140,19 @@ func work_tick():
 		parent.food.food_consumption_rations = true
 	
 	if ['smith','alchemy','tailor','cooking'].has(currenttask.product):
-		if state.craftinglists[currenttask.product].size() <= 0:
+		if game_res.craftinglists[currenttask.product].size() <= 0:
 			if currenttask.messages.has('notask') == false:
-				state.text_log_add('crafting', parent.get_short_name() + ": No craft task for " + currenttask.product.capitalize() + ". ")
+				globals.text_log_add('crafting', parent.get_short_name() + ": No craft task for " + currenttask.product.capitalize() + ". ")
 				currenttask.messages.append('notask')
 			parent.rest_tick()
 			return
 		else:
-			var craftingitem = state.craftinglists[currenttask.product][0]
+			var craftingitem = game_res.craftinglists[currenttask.product][0]
 			currenttask.messages.erase("notask")
 			if craftingitem.resources_taken == false:
 				if globals.check_recipe_resources(craftingitem) == false:
 					if currenttask.messages.has('noresources') == false:
-						state.text_log_add('crafting', parent.get_short_name() + ": Not Enough Resources for craft. ")
+						globals.text_log_add('crafting', parent.get_short_name() + ": Not Enough Resources for craft. ")
 						currenttask.messages.append("noresources")
 					parent.rest_tick()
 					return
@@ -163,34 +163,34 @@ func work_tick():
 			craftingitem.workunits += races.get_progress_task(self, currenttask.code, currenttask.product)#
 			make_item_sequence(currenttask, craftingitem)
 	elif currenttask.product == 'building':
-		if state.selected_upgrade.code == '':
+		if game_res.selected_upgrade.code == '':
 			parent.rest_tick()
 			if messages.has("noupgrade") == false:
-				state.text_log_add('upgrades', parent.get_short_name() + ": No task or upgrade selected for building. ")
+				globals.text_log_add('upgrades', parent.get_short_name() + ": No task or upgrade selected for building. ")
 				messages.append("noupgrade")
 			return
 		else:
 			messages.erase('noupgrade')
 			work_tick_values(currenttask)
-			state.upgrade_progresses[state.selected_upgrade.code].progress += races.get_progress_task(self, currenttask.code, currenttask.product, true)#*(productivity/100)
-			if state.upgrade_progresses[state.selected_upgrade.code].progress >= globals.upgradelist[state.selected_upgrade.code].levels[state.selected_upgrade.level].taskprogress:
-				if state.upgrades.has(state.selected_upgrade.code):
-					state.upgrades[state.selected_upgrade.code] += 1
+			game_res.upgrade_progresses[game_res.selected_upgrade.code].progress += races.get_progress_task(self, currenttask.code, currenttask.product, true)#*(productivity/100)
+			if game_res.upgrade_progresses[game_res.selected_upgrade.code].progress >= upgradedata.upgradelist[game_res.selected_upgrade.code].levels[game_res.selected_upgrade.level].taskprogress:
+				if game_res.upgrades.has(game_res.selected_upgrade.code):
+					game_res.upgrades[game_res.selected_upgrade.code] += 1
 				else:
-					state.upgrades[state.selected_upgrade.code] = 1
-				input_handler.emit_signal("UpgradeUnlocked", globals.upgradelist[state.selected_upgrade.code])
-				state.text_log_add('upgrades',"Upgrade finished: " + globals.upgradelist[state.selected_upgrade.code].name)
-				state.upgrade_progresses.erase(state.selected_upgrade.code)
-				state.selected_upgrade.code = ''
+					game_res.upgrades[game_res.selected_upgrade.code] = 1
+				input_handler.emit_signal("UpgradeUnlocked", upgradedata.upgradelist[game_res.selected_upgrade.code])
+				globals.text_log_add('upgrades',"Upgrade finished: " + upgradedata.upgradelist[game_res.selected_upgrade.code].name)
+				game_res.upgrade_progresses.erase(game_res.selected_upgrade.code)
+				game_res.selected_upgrade.code = ''
 	else:
 		work_tick_values(currenttask)
 		currenttask.progress += races.get_progress_task(self, currenttask.code, currenttask.product, true)#*(get_stat('productivity')*get_stat(currenttask.mod)/100)
 		while currenttask.threshhold <= currenttask.progress:
 			currenttask.progress -= currenttask.threshhold
 			if races.tasklist[currenttask.code].production[currenttask.product].item == 'gold':
-				state.money += 1
+				game_res.money += 1
 			else:
-				state.materials[races.tasklist[currenttask.code].production[currenttask.product].item] += 1
+				game_res.materials[races.tasklist[currenttask.code].production[currenttask.product].item] += 1
 
 func work_tick_values(currenttask):
 	var workstat = races.tasklist[currenttask.code].workstat
@@ -211,5 +211,5 @@ func make_item_sequence(currenttask, craftingitem):
 					make_item_sequence(currenttask, craftingitem)
 			else:
 				if currenttask.messages.has('noresources') == false:
-					state.text_log_add('crafting', parent.get_short_name() + ": " + "Not Enough Resources for craft. ")
+					globals.text_log_add('crafting', parent.get_short_name() + ": " + "Not Enough Resources for craft. ")
 					currenttask.messages.append("noresources")

@@ -24,14 +24,14 @@ var selected_class = ''
 var introduction_text = {master = "Create your Master Character", 'slave' : 'Create your Starting Slave'}
 
 func _ready():
-	globals.AddPanelOpenCloseAnimation($RaceSelection)
-	globals.AddPanelOpenCloseAnimation($TraitSelection)
-	globals.AddPanelOpenCloseAnimation($DietPanel)
-	globals.AddPanelOpenCloseAnimation($ClassPanel)
+	input_handler.AddPanelOpenCloseAnimation($RaceSelection)
+	input_handler.AddPanelOpenCloseAnimation($TraitSelection)
+	input_handler.AddPanelOpenCloseAnimation($DietPanel)
+	input_handler.AddPanelOpenCloseAnimation($ClassPanel)
 	for i in agearray:
 		$VBoxContainer/age.add_item(i.capitalize())
 	for i in sexarray:
-		if globals.globalsettings.futa == false && i == 'futa':
+		if input_handler.globalsettings.futa == false && i == 'futa':
 			continue
 		$VBoxContainer/sex.add_item(i.capitalize())
 	$VBoxContainer/race.connect("pressed", self, "select_race")
@@ -67,14 +67,14 @@ func _ready():
 	$bodyparts2/class.connect("pressed", self, "open_class_list")
 	
 	for i in slave_classes:
-		$bodyparts2/slave_class.add_item(globals.slave_class_names[i])
+		$bodyparts2/slave_class.add_item(statdata.slave_class_names[i])
 	$bodyparts2/slave_class.connect("item_selected", self, "select_type", [$bodyparts2/slave_class])
 	
 	open()
 
 func open_class_list():
 	$ClassPanel.show()
-	globals.ClearContainer($ClassPanel/ScrollContainer/VBoxContainer)
+	input_handler.ClearContainer($ClassPanel/ScrollContainer/VBoxContainer)
 	var array
 	if mode == 'master':
 		array = variables.master_starting_classes
@@ -87,12 +87,12 @@ func open_class_list():
 		var tempclass = Skilldata.professions[i]
 		if person.checkreqs(tempclass.showupreqs) == false:
 			continue
-		var newbutton = globals.DuplicateContainerTemplate($ClassPanel/ScrollContainer/VBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($ClassPanel/ScrollContainer/VBoxContainer)
 		newbutton.get_node("icon").texture = tempclass.icon
 		newbutton.get_node("name").text = tempclass.name
 		newbutton.connect('pressed', self, "select_class", [tempclass.code])
 		newbutton.connect('signal_RMB_release',input_handler,'show_class_info', [tempclass.code, person])
-		var text = globals.descriptions.get_class_details(person, tempclass, true, true) + "\n\n{color=aqua|" + tr("CLASSRIGHTCLICKDETAILS") + "}"
+		var text = ResourceScripts.singletones.descriptions.get_class_details(person, tempclass, true, true) + "\n\n{color=aqua|" + tr("CLASSRIGHTCLICKDETAILS") + "}"
 		globals.connecttexttooltip(newbutton, text)
 		if person.checkreqs(tempclass.reqs) == false:
 			newbutton.disabled = true
@@ -180,7 +180,7 @@ func open(type = 'slave', newguild = 'none'):
 	$CancelButton.visible = input_handler.CurrentScreen == 'mansion'
 	$introduction.bbcode_text = introduction_text[type]
 	if type == 'slave':
-		$introduction.bbcode_text += " " + str(state.characters.size())
+		$introduction.bbcode_text += " " + str(game_party.characters.size())
 	selected_class = ''
 	
 	person = Slave.new()
@@ -273,9 +273,9 @@ func select_personality(value):
 
 func select_race():
 	$RaceSelection.show()
-	globals.ClearContainer($RaceSelection/ScrollContainer/VBoxContainer)
+	input_handler.ClearContainer($RaceSelection/ScrollContainer/VBoxContainer)
 	for i in races.racelist.values():
-		var newbutton = globals.DuplicateContainerTemplate($RaceSelection/ScrollContainer/VBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($RaceSelection/ScrollContainer/VBoxContainer)
 		if person.get_stat('race') == i.code: newbutton.pressed = true
 		newbutton.text = i.name
 		newbutton.connect("mouse_entered", self, 'show_race_info',[i.code])
@@ -292,10 +292,10 @@ func show_race_info(temprace):
 		if (i as String).begins_with('resist'):
 			text += i.replace("resist","").capitalize() + " Resist: " + str(race.race_bonus[i]) + "%, "
 			continue
-		if globals.statdata[i].has("percent") && globals.statdata[i].percent == true:
-			text += globals.statdata[i].name + ": " + str(race.race_bonus[i]*100) + '%, '
+		if statdata.statdata[i].has("percent") && statdata.statdata[i].percent == true:
+			text += statdata.statdata[i].name + ": " + str(race.race_bonus[i]*100) + '%, '
 		else:
-			text += globals.statdata[i].name + ": " + str(race.race_bonus[i]) + ', '
+			text += statdata.statdata[i].name + ": " + str(race.race_bonus[i]) + ', '
 	text = text.substr(0, text.length() - 2) + "."
 	
 	$RaceSelection/RichTextLabel.bbcode_text = globals.TextEncoder(text)
@@ -318,9 +318,9 @@ func select_character_race(temprace):
 	rebuild_slave()
 
 func RebuildStatsContainer():
-	globals.ClearContainer($StatsContainer)
+	input_handler.ClearContainer($StatsContainer)
 	var array = []
-	for i in globals.statdata.values():
+	for i in statdata.statdata.values():
 		if i.has('type') && i.type == 'factor':
 			array.append(i)
 			if preservedsettings.has(i.code) == false:
@@ -342,7 +342,7 @@ func RebuildStatsContainer():
 	for i in array:
 		if mode == 'master' && i.code in ["growth_factor",'timid_factor','tame_factor']:
 			continue
-		var newnode = globals.DuplicateContainerTemplate($StatsContainer)
+		var newnode = input_handler.DuplicateContainerTemplate($StatsContainer)
 		newnode.get_node("up").connect("pressed", self, 'stat_up', [i])
 		newnode.get_node("down").connect("pressed", self, 'stat_down', [i])
 		newnode.get_node("Label").text = str(preservedsettings[i.code])
@@ -350,7 +350,7 @@ func RebuildStatsContainer():
 		newnode.get_node("icon").texture = i.baseicon
 		var text = i.descript
 		if i.code in ['physics_factor','wits_factor','charm_factor','sexuals_factor']:
-			text += '\n\n' + globals.statdata[i.code.replace('_factor', '')].descript
+			text += '\n\n' + statdata.statdata[i.code.replace('_factor', '')].descript
 		globals.connecttexttooltip(newnode.get_node("icon"), text)
 	
 	unassigned_points = counter
@@ -437,7 +437,7 @@ func build_bodyparts():
 					preservedsettings.erase(i)
 			'futa':
 				if i == 'balls_size':
-					if globals.globalsettings.futa_balls == false:
+					if input_handler.globalsettings.futa_balls == false:
 						$bodyparts2.get_node(i).visible = false
 						$bodyparts2.get_node(i + "_label").visible = false
 						preservedsettings.erase(i)
@@ -508,10 +508,10 @@ func confirm_return():
 	#input_handler.ShowConfirmPanel(self, "cancel_creation", "Return to Main Menu?")
 
 func cancel_creation():
-	globals.CurrentScene.queue_free()
+	input_handler.CurrentScene.queue_free()
 	input_handler.GameStartNode.queue_free()
-	state.revert()
-	globals.ChangeScene('menu')
+	state.revert()#remake
+	input_handler.ChangeScene('menu')
 	#get_parent().queue_free()
 
 func finish_character():
@@ -532,17 +532,17 @@ func finish_character():
 	else:
 		person.set_slave_category('master')
 		person.set_stat('consent', 1000)
-	state.add_slave(person)
+	game_party.add_slave(person)
 	self.hide()
 	input_handler.emit_signal("CharacterCreated")
 
 func open_sex_traits():
 	$TraitSelection.show()
-	globals.ClearContainer($TraitSelection/ScrollContainer/VBoxContainer)
+	input_handler.ClearContainer($TraitSelection/ScrollContainer/VBoxContainer)
 	for i in Traitdata.sex_traits.values():
 		if i.starting == false || person.checkreqs(i.acquire_reqs) == false:
 			continue
-		var newbutton = globals.DuplicateContainerTemplate($TraitSelection/ScrollContainer/VBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($TraitSelection/ScrollContainer/VBoxContainer)
 		newbutton.text = i.name
 		if person.sex_traits.has(i.code):
 			newbutton.pressed = true

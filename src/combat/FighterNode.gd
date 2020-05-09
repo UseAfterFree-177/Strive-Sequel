@@ -56,7 +56,7 @@ func update_hp():
 	if hp == null:
 		hp = fighter.hp
 	if hp != null && hp != fighter.hp:
-		var args = {damage = 0, type = '', color = Color(), newhp = fighter.hp, newhpp = globals.calculatepercent(fighter.hp, fighter.get_stat('hpmax')), damage_float = true}
+		var args = {damage = 0, type = '', color = Color(), newhp = fighter.hp, newhpp = input_handler.calculatepercent(fighter.hp, fighter.get_stat('hpmax')), damage_float = true}
 		args.damage = fighter.hp - hp
 		if args.damage < 0:
 			args.color = Color(0.8,0.2,0.2)
@@ -74,21 +74,21 @@ func update_hp():
 			args.newhpp = 0
 			hp = 0
 		#damageeffectsarray.append(data)
-		var data = {node = self, time = globals.combat_node.turns,type = 'hp_update',slot = 'HP', params = args}
+		var data = {node = self, time = input_handler.combat_node.turns,type = 'hp_update',slot = 'HP', params = args}
 		animation_node.add_new_data(data)
 
 func update_mana():
 	if mp == null:
 		mp = fighter.mp
 	if mp != null && mp != fighter.mp:
-		var args = {newmp = fighter.mp, newmpp = globals.calculatepercent(fighter.mp, fighter.get_stat('mpmax'))}
+		var args = {newmp = fighter.mp, newmpp = input_handler.calculatepercent(fighter.mp, fighter.get_stat('mpmax'))}
 		mp = fighter.mp
 		#damageeffectsarray.append(data)
-		var data = {node = self, time = globals.combat_node.turns,type = 'mp_update',slot = 'MP', params = args}
+		var data = {node = self, time = input_handler.combat_node.turns,type = 'mp_update',slot = 'MP', params = args}
 		animation_node.add_new_data(data)
 
 func defeat():
-	var data = {node = self, time = globals.combat_node.turns, type = 'defeat', slot = 'SFX', params = {}}
+	var data = {node = self, time = input_handler.combat_node.turns, type = 'defeat', slot = 'SFX', params = {}}
 	animation_node.add_new_data(data)
 
 func update_shield(): 
@@ -100,23 +100,23 @@ func update_shield():
 	else:
 		args.color = Color(0.8, 0.8, 0.8, 1.0)
 		#self.material.set_shader_param('modulate', Color(0.8, 0.8, 0.8, 1.0)); #example
-	var data = {node = self, time = globals.combat_node.turns, type = 'shield_update',slot = 'SHIELD', params = args}
+	var data = {node = self, time = input_handler.combat_node.turns, type = 'shield_update',slot = 'SHIELD', params = args}
 	animation_node.add_new_data(data)
 
 func process_sfx(code):
-	var data = {node = self, time = globals.combat_node.turns,type = code, slot = 'SFX', params = {}}
+	var data = {node = self, time = input_handler.combat_node.turns,type = code, slot = 'SFX', params = {}}
 	animation_node.add_new_data(data)
 
 func process_sound(sound):
-	var data = {node = self, time = globals.combat_node.turns, type = 'sound', slot = 'sound', params = {sound = sound}}
+	var data = {node = self, time = input_handler.combat_node.turns, type = 'sound', slot = 'sound', params = {sound = sound}}
 	animation_node.add_new_data(data)
 
 func rebuildbuffs():
-	var data = {node = self, time = globals.combat_node.turns, type = 'buffs', slot = 'buffs', params = fighter.get_combat_buffs()}
+	var data = {node = self, time = input_handler.combat_node.turns, type = 'buffs', slot = 'buffs', params = fighter.get_combat_buffs()}
 	animation_node.add_new_data(data)
 
 func process_critical():
-	var data = {node = self, time = globals.combat_node.turns, type = 'critical', slot = 'crit', params = {}}
+	var data = {node = self, time = input_handler.combat_node.turns, type = 'critical', slot = 'crit', params = {}}
 	animation_node.add_new_data(data)
 
 #control visuals
@@ -129,13 +129,13 @@ func noq_rebuildbuffs(newbuffs):
 			if buffs.has(i.template_name): update_buff(i)
 			else: add_buff(i)
 	else:
-		globals.ClearContainer($Buffs)
+		input_handler.ClearContainer($Buffs)
 		buffs.clear()
 		for i in newbuffs:
 			add_buff(i)
 
 func add_buff(i):
-	var newbuff = globals.DuplicateContainerTemplate($Buffs)
+	var newbuff = input_handler.DuplicateContainerTemplate($Buffs)
 	var text = i.description
 	newbuff.texture = i.icon
 	buffs.push_back(i.template_name)

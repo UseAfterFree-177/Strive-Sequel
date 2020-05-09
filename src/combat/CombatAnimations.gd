@@ -154,7 +154,7 @@ func targetattack(node, args = null):
 	hp_update_delays[node] = 0.3 #delay for hp updating during this animation
 	log_update_delay = max(log_update_delay, 0.3)
 	buffs_update_delays[node] = 0.4
-	input_handler.gfx_sprite(node, 'strike', 0.3, 0.1, node.get_flip())
+	core_animations.gfx_sprite(node, 'strike', 0.3, 0.1, node.get_flip())
 	tween.start()
 	
 	return nextanimationtime + aftereffectdelay
@@ -165,7 +165,7 @@ func ranged_attack(node, args = null):
 	hp_update_delays[node] = 0.3 #delay for hp updating during this animation
 	log_update_delay = max(log_update_delay, 0.3)
 	buffs_update_delays[node] = 0.2
-	input_handler.gfx_sprite(node, 'arrow', 0.3, 0.4, node.get_flip())
+	core_animations.gfx_sprite(node, 'arrow', 0.3, 0.4, node.get_flip())
 	tween.start()
 	
 	return nextanimationtime + aftereffectdelay
@@ -176,7 +176,7 @@ func firebolt(node, args = null):
 	hp_update_delays[node] = 0.3 #delay for hp updating during this animation
 	log_update_delay = max(log_update_delay, 0.3)
 	buffs_update_delays[node] = 0.2
-	input_handler.gfx_sprite(node, 'firebolt', 0.3, 0.4, node.get_flip())
+	core_animations.gfx_sprite(node, 'firebolt', 0.3, 0.4, node.get_flip())
 	tween.start()
 	
 	return nextanimationtime + aftereffectdelay
@@ -187,7 +187,7 @@ func water_attack(node, args = null):
 	hp_update_delays[node] = 0.3 #delay for hp updating during this animation
 	log_update_delay = max(log_update_delay, 0.3)
 	buffs_update_delays[node] = 0.2
-	input_handler.gfx_sprite(node, 'water_attack', 0.3, 0.4, node.get_flip())
+	core_animations.gfx_sprite(node, 'water_attack', 0.3, 0.4, node.get_flip())
 	tween.start()
 	
 	return nextanimationtime + aftereffectdelay
@@ -198,7 +198,7 @@ func flame(node, args = null):
 	hp_update_delays[node] = 0.3 #delay for hp updating during this animation
 	log_update_delay = max(log_update_delay, 0.3)
 	buffs_update_delays[node] = 0.4
-	input_handler.gfx_sprite(node, 'flame', 0.3, 0.5)
+	core_animations.gfx_sprite(node, 'flame', 0.3, 0.5)
 	tween.start()
 	
 	return nextanimationtime + aftereffectdelay
@@ -209,7 +209,7 @@ func earth_spike(node, args = null):
 	hp_update_delays[node] = 0.5 #delay for hp updating during this animation
 	log_update_delay = max(log_update_delay, 0.5)
 	buffs_update_delays[node] = 0.5
-	input_handler.gfx_sprite(node, 'earth_spike', 0.7, 1)
+	core_animations.gfx_sprite(node, 'earth_spike', 0.7, 1)
 	#tween.interpolate_callback(self, nextanimationtime, 'nextanimation')
 	tween.start()
 	
@@ -222,7 +222,7 @@ func targetfire(node, args = null):
 	hp_update_delays[node] = 0.1 #delay for hp updating during this animation
 	log_update_delay = max(log_update_delay, 0.1)
 	buffs_update_delays[node] = 0.2
-	input_handler.gfx(node, 'fire')
+	core_animations.gfx(node, 'fire')
 	#tween.interpolate_callback(self, nextanimationtime, 'nextanimation')
 	tween.start()
 	
@@ -235,7 +235,7 @@ func decay(node, args):
 	hp_update_delays[node] = 0.5 #delay for hp updating during this animation
 	log_update_delay = max(log_update_delay, 0.5)
 	buffs_update_delays[node] = 0.5
-	input_handler.gfx_sprite(node.get_parent().get_parent().get_parent().get_parent(), 'decay', 0.5, 1.5)
+	core_animations.gfx_sprite(node.get_parent().get_parent().get_parent().get_parent(), 'decay', 0.5, 1.5)
 	#tween.interpolate_callback(self, nextanimationtime, 'nextanimation')
 	tween.start()
 	
@@ -248,7 +248,7 @@ func heal(node, args = null):
 	hp_update_delays[node] = 0 #delay for hp updating during this animation
 	log_update_delay = max(log_update_delay, 0)
 	buffs_update_delays[node] = 0.5
-	input_handler.gfx_particles(node, 'heal', 1, 1)
+	core_animations.gfx_particles(node, 'heal', 1, 1)
 	tween.start()
 	
 	return nextanimationtime + aftereffectdelay
@@ -259,7 +259,7 @@ func miss(node, args = null):#conflicting usage of tween node!!
 	var nextanimationtime = 0.0
 	var delaytime = 0.4
 	input_handler.PlaySound("combatmiss")
-	input_handler.FloatText(node, tr("MISS"), 'miss', 75, Color(1,1,1), 1, 0.2)#, node.get_node('Icon').rect_size/2-Vector2(80,20))
+	core_animations.FloatText(node, tr("MISS"), 'miss', 75, Color(1,1,1), 1, 0.2)#, node.get_node('Icon').rect_size/2-Vector2(80,20))
 	tween.interpolate_property(node, 'modulate', Color(1,1,1), Color(1,1,0), playtime, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT, 0)
 	tween.interpolate_property(node, 'modulate', Color(1,1,0), Color(1,1,1), playtime, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT, delaytime)
 	tween.start()
@@ -273,7 +273,7 @@ func resist(node, args = null):#conflicting usage of tween node!!
 	var nextanimationtime = 0.0
 	var delaytime = 0.4
 	input_handler.PlaySound("combatmiss")
-	input_handler.FloatText(node, 'RESIST', 'miss', 75, Color(1,1,1), 1, 0.2) #stub
+	core_animations.FloatText(node, 'RESIST', 'miss', 75, Color(1,1,1), 1, 0.2) #stub
 	#, node.get_node('Icon').rect_size/2-Vector2(80,20))
 	tween.interpolate_property(node, 'modulate', Color(1,1,1), Color(1,1,0), playtime, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT, 0)
 	tween.interpolate_property(node, 'modulate', Color(1,1,0), Color(1,1,1), playtime, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT, delaytime)
@@ -319,8 +319,8 @@ func hp_update(node, args):
 		if crit_display.has(node):
 			args.color = Color(1,0.8,0)
 			crit_display.erase(node)
-			tween.interpolate_callback(input_handler, delay, 'FloatTextArgs', {node = node, text = str(ceil(args.damage)) + '!', type = args.type, size = 120, color = args.color, time = 1, fadetime = 0.5, offset = Vector2(0,0)})
-		else: tween.interpolate_callback(input_handler, delay, 'FloatTextArgs', {node = node, text = str(ceil(args.damage)), type = args.type, size = 80, color = args.color, time = 1, fadetime = 0.5, offset = Vector2(0,0)})
+			tween.interpolate_callback(core_animations, delay, 'FloatTextArgs', {node = node, text = str(ceil(args.damage)) + '!', type = args.type, size = 120, color = args.color, time = 1, fadetime = 0.5, offset = Vector2(0,0)})
+		else: tween.interpolate_callback(core_animations, delay, 'FloatTextArgs', {node = node, text = str(ceil(args.damage)), type = args.type, size = 80, color = args.color, time = 1, fadetime = 0.5, offset = Vector2(0,0)})
 	#input_handler.FloatText(node, str(args.damage), args.type, 150, args.color, 2, 0.2, Vector2(node.get_node('Icon').rect_position.x+25, node.get_node("Icon").rect_position.y+100))
 	#update hp bar
 	tween.interpolate_property(hpnode, 'value', hpnode.value, args.newhpp, 0.3, Tween.TRANS_LINEAR, Tween.EASE_IN_OUT, delay)
@@ -364,5 +364,5 @@ func death_animation(node):
 	var nextanimationtime = 0.0
 	var delaytime = 0.8
 	
-	input_handler.FadeAnimation(node, 1, 0.5)
+	core_animations.FadeAnimation(node, 1, 0.5)
 	return delaytime

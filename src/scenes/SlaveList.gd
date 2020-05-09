@@ -3,18 +3,18 @@ extends Panel
 
 #warning-ignore-all:return_value_discarded
 func _ready():
-	state.connect("slave_added",self,"rebuild")
-	state.connect("hour_tick", self, "update")
+	game_party.connect("slave_added",self,"rebuild")
+	globals.connect("hour_tick", self, "update")
 	input_handler.slave_list_node = self
 	#rebuild()
 
 
 func rebuild():
 	input_handler.get_spec_node(input_handler.NODE_SLAVETOOLTIP).hide()
-	globals.ClearContainer($ScrollContainer/VBoxContainer)
-	for i in state.character_order:
-		var person = state.characters[i]
-		var newbutton = globals.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
+	input_handler.ClearContainer($ScrollContainer/VBoxContainer)
+	for i in game_party.character_order:
+		var person = game_party.characters[i]
+		var newbutton = input_handler.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
 		newbutton.set_meta('slave', person)
 		newbutton.connect('pressed', self, 'open_slave_tab', [person])
 		globals.connectslavetooltip(newbutton, person)
@@ -22,7 +22,7 @@ func rebuild():
 		newbutton.target_node = self
 		newbutton.target_function = 'rebuild'
 		newbutton.arraydata = i
-		newbutton.parentnodearray = state.character_order
+		newbutton.parentnodearray = game_party.character_order
 
 func update():
 	for i in $ScrollContainer/VBoxContainer.get_children():
@@ -53,23 +53,23 @@ func update_button(newbutton):
 	if person.get_stat('loyalty') < 100 && person.get_stat('submission') < 100 && !person.has_profession('master'):
 		newbutton.get_node("HBoxContainer/obed").text = str(ceil(person.get_stat('obedience')))
 		if person.get_stat('obedience') <= 0:
-			newbutton.get_node("HBoxContainer/obed").set("custom_colors/font_color", Color(globals.hexcolordict.red))
+			newbutton.get_node("HBoxContainer/obed").set("custom_colors/font_color", Color(variables.hexcolordict.red))
 		elif person.get_stat('obedience') <= 10:
-			newbutton.get_node("HBoxContainer/obed").set("custom_colors/font_color", Color(globals.hexcolordict.yellow))
+			newbutton.get_node("HBoxContainer/obed").set("custom_colors/font_color", Color(variables.hexcolordict.yellow))
 		else:
-			newbutton.get_node("HBoxContainer/obed").set("custom_colors/font_color", Color(globals.hexcolordict.green))
+			newbutton.get_node("HBoxContainer/obed").set("custom_colors/font_color", Color(variables.hexcolordict.green))
 	else:
 		newbutton.get_node("HBoxContainer/obed").text = "∞"
 	
 	if person.get_next_class_exp() <= person.xp_module.base_exp:
-		newbutton.get_node("HBoxContainer/explabel").set("custom_colors/font_color", Color(globals.hexcolordict.levelup_text_color))
+		newbutton.get_node("HBoxContainer/explabel").set("custom_colors/font_color", Color(variables.hexcolordict.levelup_text_color))
 	else:
 		newbutton.get_node("HBoxContainer/explabel").set("custom_colors/font_color", Color(1,1,1))
 	if !person.check_location('mansion'):
 		if person.check_location('travel'):
 			newbutton.get_node('HBoxContainer/job').text = 'Relocating: in ' + str(ceil(person.travel.travel_time / person.travel_per_tick())) + " hours. " 
 		else:
-			newbutton.get_node('HBoxContainer/job').text = 'Positioned: ' + state.areas[state.location_links[person.travel.location].area].name
+			newbutton.get_node('HBoxContainer/job').text = 'Positioned: ' + game_world.areas[game_world.location_links[person.travel.location].area].name
 	var icon
 	if person.has_profession("master"):
 		icon = load("res://assets/images/gui/gui icons/icon_master.png")

@@ -61,12 +61,12 @@ func apply_temp_effect(eff_id):
 	var eff = effects_pool.get_effect_by_id(eff_id)
 	var eff_n = eff.template.name
 	if check_status_resist(eff): 
-		if globals.combat_node != null:
-			globals.combat_node.combatlogadd("\n%s resists %s." % [parent.get_stat('name'), eff_n]) 
+		if input_handler.combat_node != null:
+			input_handler.combat_node.combatlogadd("\n%s resists %s." % [parent.get_stat('name'), eff_n]) 
 			parent.play_sfx('resist')
 		return
-	if globals.combat_node != null:
-		globals.combat_node.combatlogadd("\n%s is afflicted by %s." % [parent.get_stat('name'), eff_n]) 
+	if input_handler.combat_node != null:
+		input_handler.combat_node.combatlogadd("\n%s is afflicted by %s." % [parent.get_stat('name'), eff_n]) 
 	var tmp = find_temp_effect(eff_n)
 	if (tmp.num < eff.template.stack) or (eff.template.stack == 0):
 		temp_effects.push_back(eff_id)
@@ -153,10 +153,10 @@ func clean_effects():#clean effects before deleting character
 		eff.remove()
 
 func process_event(ev, skill = null):
-	for e in temp_effects:
+	for e in temp_effects.duplicate():
 		var eff = effects_pool.get_effect_by_id(e)
 		eff.process_event(ev)
-	for e in triggered_effects:
+	for e in triggered_effects.duplicate():
 		var eff:triggered_effect = effects_pool.get_effect_by_id(e)
 		if skill != null and eff.req_skill:
 			eff.set_args('skill', skill)
@@ -165,15 +165,15 @@ func process_event(ev, skill = null):
 		else:
 			eff.process_event(ev)
 
-func process_skill_cast_event(s_skill, event):
-	for e in triggered_effects:
-		var eff:triggered_effect = effects_pool.get_effect_by_id(e)
-		if eff.req_skill:
-			eff.set_args('skill', s_skill)
-			eff.process_event(event)
-			eff.set_args('skill', null)
-		else:
-			eff.process_event(event)
+#func process_skill_cast_event(s_skill, event):
+#	for e in triggered_effects:
+#		var eff:triggered_effect = effects_pool.get_effect_by_id(e)
+#		if eff.req_skill:
+#			eff.set_args('skill', s_skill)
+#			eff.process_event(event)
+#			eff.set_args('skill', null)
+#		else:
+#			eff.process_event(event)
 
 func get_all_buffs():
 	var res = {}

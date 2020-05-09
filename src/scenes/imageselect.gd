@@ -6,8 +6,8 @@ var person
 #warning-ignore-all:return_value_discarded
 
 var portaitsbuilt = false
-var portraitspath = globals.globalsettings.portrait_folder
-var bodypath = globals.globalsettings.body_folder
+var portraitspath = input_handler.globalsettings.portrait_folder
+var bodypath = input_handler.globalsettings.body_folder
 #var thumbnailpath = "user://thumbnails/"
 
 func _ready():
@@ -52,7 +52,7 @@ func buildimagelist(type = mode):
 			i.free()
 	if dir.dir_exists(currentpath) == false:
 		dir.make_dir(currentpath)
-	for i in globals.dir_contents(currentpath):
+	for i in input_handler.dir_contents(currentpath):
 		if filecheck.file_exists(i) && (i.find('.png') >= 0 || i.find('.jpg') >= 0):
 			var node = get_node("ScrollContainer/GridContainer/Button").duplicate()
 #			var iconpath = i.replace(currentpath, thumbnailpath + type)
@@ -209,8 +209,8 @@ func updatepage():
 
 func _on_selectfolder_pressed():
 	get_node("selectfolders").popup()
-	get_node("selectfolders/chooseportraitolder").set_text(globals.globalsettings.portrait_folder)
-	get_node("selectfolders/choosebodyfolder").set_text(globals.globalsettings.body_folder)
+	get_node("selectfolders/chooseportraitolder").set_text(input_handler.globalsettings.portrait_folder)
+	get_node("selectfolders/choosebodyfolder").set_text(input_handler.globalsettings.body_folder)
 
 
 func _on_chooseportraitolder_pressed():
@@ -232,12 +232,12 @@ func _on_choosebodyfolder_pressed():
 
 func _on_folderdialogue_dir_selected( dir ):
 	if get_node("folderdialogue").get_meta("meta") == 'portrait':
-		globals.globalsettings.portrait_folder = dir
+		input_handler.globalsettings.portrait_folder = dir
 		portraitspath = dir
 		buildimagelist()
 		_on_selectfolder_pressed()
 	elif get_node("folderdialogue").get_meta("meta") == 'body':
-		globals.globalsettings.body_folder = dir
+		input_handler.globalsettings.body_folder = dir
 		bodypath = dir
 		buildimagelist()
 		_on_selectfolder_pressed()

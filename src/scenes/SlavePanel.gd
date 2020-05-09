@@ -21,30 +21,30 @@ func _ready():
 	
 	for i in $progress.get_children():
 		#i.connect("mouse_entered", self, "show_progress_tooltip", [i])
-		globals.connecttexttooltip(i, globals.statdata[i.name].descript)
+		globals.connecttexttooltip(i, statdata.statdata[i.name].descript)
 	for i in $factors.get_children():
-		globals.connecttexttooltip(i, globals.statdata[i.name].descript)
+		globals.connecttexttooltip(i, statdata.statdata[i.name].descript)
 	
 	
 	for i in $base_stats.get_children():
-		globals.connecttexttooltip(i, globals.statdata[i.name].descript)
+		globals.connecttexttooltip(i, statdata.statdata[i.name].descript)
 	
 	for i in ['restup', 'workup', 'joyup', 'restdown', 'workdown', 'joydown']:
 
 		get_node("job_panel/job_details/WorkDetailsPanel/"+i).connect("pressed", self, "change_hours", [i])
 	
 	
-	globals.connecttexttooltip($food_love,"[center]" +globals.statdata.food_love.name + "[/center]\n"+  globals.statdata.food_love.descript)
-	globals.connecttexttooltip($food_hate,"[center]" +globals.statdata.food_hate.name + "[/center]\n"+ globals.statdata.food_hate.descript)
+	globals.connecttexttooltip($food_love,"[center]" +statdata.statdata.food_love.name + "[/center]\n"+  statdata.statdata.food_love.descript)
+	globals.connecttexttooltip($food_hate,"[center]" +statdata.statdata.food_hate.name + "[/center]\n"+ statdata.statdata.food_hate.descript)
 	
 	###############
 	$skillpanelswitch.connect("pressed", self, "change_panel_type")
 	
 	$controls/ClassButton.connect("pressed",self ,'open_class_selection')
-	globals.AddPanelOpenCloseAnimation($job_panel)
+	input_handler.AddPanelOpenCloseAnimation($job_panel)
 
-	globals.AddPanelOpenCloseAnimation($DietPanel)
-	globals.AddPanelOpenCloseAnimation($SexTraitsPanel)
+	input_handler.AddPanelOpenCloseAnimation($DietPanel)
+	input_handler.AddPanelOpenCloseAnimation($SexTraitsPanel)
 
 	$job_panel.move_child($job_panel/CloseButton, 3)
 	
@@ -59,7 +59,7 @@ func _ready():
 	$RichTextLabel.connect("meta_hover_started", self, 'text_url_hover')
 	$RichTextLabel.connect("meta_hover_ended", self, "text_url_hover_hide")
 	
-	globals.AddPanelOpenCloseAnimation($DetailsPanel)
+	input_handler.AddPanelOpenCloseAnimation($DetailsPanel)
 	$DetailsPanel/VBoxContainer/descript.connect("pressed", self, "custom_description_open")
 	$DetailsPanel/VBoxContainer/icon.connect("pressed", self, "chooseimage",['portrait'])
 	$DetailsPanel/VBoxContainer/body.connect("pressed", self, "chooseimage",['body'])
@@ -67,10 +67,10 @@ func _ready():
 	$DetailsPanel/VBoxContainer/masternoun.connect("pressed", self, "custom_masternoun_open")
 	$DetailsPanel/VBoxContainer/traits.connect("pressed", self, "sex_traits_open")
 	
-	globals.connecttexttooltip($obedlabel/icon, globals.statdata.obedience.descript)
-	globals.connecttexttooltip($loyaltylabel, globals.statdata.loyalty.descript)
-	globals.connecttexttooltip($authoritylabel, globals.statdata.authority.descript)
-	globals.connecttexttooltip($submissionlabel, globals.statdata.submission.descript)
+	globals.connecttexttooltip($obedlabel/icon, statdata.statdata.obedience.descript)
+	globals.connecttexttooltip($loyaltylabel, statdata.statdata.loyalty.descript)
+	globals.connecttexttooltip($authoritylabel, statdata.statdata.authority.descript)
+	globals.connecttexttooltip($submissionlabel, statdata.statdata.submission.descript)
 	globals.connecttexttooltip($SexTraitsPanel/TraitHelp, tr("SEXTRAITHELP") + tr("SEXTRAITDISLIKES"))
 	
 	$testbutton.connect('pressed', self, "run_test")
@@ -87,16 +87,16 @@ func _ready():
 	$HirePanel/HireButton.connect("pressed", self, "hire_character")
 
 func hire_character():
-	if state.characters.size() >= state.get_pop_cap():
-		if state.get_pop_cap() < variables.max_population_cap:
+	if game_party.characters.size() >= game_party.get_pop_cap():
+		if game_party.get_pop_cap() < variables.max_population_cap:
 			input_handler.SystemMessage("You don't have enough rooms")
 		else:
 			input_handler.SystemMessage("Population limit reached")
 		return
-	state.money -= person.calculate_price()
+	game_res.money -= person.calculate_price()
 	input_handler.PlaySound("money_spend")
 	person.set_stat('is_hirable', false)
-	state.add_slave(person)
+	game_party.add_slave(person)
 	hide()
 	
 	if input_handler.scene_characters.has(person):
@@ -154,7 +154,7 @@ func open(tempperson):
 
 func hide():
 	.hide()
-	if state.active_tasks.size() > 0:
+	if game_party.active_tasks.size() > 0:
 		input_handler.ActivateTutorial('tasklist')
 
 var authority_lines = {
@@ -168,7 +168,7 @@ func update():
 	if person == null:return
 	for i in get_tree().get_nodes_in_group("hide_master") + get_tree().get_nodes_in_group("hide_stranger") + get_tree().get_nodes_in_group("hide_traveler")+ get_tree().get_nodes_in_group("hide_servant"):
 		i.visible = true
-	if state.characters.has(person.id):
+	if game_party.characters.has(person.id):
 		type = 'slave'
 		if person.has_profession('master'):
 			type = 'master'
@@ -206,13 +206,13 @@ func update():
 	for i in $progress.get_children():
 		i.text = str(floor(person.get_stat(i.name)))
 		if person.get_stat(i.name+'_bonus') > 0:
-			i.set("custom_colors/font_color", globals.hexcolordict.green) 
+			i.set("custom_colors/font_color", variables.hexcolordict.green) 
 			i.text +=  "+"+ str(person.get_stat(i.name+'_bonus'))
 		elif person.get_stat(i.name+'_bonus') < 0:
-			i.set("custom_colors/font_color", globals.hexcolordict.red) 
+			i.set("custom_colors/font_color", variables.hexcolordict.red) 
 			i.text += str(person.get_stat(i.name+'_bonus'))
 		else:
-			i.set("custom_colors/font_color", globals.hexcolordict.white) 
+			i.set("custom_colors/font_color", variables.hexcolordict.white) 
 		if i.name != 'sexuals':
 			i.text +=  '/' + str(person.get_stat(i.name +"_factor")*20)
 		else:
@@ -224,9 +224,9 @@ func update():
 		if i.name in ['food_consumption']:
 			i.get_node("Label").text = str(floor(person.get_stat(i.name)))
 			continue
-		if globals.globalsettings.factors_as_words:
-			i.get_node("Label").text = globals.descriptions.factor_descripts[int(floor(person.get_stat(i.name)))]
-			i.get_node("Label").set("custom_colors/font_color", globals.hexcolordict['factor'+str(int(floor(person.get_stat(i.name))))]) 
+		if input_handler.globalsettings.factors_as_words:
+			i.get_node("Label").text = ResourceScripts.singletones.descriptions.factor_descripts[int(floor(person.get_stat(i.name)))]
+			i.get_node("Label").set("custom_colors/font_color", variables.hexcolordict['factor'+str(int(floor(person.get_stat(i.name))))]) 
 		else:
 			i.get_node("Label").text = str(floor(person.get(i.name)))
 			i.get_node("Label").set("custom_colors/font_color", Color(1,1,1))
@@ -269,23 +269,23 @@ func update():
 #	$base_stats/lust.max_value = person.get_stat('lustmax')
 #	$base_stats/lust/Label.text = str(floor(person.get_stat('lust'))) + '/' + str(person.get_stat('lustmax'))
 	$productivity/Label.text = str(person.get_stat('productivity')) + "%"
-	$character_class.text = globals.slave_class_names[person.get_stat('slave_class')]
+	$character_class.text = statdata.slave_class_names[person.get_stat('slave_class')]
 	
 	
-	text = globals.statdata.obedience.descript
+	text = statdata.statdata.obedience.descript
 	
 	text = ''
 	$factors/food_consumption/Label.text = str(person.get_stat('food_consumption'))
 	$food_love/Button.texture = foodicons[person.food.food_love]
 	$food_love/Button.hint_tooltip = tr("FOODTYPE" +person.food.food_love.to_upper())
 	$food_love/Button.visible = $food_love/Button.texture != null
-	globals.ClearContainer($food_hate/Container)
+	input_handler.ClearContainer($food_hate/Container)
 	for i in person.food.food_hate:
-		var newnode = globals.DuplicateContainerTemplate($food_hate/Container)
+		var newnode = input_handler.DuplicateContainerTemplate($food_hate/Container)
 		newnode.texture = foodicons[i]
 		newnode.hint_tooltip =  tr("FOODTYPE" +i.to_upper())
 	
-	globals.ClearContainer($professions)
+	input_handler.ClearContainer($professions)
 	if person.xp_module.professions.size() > 5:
 		$professions/Button.rect_min_size = Vector2(50,50)
 		$professions/Button/Label.hide()
@@ -293,13 +293,13 @@ func update():
 		$professions/Button.rect_min_size = Vector2(100,100)
 		$professions/Button/Label.show()
 	for i in person.xp_module.professions:
-		var newnode = globals.DuplicateContainerTemplate($professions)
+		var newnode = input_handler.DuplicateContainerTemplate($professions)
 		var prof = Skilldata.professions[i]
-		var name = globals.descriptions.get_class_name(prof, person)
+		var name = ResourceScripts.singletones.descriptions.get_class_name(prof, person)
 		newnode.get_node("Label").text = name
 		newnode.texture = prof.icon
 		newnode.connect('signal_RMB_release',input_handler, 'show_class_info', [prof.code, person])
-		var temptext = "[center]"+globals.descriptions.get_class_name(prof,person) + "[/center]\n"+globals.descriptions.get_class_bonuses(person, prof) + globals.descriptions.get_class_traits(person, prof)
+		var temptext = "[center]"+ResourceScripts.singletones.descriptions.get_class_name(prof,person) + "[/center]\n"+ResourceScripts.singletones.descriptions.get_class_bonuses(person, prof) + ResourceScripts.singletones.descriptions.get_class_traits(person, prof)
 		temptext += "\n\n{color=aqua|" + tr("CLASSRIGHTCLICKDETAILS") + "}"
 		globals.connecttexttooltip(newnode, temptext)
 	#input_handler.active_character = person
@@ -308,9 +308,9 @@ func update():
 	
 	rebuild_traits()
 	
-	globals.ClearContainer($buffscontainer)
+	input_handler.ClearContainer($buffscontainer)
 	for i in person.get_mansion_buffs():
-		var newnode = globals.DuplicateContainerTemplate($buffscontainer)
+		var newnode = input_handler.DuplicateContainerTemplate($buffscontainer)
 		newnode.texture = i.icon
 		if i.get_duration() != null and i.get_duration() >= 0:
 			newnode.get_node("Label").text = str(i.get_duration())
@@ -318,23 +318,23 @@ func update():
 			newnode.get_node("Label").hide()
 		newnode.hint_tooltip = person.translate(i.description)
 	
-	text = "[center]" + globals.statdata.productivity.name + "[/center]\n" + globals.statdata.productivity.descript + "\nTotal Productivity: " + str(floor(person.get_stat('productivity'))) 
+	text = "[center]" + statdata.statdata.productivity.name + "[/center]\n" + statdata.statdata.productivity.descript + "\nTotal Productivity: " + str(floor(person.get_stat('productivity'))) 
 	for i in variables.productivity_mods:
 		if person.get_stat(i) > 1:
-			text += "\n{color=green|" + str(round(person.get_stat(i)*100)) + " - " + globals.statdata[i].name + "}"
+			text += "\n{color=green|" + str(round(person.get_stat(i)*100)) + " - " + statdata.statdata[i].name + "}"
 		elif person.get_stat(i) < 1:
-			text += "\n{color=red|" + str(round(person.get_stat(i)*100)) + " - " + globals.statdata[i].name + "}"
+			text += "\n{color=red|" + str(round(person.get_stat(i)*100)) + " - " + statdata.statdata[i].name + "}"
 		else:
-			text += "\n" + str(round(person.get_stat(i)*100)) + " - " + globals.statdata[i].name
+			text += "\n" + str(round(person.get_stat(i)*100)) + " - " + statdata.statdata[i].name
 		
 	
 	$masterlabel.visible = person.has_profession('master')
 	$masterlabel.text = person.translate('[master]').capitalize()
 	
 	$HirePanel/RichTextLabel.bbcode_text = person.translate("[center]You can hire [name] for [price] gold.[/center]") 
-	$HirePanel/HireButton.disabled = person.calculate_price() > state.money
+	$HirePanel/HireButton.disabled = person.calculate_price() > game_res.money
 	$HirePanel.visible = person.get_stat('is_hirable')
-	$HirePanel/Gold/Label.text = str(state.money)
+	$HirePanel/Gold/Label.text = str(game_res.money)
 	
 	
 	globals.connecttexttooltip($productivity, globals.TextEncoder(text))
@@ -343,17 +343,17 @@ func update():
 
 func rebuild_traits():
 	
-	globals.ClearContainer($ScrollContainer/traits)
+	input_handler.ClearContainer($ScrollContainer/traits)
 	for i in person.statlist.traits:
 		var trait = Traitdata.traits[i]
 		if trait.visible == false:
 			continue
-		var newnode = globals.DuplicateContainerTemplate($ScrollContainer/traits)
+		var newnode = input_handler.DuplicateContainerTemplate($ScrollContainer/traits)
 		newnode.text = trait.name
 	
 	for i in person.statlist.sex_traits + person.statlist.negative_sex_traits:
 		var trait = Traitdata.sex_traits[i]
-		var newnode = globals.DuplicateContainerTemplate($ScrollContainer/traits)
+		var newnode = input_handler.DuplicateContainerTemplate($ScrollContainer/traits)
 		newnode.text = trait.name
 		var traittext = person.translate(trait.descript)
 		for j in trait.reqs:
@@ -392,16 +392,16 @@ func open_class_selection():
 func open_jobs_window():
 	$job_panel.show()
 	$job_panel/job_details.hide()
-	globals.ClearContainer($job_panel/ScrollContainer/VBoxContainer)
+	input_handler.ClearContainer($job_panel/ScrollContainer/VBoxContainer)
 	currentjob = null
-	var restbutton = globals.DuplicateContainerTemplate($job_panel/ScrollContainer/VBoxContainer)
+	var restbutton = input_handler.DuplicateContainerTemplate($job_panel/ScrollContainer/VBoxContainer)
 	restbutton.text = tr("TASKREST")
 	restbutton.connect("pressed", self, 'set_rest')
 	
 	for i in races.tasklist.values():
-		if state.checkreqs(i.reqs) == false:
+		if globals.checkreqs(i.reqs) == false:
 			continue
-		var newbutton = globals.DuplicateContainerTemplate($job_panel/ScrollContainer/VBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($job_panel/ScrollContainer/VBoxContainer)
 		newbutton.text = i.name
 		newbutton.connect('pressed', self, 'show_job_details', [i])
 		if person.tags.has('no_sex') && i.tags.has("sex"):
@@ -417,14 +417,14 @@ var currentjob
 func show_job_details(job):
 	currentjob = job
 	$job_panel/job_details.show()
-	globals.ClearContainer($job_panel/job_details/ResourceOptions)
+	input_handler.ClearContainer($job_panel/job_details/ResourceOptions)
 	for i in $job_panel/ScrollContainer/VBoxContainer.get_children():
 		i.pressed = i.text == job.name
-	var text =  "[center]" + job.name + '[/center]\n' + job.descript + "\n\n" + tr("TASKMAINSTAT") + ": [color=yellow]" + globals.statdata[job.workstat].name + "[/color]"
+	var text =  "[center]" + job.name + '[/center]\n' + job.descript + "\n\n" + tr("TASKMAINSTAT") + ": [color=yellow]" + statdata.statdata[job.workstat].name + "[/color]"
 	if job.has("worktool"):
-		text += "\n" + tr("WORKTOOL") + ": [color=aqua]" + globals.worktoolnames[job.worktool] + "[/color]. \n"
-		if person.eqipment.gear.tool != null:
-			var item = state.items[person.eqipment.gear.tool]
+		text += "\n" + tr("WORKTOOL") + ": [color=aqua]" + statdata.worktoolnames[job.worktool] + "[/color]. \n"
+		if person.equipment.gear.tool != null:
+			var item = game_res.items[person.equipment.gear.tool]
 			if item.toolcategory.has(job.worktool):
 				text += "[color=green]" + tr("CORRECTTOOLEQUIPPED") +"[/color]"
 	
@@ -434,9 +434,9 @@ func show_job_details(job):
 	
 
 	for i in job.production.values():
-		if state.checkreqs(i.reqs) == false:
+		if globals.checkreqs(i.reqs) == false:
 			continue
-		var newbutton = globals.DuplicateContainerTemplate($job_panel/job_details/ResourceOptions)
+		var newbutton = input_handler.DuplicateContainerTemplate($job_panel/job_details/ResourceOptions)
 		if Items.materiallist.has(i.item):
 			var number
 			number = races.get_progress_task(person, job.code, i.code)/i.progress_per_item
@@ -488,7 +488,7 @@ func set_work_rule(rule):
 
 
 func build_skill_panel():
-	globals.ClearContainer($SkillPanel)
+	input_handler.ClearContainer($SkillPanel)
 	var src
 	if person.skills.active_panel == variables.PANEL_SOC:
 		src = person.skills.social_skill_panel
@@ -498,7 +498,7 @@ func build_skill_panel():
 		$skillpanelswitch.pressed = true
 	for i in range(1,10):
 		var text = ''
-		var newbutton = globals.DuplicateContainerTemplate($SkillPanel)
+		var newbutton = input_handler.DuplicateContainerTemplate($SkillPanel)
 		if src.has(i):
 			var skill = Skilldata.Skilllist[src[i]]
 			newbutton.get_node("icon").texture = skill.icon
@@ -611,13 +611,13 @@ var universal_skills = ['oral','anal','petting']
 
 func open_customize_button():
 	$DetailsPanel.show()
-	globals.ClearContainer($DetailsPanel/SexSkills)
+	input_handler.ClearContainer($DetailsPanel/SexSkills)
 	$DetailsPanel/ConsentLabel.text = "Consent: " + str(floor(person.get_stat('consent')))
 	var s_skills = person.get_stat('sex_skills')
 	for i in s_skills:
 		if s_skills[i] == 0 && universal_skills.find(i) < 0:
 			continue
-		var newbutton = globals.DuplicateContainerTemplate($DetailsPanel/SexSkills)
+		var newbutton = input_handler.DuplicateContainerTemplate($DetailsPanel/SexSkills)
 		newbutton.get_node("Label").text = tr("SEXSKILL"+i.to_upper())
 		newbutton.get_node("ProgressBar").value = s_skills[i]
 		newbutton.get_node("ProgressBar/Label").text = str(floor(s_skills[i])) + '/100'
@@ -629,7 +629,7 @@ func show_gear_gui():
 
 func open_diet_window():
 	$DietPanel.show()
-	globals.ClearContainer($DietPanel/ScrollContainer/VBoxContainer)
+	input_handler.ClearContainer($DietPanel/ScrollContainer/VBoxContainer)
 	$DietPanel/RichTextLabel.bbcode_text = tr("INFOFOODFILTER")
 	var array = []
 	for i in Items.materiallist.values():
@@ -637,13 +637,13 @@ func open_diet_window():
 			array.append(i)
 	array.sort_custom(self, 'sort_food')
 	for i in array:
-		var newbutton = globals.DuplicateContainerTemplate($DietPanel/ScrollContainer/VBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($DietPanel/ScrollContainer/VBoxContainer)
 		newbutton.get_node("Label").text = i.name
 		globals.connectmaterialtooltip(newbutton, i)
 		for k in ['high','med','low','disable']:
 			if person.food.food_filter[k].has(i.code):
 				newbutton.get_node("filter").text = tr("FOODFILTER" + k.to_upper())
-				newbutton.get_node("filter").set("custom_colors/font_color", Color(globals.hexcolordict[categorycolors[k]]))
+				newbutton.get_node("filter").set("custom_colors/font_color", Color(variables.hexcolordict[categorycolors[k]]))
 				break
 		newbutton.connect("pressed", self, "change_food_category", [i.code])
 
@@ -689,11 +689,11 @@ func chooseimage(type):
 
 func sex_traits_open():
 	$SexTraitsPanel.show()
-	globals.ClearContainer($SexTraitsPanel/ScrollContainer/VBoxContainer)
+	input_handler.ClearContainer($SexTraitsPanel/ScrollContainer/VBoxContainer)
 	var array = person.statlist.unlocked_sex_traits.duplicate()
 	array.sort_custom(self, 'sort_traits')
 	for i in array:
-		var newbutton = globals.DuplicateContainerTemplate($SexTraitsPanel/ScrollContainer/VBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($SexTraitsPanel/ScrollContainer/VBoxContainer)
 		newbutton.pressed = person.check_trait(i)
 		newbutton.text = Traitdata.sex_traits[i].name
 		globals.connecttexttooltip(newbutton, person.translate(Traitdata.sex_traits[i].descript))

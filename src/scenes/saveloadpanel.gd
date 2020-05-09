@@ -19,9 +19,9 @@ var savedata = {}
 func SavePanelOpen():
 	show()
 	saveloadmode = 'save'
-	globals.ClearContainer($ScrollContainer/VBoxContainer)
+	input_handler.ClearContainer($ScrollContainer/VBoxContainer)
 	$LineEdit.editable = true
-	for i in globals.dir_contents(globals.userfolder + 'saves'):
+	for i in input_handler.dir_contents(globals.userfolder + 'saves'):
 		var savename = SaveNameTransform(i)
 		if i.ends_with(".dat") == true:
 			var config = ConfigFile.new()
@@ -32,7 +32,7 @@ func SavePanelOpen():
 				savedata[savename][i] = config.get_value("details", i, null)
 		if i.ends_with('.sav') == false:
 			continue
-		var newbutton = globals.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
 		newbutton.get_node("Delete").connect("pressed", self, 'DeleteSaveGame', [savename])
 		newbutton.get_node("Label").text = savename
 		newbutton.connect('pressed', self, 'PressSaveGame', [savename])
@@ -44,10 +44,10 @@ func SavePanelOpen():
 func LoadPanelOpen():
 	show()
 	saveloadmode = 'load'
-	globals.ClearContainer($ScrollContainer/VBoxContainer)
+	input_handler.ClearContainer($ScrollContainer/VBoxContainer)
 	$LineEdit.editable = false
 	$LineEdit.text = ''
-	for i in globals.dir_contents(globals.userfolder + 'saves'):
+	for i in input_handler.dir_contents(globals.userfolder + 'saves'):
 		var savename = SaveNameTransform(i)
 		if i.ends_with(".dat") == true:
 			var config = ConfigFile.new()
@@ -58,7 +58,7 @@ func LoadPanelOpen():
 				savedata[savename][i] = config.get_value("details", i, null)
 		if i.ends_with('.sav') == false:
 			continue
-		var newbutton = globals.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
 		newbutton.get_node("Delete").connect("pressed", self, 'DeleteSaveGame', [savename])
 		newbutton.get_node("Label").text = savename
 		newbutton.connect('pressed', self, 'PressLoadGame', [savename])

@@ -131,7 +131,7 @@ func generate_ea_character(gendata, desired_class):
 		var temprace = gendata.race
 		if races.race_groups.has(temprace):
 			temprace = races.race_groups[temprace][randi()%races.race_groups[temprace].size()]
-		if state.easter_egg_characters_acquired.has(i.name) == false && (temprace == 'random' || gendata.race == i.race):
+		if game_world.easter_egg_characters_acquired.has(i.name) == false && (temprace == 'random' || gendata.race == i.race):
 			var char_exists = false
 			for k in characters_pool.characters.values():
 				if k.get_stat('unique') == i.code:
@@ -235,6 +235,13 @@ func set_travel_time(value):
 func return_to_mansion():
 	travel.return_to_mansion()
 
+func recruit():
+	travel.recruit()
+	game_party.add_slave(self)
+
+func set_work(task):
+	xp_module.work = task
+
 func get_skill_by_tag(tg):
 	return skills.get_skill_by_tag(tg)
 
@@ -331,8 +338,8 @@ func set_slave_category(new_class):
 func use_social_skill(s_code, target):
 	skills.use_social_skill(s_code, target)
 
-func process_skill_cast_event(s_skill, event):
-	effects.process_skill_cast_event(s_skill, event)
+#func process_skill_cast_event(s_skill, event):
+#	effects.process_skill_cast_event(s_skill, event)
 
 func check_location(loc, completed = false):
 	return travel.check_location(loc, completed)
@@ -397,7 +404,7 @@ func death():
 	if displaynode != null:
 		displaynode.defeat()
 	#clean_effects()
-	if globals.combat_node == null && travel.location == 'mansion':
+	if input_handler.combat_node == null && travel.location == 'mansion':
 		is_active = false
 		print('warning! char died outside combat')
 		characters_pool.call_deferred('cleanup')
@@ -408,7 +415,7 @@ func killed():
 #	input_handler.active_character = self
 #	input_handler.interactive_message('slave_escape', '', {})
 	is_active = false 
-	state.character_order.erase(id)
+	game_party.character_order.erase(id)
 	characters_pool.call_deferred('cleanup')
 	input_handler.update_slave_list()
 
@@ -452,7 +459,7 @@ func valuecheck(ch, ignore_npc_stats_gear = false): #additional flag is never us
 			if i.has('param'): check = equipment.check_gear_equipped(i.value, i.param)
 			else: check = equipment.check_gear_equipped(i.value)
 		'global_profession_limit':
-			check = state.check_profession_limit(i.profession, i.value)
+			check = game_party.check_profession_limit(i.profession, i.value)
 		'race':
 			check = (get_stat('race') == i.race) == i.check
 		'one_of_races':
@@ -479,7 +486,7 @@ func valuecheck(ch, ignore_npc_stats_gear = false): #additional flag is never us
 		'is_master':
 			check = has_profession('master') == i.check
 		'rules':
-			check = globals.globalsettings[i.type] == i.check
+			check = input_handler.globalsettings[i.type] == i.check
 		'bodypart':
 			check = input_handler.operate(i.operant, get(i.part), i.value)
 		'trait':
@@ -491,7 +498,7 @@ func valuecheck(ch, ignore_npc_stats_gear = false): #additional flag is never us
 		'slave_type':
 			check = input_handler.operate(i.operant, get_stat('slave_class'), i.value)
 		'population':
-			check = input_handler.operate(i.operant, state.characters.size(), i.value)
+			check = input_handler.operate(i.operant, game_party.characters.size(), i.value)
 		'random':
 			if typeof(i.value) == TYPE_ARRAY: i.value = calculate_number_from_string_array(i.value)
 			check = globals.rng.randf()*100 <= i.value
@@ -523,9 +530,9 @@ func decipher_single(ch):
 		'stat':
 			if typeof(i.value) == TYPE_ARRAY: i.value = calculate_number_from_string_array(i.value)
 			if i.stat.find("factor") > 0:
-				text2 += globals.statdata[i.stat].name + ': ' + globals.descriptions.factor_descripts[i.value] + " "
+				text2 += statdata.statdata[i.stat].name + ': ' + ResourceScripts.singletones.descriptions.factor_descripts[i.value] + " "
 			else:
-				text2 += globals.statdata[i.stat].name + ': ' + str(i.value) + " "
+				text2 += statdata.statdata[i.stat].name + ': ' + str(i.value) + " "
 			match i.operant:
 				'gte':
 					text2 += "or higher"
@@ -582,10 +589,10 @@ func decipher_single(ch):
 #		sex = 'male'
 
 func make_description():
-	globals.text_characters.clear()
-	globals.text_characters.append(self)
+	input_handler.text_characters.clear()
+	input_handler.text_characters.append(self)
 	#input_handler.active_character = self
-	return globals.TextEncoder(translate(globals.descriptions.create_character_description(self)))
+	return globals.TextEncoder(translate(ResourceScripts.singletones.descriptions.create_character_description(self)))
 
 func show_race_description():
 	var race = get_stat('race')
@@ -599,10 +606,10 @@ func show_race_description():
 	text += temprace.descript
 	text += "\n\nRace bonuses: "
 	for i in temprace.race_bonus:
-		if globals.statdata[i].has("percent") && globals.statdata[i].percent == true:
-			text += globals.statdata[i].name + ": " + str(temprace.race_bonus[i]*100) + '%, '
+		if statdata.statdata[i].has("percent") && statdata.statdata[i].percent == true:
+			text += statdata.statdata[i].name + ": " + str(temprace.race_bonus[i]*100) + '%, '
 		else:
-			text += globals.statdata[i].name + ": " + str(temprace.race_bonus[i]) + ', '
+			text += statdata.statdata[i].name + ": " + str(temprace.race_bonus[i]) + ', '
 	text = text.substr(0, text.length() - 2) + "."
 	
 	return text
@@ -615,7 +622,7 @@ func check_escape_chance():
 	return check
 
 func check_escape_possibility():
-	last_escape_day_check = state.date
+	last_escape_day_check = game_globals.date
 	if check_escape_chance() == false || get_stat('sleep') == 'jail' || xp_module.professions.has("master") || has_status('no_escape') || randf() < get_stat('timid_factor') * 0.1:
 		return false
 	var shackles_chance = get_stat('shackles_chance')
@@ -636,7 +643,7 @@ func escape():
 	input_handler.active_character = self
 	input_handler.interactive_message('slave_escape', '', {})
 	is_active = false #for now, to replace with corresponding mechanic
-	state.character_order.erase(id)
+	game_party.character_order.erase(id)
 	characters_pool.call_deferred('cleanup')
 	input_handler.slave_list_node.rebuild()
 	#state.text_log_add(get_short_name() + " has escaped. ")
@@ -667,9 +674,9 @@ func tick():
 	
 	xp_module.work_tick()
 	
-	if last_escape_day_check != state.date && randf() <= 0.2:
+	if last_escape_day_check != game_globals.date && randf() <= 0.2:
 		check_escape_possibility()
-		if state.characters.has(self.id):
+		if game_party.characters.has(self.id):
 			return
 
 #func productivity_get():
@@ -704,8 +711,8 @@ func apply_atomic(template):
 	match template.type:
 		'damage':
 			var tval = deal_damage(template.value, template.source)
-			if globals.combat_node != null:
-				globals.combat_node.combatlogadd("\n%s loses %d hp." % [get_short_name(), int(tval)])
+			if input_handler.combat_node != null:
+				input_handler.combat_node.combatlogadd("\n%s loses %d hp." % [get_short_name(), int(tval)])
 		'heal':
 			heal(template.value)
 			pass
@@ -745,8 +752,8 @@ func apply_atomic(template):
 		'kill':
 			killed()
 		'use_combat_skill':
-			if globals.combat_node == null: return
-			globals.combat_node.use_skill(template.skill, self, null)
+			if input_handler.combat_node == null: return
+			input_handler.combat_node.use_skill(template.skill, self, null)
 		'use_social_skill':
 			if !check_location('mansion'): return
 			#use_social_skill(template.value, null)
@@ -864,7 +871,7 @@ func set_shield(value):
 
 func deal_damage(value, source = 'normal'):
 	var tmp = hp
-	if state.characters.has(self.id) && variables.invincible_player:
+	if game_party.characters.has(self.id) && variables.invincible_player:
 		return 0
 	value *= (1.0 - get_stat('resists')[source]/100.0)
 	value = int(value);
@@ -925,7 +932,7 @@ func check_skill_availability(s_code, target):
 	if skills.social_skills_charges.has(s_code) && skills.social_skills_charges[s_code] >= template.charges:
 		descript = get_short_name() + ": " + template.name + " - No charges left."
 		check = false
-	if template.has('globallimit') && state.global_skills_used.has(s_code) && state.global_skills_used[s_code] >= template.globallimit:
+	if template.has('globallimit') && game_party.global_skills_used.has(s_code) && game_party.global_skills_used[s_code] >= template.globallimit:
 		descript = get_short_name() + ": Can't use this skill today anymore."
 		check = false
 	

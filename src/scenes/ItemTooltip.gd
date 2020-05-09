@@ -90,8 +90,8 @@ func showup(node, data, type): #types material materialowned gear geartemplate
 func material_tooltip(data):
 	var item = data.item
 	var text = data.text
-	if state.materials.has(data.item) && state.materials[data.item] > 0:
-		text += "\n\n" + tr("CURRENTLYINPOSSESSION") + ": " + str(state.materials[data.item])
+	if game_res.materials.has(data.item) && game_res.materials[data.item] > 0:
+		text += "\n\n" + tr("CURRENTLYINPOSSESSION") + ": " + str(game_res.materials[data.item])
 	iconnode.texture = item.icon
 	$Cost/Label.text = str(item.price)
 	$Cost.visible = int(item.price) != 0
@@ -170,16 +170,16 @@ func geartemplete_tooltip(data):
 			if item.basestats[i] != 0:
 				var value = item.basestats[i]
 				var change = ''
-				if globals.statdata[i].has('percent'):
+				if statdata.statdata[i].has('percent'):
 					value = value*100
-				text += globals.statdata[i].name + " " +Items.stats[i] + ': {color='
+				text += statdata.statdata[i].name + " " +Items.stats[i] + ': {color='
 				if value > 0:
 					change = '+'
 					text += 'green|' + change
 				else:
 					text += 'red|'
 				value = str(value)
-				if globals.statdata[i].has('percent'):
+				if statdata.statdata[i].has('percent'):
 					value = value + '%'
 				text += value + '}\n'
 	
@@ -213,4 +213,4 @@ func cooldown():
 func hide():
 	parentnode = null
 	set_process(false)
-	input_handler.FadeAnimation(self, 0.2)
+	core_animations.FadeAnimation(self, 0.2)

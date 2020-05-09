@@ -2,20 +2,25 @@ extends Node
 
 const gameversion = '0.2.1'
 
+#time
+signal hour_tick
+var hour_turns_set = 1
+
+#guistate maybe for removing
+var CurrentTextScene
+var CurrentScreen
+var CurrentLine = 0
+var log_node
+var log_storage = []
+
 var start_new_game = false
 
-var SpriteDict = {}
-var TranslationData = {}
-var CurrentScene #holds reference to instanced scene
-
+#var SpriteDict = {}
 var EventList 
 
-var scenedict = {
-	menu = "res://src/Menu.tscn",
-	mansion = "res://src/main/Mansion.tscn"
-	
-}
 var rng := RandomNumberGenerator.new()
+var file = File.new()
+var dir = Directory.new()
 
 var workersdict
 var randomgroups
@@ -27,617 +32,35 @@ var effects
 var combateffects
 var explorationares 
 
-var combat_node = null
+var current_level
+var current_stage
+var current_enemy_group
 
-
-var descriptions = load("res://assets/data/descriptions.gd").new()
-var custom_effects = load("res://src/main/custom_effects.gd").new()
-
-var statdata = {
-	base_exp = {
-		code = 'base_exp',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/growth_factor.png"),
-		type = 'misc',
-	},
-	growth_factor = {
-		code = 'growth_factor',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/growth_factor.png"),
-		type = 'factor',
-	},
-	physics_factor = {
-		code = 'physics_factor',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/physics_factor.png"),
-		type = 'factor',
-	},
-	wits_factor = {
-		code = 'wits_factor',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/wit.png"),
-		type = 'factor',
-	},
-	charm_factor = {
-		code = 'charm_factor',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/charm.png"),
-		type = 'factor',
-	},
-	sexuals_factor = {
-		code = 'sexuals_factor',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/sex.png"),
-		type = 'factor',
-	},
-	
-	magic_factor = {
-		code = 'magic_factor',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/magic_factor.png"),
-		type = 'factor',
-	},
-	
-	tame_factor = {
-		code = 'tame_factor',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/tame_factor.png"),
-		type = 'factor',
-	},
-	timid_factor = {
-		code = 'timid_factor',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/timid_factor.png"),
-		type = 'factor',
-	},
-	authority = {
-		code = 'authority',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/timid_factor.png"),
-		type = '',
-	},
-	loyalty = {
-		code = 'loyalty',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/timid_factor.png"),
-		type = '',
-	},
-	submission = {
-		code = 'submission',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/timid_factor.png"),
-		type = '',
-	},
-	physics = { 
-		code = 'physics',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/brave_factor.png"),
-		type = 'primal',
-	},
-	wits = { 
-		code = 'wits',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/brave_factor.png"),
-		type = 'primal',
-	},
-	charm = { 
-		code = 'charm',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/brave_factor.png"),
-		type = 'primal',
-	},
-	sexuals = { 
-		code = 'sexuals',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/brave_factor.png"),
-		type = 'primal',
-	},
-	
-	
-	
-	obedience = {
-		code = 'obedience',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/obed_good.png"),
-		type = 'mental_stat',
-	},
-	fear = {
-		code = 'fear',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/fear_good.png"),
-		type = 'mental_stat',
-	},
-	lust = {
-		code = 'lust',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/charm_factor.png"),
-		type = 'mental_stat',
-	},
-	loyal = {
-		code = 'loyal',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/charm_factor.png"),
-		type = 'mental_stat',
-	},
-	food_consumption = {
-		code = 'food_consumption',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/food.png"),
-		type = 'misc',
-	},
-	
-	food_hate = {
-		code = 'food_hate',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/food_hate.png"),
-		type = 'misc',
-	},
-	food_love = {
-		code = 'food_love',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/food_love.png"),
-		type = 'misc',
-	},
-	
-	hp = {
-		code = 'hp',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/food_love.png"),
-		type = 'misc',
-	},
-	hpmax = {
-		code = 'hpmax',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/food_love.png"),
-		type = 'misc',
-	},
-	hpmaxmod = {
-		code = 'hpmaxmod',
-		name = '',
-		descript = '',
-		percent = true,
-		baseicon = load("res://assets/images/gui/gui icons/food_love.png"),
-		type = 'misc',
-	},
-	hpfactor = {
-		code = 'hpfactor',
-		name = '',
-		descript = '',
-		percent = true,
-		baseicon = load("res://assets/images/gui/gui icons/food_love.png"),
-		type = 'misc',
-	},
-	mp = {
-		code = 'mp',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/food_love.png"),
-		type = 'misc',
-	},
-	mpmax = {
-		code = 'mpmax',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/food_love.png"),
-		type = 'misc',
-	},
-	mpmaxmod = {
-		code = 'mpmaxmod',
-		name = '',
-		descript = '',
-		percent = true,
-		baseicon = load("res://assets/images/gui/gui icons/food_love.png"),
-		type = 'misc',
-	},
-	hitrate = {
-		code = 'hitrate',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/food_love.png"),
-		type = 'misc',
-	},
-	evasion = {
-		code = 'evasion',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/food_love.png"),
-		type = 'misc',
-	},
-	speed = {
-		code = 'speed',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/food_love.png"),
-		type = 'misc',
-	},
-	energy = {
-		code = 'energy',
-		name = '',
-		descript = '',
-		baseicon = load("res://assets/images/gui/gui icons/food_love.png"),
-		type = 'misc',
-	},
-	fatigue = {
-		code = 'fatigue',
-		name = '',
-		descript = '',
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	exhaustion = {
-		code = 'exhaustion',
-		name = '',
-		descript = '',
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	atk = {
-		code = 'atk',
-		name = '',
-		descript = '',
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	matk = {
-		code = 'matk',
-		name = '',
-		descript = '',
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	armor = {
-		code = 'armor',
-		name = '',
-		descript = '',
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	mdef = {
-		code = 'mdef',
-		name = '',
-		descript = '',
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	armorpenetration = {
-		code = 'armorpenetration',
-		name = '',
-		descript = '',
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	critchance = {
-		code = 'critchance',
-		name = '',
-		descript = '',
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	critmod = {
-		code = 'critmod',
-		percent = true,
-		name = '',
-		descript = '',
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	
-	physics_bonus = {
-		code = 'physics_bonus',
-		name = '',
-		descript = '',
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	wits_bonus = {
-		code = 'wits_bonus',
-		name = '',
-		descript = '',
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	charm_bonus = {
-		code = 'charm_bonus',
-		name = '',
-		descript = '',
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	sexuals_bonus = {
-		code = 'sexuals_bonus',
-		name = '',
-		descript = '',
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	productivity = {
-		code = 'productivity',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	mod_collect = {
-		code = 'mod_collect',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	mod_build = {
-		code = 'mod_build',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	mod_hunt = {
-		code = 'mod_hunt',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	mod_fish = {
-		code = 'mod_fish',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	mod_cook = {
-		code = 'mod_cook',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	mod_smith = {
-		code = 'mod_smith',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	mod_tailor = {
-		code = 'mod_tailor',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	mod_alchemy = {
-		code = 'mod_alchemy',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	mod_farm = {
-		code = 'mod_farm',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	mod_pros = {
-		code = 'mod_pros',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	task_crit_chance = {
-		code = 'task_crit_chance',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	task_efficiency_tool = {
-		code = 'task_efficiency_tool',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	consent = {
-		code = 'consent',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	
-	damagemod = {
-		code = 'damagemod',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-	
-	modmelee = {
-		code = 'modmelee',
-		name = '',
-		descript = '',
-		percent = true,
-		basicon = load("res://assets/images/gui/gui icons/food_love.png"),
-	},
-}
-
-var slave_class_names = {
-	'slave' : 'Slave',
-	servant = 'Peon',
-	'master' : '[Master]',
-	hireling = 'Hireling',
-}
-
-
-var worktoolnames = {
-	bow = '',
-	axe = '',
-	pickaxe = '',
-	rod = '',
-	sickle = '',
-	hammer = '',
-	hunt_knife = '',
-}
-
-var gearlist = ['chest', 'gloves', 'boots', 'rhand', 'lhand', 'neck', 'ring1', 'ring2']
-
-var file = File.new()
-var dir = Directory.new()
-
-var LocalizationFolder = "res://localization/"
-#var state
-
-var userfolder = 'user://'
 
 #var images = load("res://src/scripts/ResourceImages.gd").new()
 #var audio = load("res://src/scripts/ResourceAudio.gd").new()
 var scenes = {}
 
-var hexcolordict = {
-	red = '#ff5e5e',
-	yellow = "#ffff00",
-	brown = "#8B572A",
-	gray = "#4B4B4B",
-	gray_text_dialogue = "#90d4aa",
-	green = '#00b700',
-	white = '#ffffff',
-	aqua = '#24ffdb',
-	factor1 = '#ff5e5e',
-	factor2 = '#f6922a',
-	factor3 = '#4dff83',
-	factor4 = '#13a40d',
-	factor5 = '#25b8ff',
-	factor6 = '#bc53ff',
-	levelup_text_color = "#10ff10",
-}
-var textcodedict = {
-	color = {start = '[color=', end = '[/color]'},
-	url = {start = '[url=',end = '[/url]'}
-}
-
-var quest_icons = {
-	complete_location = load("res://assets/images/gui/quest_encounter.png"),
-	complete_dungeon = load("res://assets/images/gui/quest_dungeon.png"),
-	reputation = load("res://assets/images/gui/quest_reputation.png"),
-	
-}
-
 var sex_actions_dict = {}
 
-var globalsettings = { 
-	ActiveLocalization = 'en',
-	mastervol = -15,
-	mastermute = false,
-	musicvol = -20,
-	musicmute = false,
-	soundvol = -15,
-	soundmute = false,
-	
-	#Window settings
-	fullscreen = true,
-	window_size = Vector2(1366,768),
-	window_pos = Vector2(0,0),
-	
-	factors_as_words = true,
-	show_full_consent = false,
-	
-	textspeed = 60,
-	skipread = false,
-	textmonocolor = false,
-	warnseen = false,
-	disabletips = false,
-	
-	futa = true,
-	furry = true,
-	furry_multiple_nipples = true,
-	futa_balls = true,
-	futachance = 10,
-	malechance = 50,
-	meowing = true,
-	#user_folders_settings
-	portrait_folder = 'user://portraits/',
-	body_folder = 'user://bodies/',
-	#mod_folder = 'user://mods/',
-	
-	turn_based_time_flow = false,
-	
-	guilds_any_race = false, #unused
-	
-	autosave = true,
-	autosave_number = 3,
-	autosave_frequency = 24,
-	
-	
-} setget settings_save
-
-func settings_load():
-	var config = ConfigFile.new()
-	if file.file_exists(userfolder + "Settings.ini") == false:
-		settings_save(globalsettings)
-	config.load(userfolder + "Settings.ini")
-	var settings = config.get_section_keys("settings") 
-	for i in settings:
-		globalsettings[i] = config.get_value("settings", i, null)
-	
-	#updatevolume
-	var counter = 0
-	for i in ['master','music','sound']:
-		AudioServer.set_bus_mute(counter, globalsettings[i+'mute'])
-		AudioServer.set_bus_volume_db(counter, globalsettings[i+'vol'])
-		counter += 1
-	
-
-func settings_save(value):
-	globalsettings = value
-	var config = ConfigFile.new()
-	config.load(userfolder + "Settings.ini")
-	for i in globalsettings:
-		config.set_value('settings', i, globalsettings[i])
-	config.save(userfolder + "Settings.ini")
-	if CurrentScene != null and weakref(CurrentScene) != null and CurrentScene.name == 'mansion':
-		CurrentScene.set_time_buttons()
-
-func _notification(what):
-	if what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST:
-		globalsettings.window_size = OS.window_size
-		globalsettings.window_pos = OS.window_position
-		settings_save(globalsettings)
-		get_tree().quit()
+#warning-ignore:unused_signal
+signal scene_changed
 
 func _init():
-	
 	#for logging purposes
 	print("Game Version: " + str(gameversion))
 	print("OS: " +  OS.get_name()) 
 	
+	if dir.dir_exists(variables.userfolder + 'saves') == false:
+		dir.make_dir(variables.userfolder + 'saves')
 	
-	if dir.dir_exists(userfolder + 'saves') == false:
-		dir.make_dir(userfolder + 'saves')
-	
-	for i in dir_contents('res://src/actions'):
+	for i in input_handler.dir_contents('res://src/actions'):
 		if i.find('.remap') >= 0:
 			continue
 		var newaction = load(i).new()
 		sex_actions_dict[newaction.code] = newaction
 	
-	for i in dir_contents("res://assets/data/events"):
+	for i in input_handler.dir_contents("res://assets/data/events"):
 		if i.find('.gd') < 0:
 			continue
 		var newscript  = load(i).new()
@@ -646,136 +69,81 @@ func _init():
 				scenedata.scenedict[k] = newscript.data[k]
 			else:
 				print("Error: Scene data key already exists: " + k)
-	
-	#Storing available translations
-	for i in scanfolder(LocalizationFolder):
-		for ifile in dir_contents(i):
-			TranslationData[i.replace(LocalizationFolder, '')] = ifile
-#			file.open(ifile, File.READ)
-#			var data = file.get_as_text()
-#	for i in dir_contents(LocalizationFolder):
-#		TranslationData[i.replace(LocalizationFolder + '/', '').replace('.gd','')] = i
-	
-	#Applying active translation
-	var activetranslation = Translation.new()
-	var translationscript = load(TranslationData[globalsettings.ActiveLocalization]).new()
-	activetranslation.set_locale(globalsettings.ActiveLocalization)
-	for i in translationscript.TranslationDict:
-		activetranslation.add_message(i, translationscript.TranslationDict[i])
-	TranslationServer.add_translation(activetranslation)
+
 
 func _ready():
-	OS.window_size = globalsettings.window_size
-	OS.window_position = globalsettings.window_pos
 	randomize() #for legacy code sake
 	rng.randomize()
-	#Settings and folders
-	settings_load()
-
-	upgradelist = load("res://assets/data/upgradedata.gd").new().upgradelist
 	
 	for i in variables.resists_list:
-		statdata['resist'+i] = {code = "resist"+i}
+		statdata.statdata['resist'+i] = {code = "resist"+i}
 	
-	for i in statdata.values():
+	for i in statdata.statdata.values():
 		i.name = tr("STAT" + i.code.to_upper())
 		i.descript = tr("STAT" + i.code.to_upper() + "DESCRIPT")
 	
-	for i in upgradelist.values():
+	for i in upgradedata.upgradelist.values():
 		i.name = tr("UPGRADE" + i.code.to_upper())
 		i.descript = tr("UPGRADE" + i.code.to_upper() + "DESCRIPT")
 	
-	for i in worktoolnames:
-		worktoolnames[i] = tr("WORKTOOL" + i.to_upper())
+	for i in statdata.worktoolnames:
+		statdata.worktoolnames[i] = tr("WORKTOOL" + i.to_upper())
 	
-	for i in descriptions.bodypartsdata:
-		for k in descriptions.bodypartsdata[i].values():
+	for i in ResourceScripts.singletones.descriptions.bodypartsdata:
+		for k in ResourceScripts.singletones.descriptions.bodypartsdata[i].values():
 			k.name = tr("BODYPART" + i.to_upper() + k.code.to_upper())
 #			text += k.name + ' = "' + k.code + '",\n'
 			k.chardescript = tr("BODYPART" + i.to_upper() + k.code.to_upper() + "DESCRIPT")
 	
-
 	modding_core.fix_main_data_preload()
 	modding_core.process_data_mods()
 	modding_core.fix_main_data_postload()
-	
-	#LoadEventData()
-#	if globalsettings.fullscreen == true:
-#		OS.window_fullscreen = true
-	#===Necessary to apply translation===
-
-	#Items = load("res://src/Items.gd").new()
-	#Enemydata = load("res://assets/data/enemydata.gd").new()
-	#Skillsdata = load("res://assets/data/Skills.gd").new()
-	#Effectdata = load("res://assets/data/Effects.gd").new()
-	#TownData = load("res://src/TownData.gd").new()
-	#Traitdata = load("res://assets/data/Traits.gd").new()
-	#combatantdata = load("res://src/CombatantClass.gd").new()
-
-	#====================================
-	
-	
-	
-
-func logupdate(text):
-	state.logupdate(text)
 
 
-
-
-#warning-ignore:unused_signal
-signal scene_changed
-
-func ChangeScene(name):
-	input_handler.CloseableWindowsArray.clear()
-	var loadscreen = load("res://src/LoadScreen.tscn").instance()
-	get_tree().get_root().add_child(loadscreen)
-	loadscreen.goto_scene(scenedict[name])
-
-
-func EventCheck():
-	if state.CurEvent != "": return;
-	for s in get_tree().get_nodes_in_group('char_sprite'):
-		s.set_active_val();
-	for event in EventList.keys():
-		if SimpleEventCheck(event, false):
-			StartEventScene(event);
-			break;
-
-func SimpleEventCheck(event, skip = true):
-	#var tmp_d = {global = 'skip'};
-	if state.OldEvents.has(event):
-		return false
-	for check in EventList[event]:
-		if check.size() == 0:
-			if skip:
-				continue
-			else:
-				return false
-		if !state.valuecheck(check): 
-			return false
-	return true
-
-func LoadEvent(name):
-	var dict
-	
-	if file.file_exists("res://assets/data/events/"+ name + '.json'):
-		file.open("res://assets/data/events/"+ name + '.json', File.READ)
-		dict = parse_json(file.get_as_text())
-		file.close()
-	else:
-		print('Event not found: ' + name)
-	return dict
-
-func StartEventScene(name, debug = false, line = 0):
-	state.CurEvent = name;
-	scenes[name] = LoadEvent(name)
-	var scene = input_handler.get_spec_node(input_handler.NODE_EVENT) #input_handler.GetEventNode()
-	scene.visible = true
-	scene.Start(scenes[name], debug, line)
+#not used
+#func EventCheck():
+#	if state.CurEvent != "": return;
+#	for s in get_tree().get_nodes_in_group('char_sprite'):
+#		s.set_active_val();
+#	for event in EventList.keys():
+#		if SimpleEventCheck(event, false):
+#			StartEventScene(event);
+#			break;
+#
+#func SimpleEventCheck(event, skip = true):
+#	#var tmp_d = {global = 'skip'};
+#	if state.OldEvents.has(event):
+#		return false
+#	for check in EventList[event]:
+#		if check.size() == 0:
+#			if skip:
+#				continue
+#			else:
+#				return false
+#		if !globals.valuecheck(check): 
+#			return false
+#	return true
+#
+#func LoadEvent(name):
+#	var dict
+#
+#	if file.file_exists("res://assets/data/events/"+ name + '.json'):
+#		file.open("res://assets/data/events/"+ name + '.json', File.READ)
+#		dict = parse_json(file.get_as_text())
+#		file.close()
+#	else:
+#		print('Event not found: ' + name)
+#	return dict
+#
+#func StartEventScene(name, debug = false, line = 0):
+#	state.CurEvent = name;
+#	scenes[name] = LoadEvent(name)
+#	var scene = input_handler.get_spec_node(input_handler.NODE_EVENT) #input_handler.GetEventNode()
+#	scene.visible = true
+#	scene.Start(scenes[name], debug, line)
 
 func check_duplicates(item, parts):
-	for i in state.items.values():
+	for i in game_res.items.values():
 		if str(i.itembase) == str(item) && str(i.parts) == str(parts) && i.owner == null:
 			return i.id
 
@@ -792,114 +160,33 @@ func CreateUsableItem(item, amount = 1):
 	return newitem
 
 func AddItemToInventory(item, dont_duplicate = true):
-	item.inventory = state.items
+	item.inventory = game_res.items
 	if dont_duplicate && item.stackable == false:
 		var duplicate = check_duplicates(item.itembase, item.parts)
 		if duplicate != null:
-			state.items[duplicate].amount += 1
+			game_res.items[duplicate].amount += 1
 			item.amount = 0
 			return
 	if item.stackable == false:
-		item.id = "i" + str(state.itemcounter)
-		state.items[item.id] = item
-		state.itemcounter += 1
+		item.id = "i" + str(game_res.itemcounter)
+		game_res.items[item.id] = item
+		game_res.itemcounter += 1
 	else:
 		var id = get_item_id_by_code(item.itembase)
 		if id != null:
-			state.items[id].amount += item.amount
+			game_res.items[id].amount += item.amount
 		else:
-			item.id = "i" + str(state.itemcounter)
-			state.items[item.id] = item
-			state.itemcounter += 1
-
-#func CreateUsableItem(item, amount = 1):
-#	var newitem = Item.new()
-#	newitem.CreateUsable(item, amount)
-#	return newitem
-#func CreateGearItem(item, parts, bonus = {}, newname = null, dont_duplicate = true):
-#	if dont_duplicate:
-#		var duplicate = check_duplicates(item, parts)
-#		if duplicate != null:
-#			state.items[duplicate].amount += 1
-#			return
-#	var newitem = Item.new()
-#	newitem.CreateGear(item, parts, bonus)
-#	if newname != null:
-#		newitem.name = newname
-#	return newitem
-	
-#func AddItemToInventory(item):
-#	if item == null:
-#		return
-#	item.inventory = state.items
-#	if item.stackable == false:
-#		item.id = "i" + str(state.itemcounter)
-#		state.items[item.id] = item
-#		state.itemcounter += 1
-#	else:
-#		var id = get_item_id_by_code(item.itembase)
-#		if id != null:
-#			state.items[id].amount += item.amount
-#		else:
-#			item.id = "i" + str(state.itemcounter)
-#			state.items[item.id] = item
-#			state.itemcounter += 1
-
-
+			item.id = "i" + str(game_res.itemcounter)
+			game_res.items[item.id] = item
+			game_res.itemcounter += 1
 
 
 func get_item_id_by_code(itembase):
-	for item in state.items.values():
+	for item in game_res.items.values():
 		if item.itembase == itembase:
 			return item.id
-	
 	return null
 
-func dir_contents(target):
-	var dir = Directory.new()
-	var array = []
-	if dir.open(target) == OK:
-		dir.list_dir_begin()
-		var file_name = dir.get_next()
-		while file_name != "":
-			if !dir.current_is_dir():
-				array.append(target + "/" + file_name)
-			elif !file_name in ['.','..', null] && dir.current_is_dir():
-				array += dir_contents(target + "/" + file_name)
-			file_name = dir.get_next()
-		return array
-	else:
-		print("An error occurred when trying to access the path.")
-
-func evaluate(input): #used to read strings as conditions when needed
-	var script = GDScript.new()
-	script.set_source_code("var active_slave\nfunc eval():\n\treturn " + input)
-	script.reload()
-	var obj = Reference.new()
-	obj.set_script(script)
-	obj.active_slave = text_characters[0]
-	return obj.eval()
-
-
-
-func ClearContainer(container):
-	for i in container.get_children():
-		if i.name != 'Button':
-			i.hide()
-			i.queue_free()
-
-func ClearContainerForced(container):
-	for i in container.get_children():
-		if i.name != 'Button':
-			i.hide()
-			i.free()
-
-func DuplicateContainerTemplate(container):
-	var newbutton = container.get_node('Button').duplicate()
-	newbutton.show()
-	container.add_child(newbutton)
-	container.move_child(container.get_node('Button'), newbutton.get_position_in_parent())
-	return newbutton
 
 func connecttexttooltip(node, text):
 	if node.is_connected("mouse_entered",self,'showtexttooltip'):
@@ -972,8 +259,8 @@ func mattooltip(targetnode, material, bonustext = '', type = 'materialowned'):
 	data.item = material
 	data.icon = material.icon
 	data.price = str(material.price)
-	if state.materials[material.code] > 0:
-		data.amount = state.materials[material.code]
+	if game_res.materials[material.code] > 0:
+		data.amount = game_res.materials[material.code]
 	
 	node.showup(targetnode, data, type)
 
@@ -993,8 +280,6 @@ func loadimage(path):
 	var temptexture = ImageTexture.new()
 	temptexture.create_from_image(image)
 	return temptexture
-
-
 
 func RomanNumberConvert(value):
 	var rval = ''
@@ -1020,12 +305,6 @@ func RomanNumberConvert(value):
 		10:
 			rval = 'X'
 
-func AddPanelOpenCloseAnimation(node):
-	if node.get_script() == null:
-		node.set_script(load("res://src/scenes/ClosingPanel.gd"))
-	node._ready()
-
-var text_characters = []
 
 func TextEncoder(text, node = null):
 	var tooltiparray = []
@@ -1041,7 +320,7 @@ func TextEncoder(text, node = null):
 			data = data.replace('{','').split("=")
 			match data[0]:
 				'color':
-					startcode += '[color=' + hexcolordict[data[1]] + ']'
+					startcode += '[color=' + variables.hexcolordict[data[1]] + ']'
 					endcode = '[/color]' + endcode
 				'url':
 					tooltiparray.append(data[1])
@@ -1049,13 +328,13 @@ func TextEncoder(text, node = null):
 					endcode = '[/url]' + endcode
 					counter += 1
 				'check':
-					if evaluate(data[1]) == false:
+					if input_handler.evaluate(data[1]) == false:
 						originaltext = ''
 				'random_chat':
 					var character = input_handler.scene_characters[int(data[1])]
 					originaltext = character.translate(input_handler.get_random_chat_line(character, originaltext))
 				'custom_text_function':
-					originaltext = originaltext + input_handler.get_custom_text(data[1])
+					originaltext = originaltext + custom_text.get_custom_text(data[1])
 		
 		text = text.replace(newtext, startcode + originaltext + endcode)
 	if node != null:
@@ -1081,34 +360,33 @@ func ItemSelect(targetscript, type, function, requirements = true):
 	else:
 		node = load("res://ItemSelect.tscn").instance()
 		get_tree().get_root().add_child(node)
-		AddPanelOpenCloseAnimation(node)
+		input_handler.AddPanelOpenCloseAnimation(node)
 		node.name = 'ItemSelect'
-	
 	
 	node.show()
 	
-	ClearContainer(node.get_node("ScrollContainer/GridContainer"))
+	input_handler.ClearContainer(node.get_node("ScrollContainer/GridContainer"))
 	var array = []
 	if type == 'gear':
-		for i in state.items.values():
+		for i in game_res.items.values():
 			if i.geartype == requirements && i.task == null && i.owner == null && i.durability > 0:
 				array.append(i)
 	elif type == 'repairable':
-		for i in state.items.values():
+		for i in game_res.items.values():
 			if i.durability < i.maxdurability:
 				array.append(i)
 	elif type == 'sex_use':
-		for i in state.items.values():
+		for i in game_res.items.values():
 			if i.interaction_use == true:
 				array.append(i)
 	
 	for i in array:
-		var newnode = DuplicateContainerTemplate(node.get_node("ScrollContainer/GridContainer"))
+		var newnode = input_handler.DuplicateContainerTemplate(node.get_node("ScrollContainer/GridContainer"))
 		match type:
 			'gear':
 				i.set_icon(newnode.get_node("icon"))
 				newnode.get_node("Percent").show()
-				newnode.get_node("Percent").text = str(calculatepercent(i.durability, i.maxdurability)) + '%'
+				newnode.get_node("Percent").text = str(input_handler.calculatepercent(i.durability, i.maxdurability)) + '%'
 				connectitemtooltip(newnode, i)
 			'sex_use':
 				i.set_icon(newnode.get_node("icon"))
@@ -1119,44 +397,6 @@ func ItemSelect(targetscript, type, function, requirements = true):
 		newnode.connect('pressed', targetscript, function, [i])
 		newnode.connect('pressed',self,'CloseSelection', [node])
 
-func CloseSelection(panel):
-	panel.hide()
-
-func calculatepercent(value1, value2):
-	return value1*100/max(value2,1)
-
-func AddOrIncrementDict(dict, newdict):
-	for i in newdict:
-		if dict.has(i):
-			dict[i] += newdict[i]
-		else:
-			dict[i] = newdict[i]
-
-func MergeDicts(dict1, dict2, overwrite = false):
-	var returndict = dict1
-	for i in dict2:
-		if returndict.has(i) && overwrite == false:
-			returndict[i] += dict2[i]
-		else:
-			returndict[i] = dict2[i]
-	
-	return returndict
-
-func scanfolder(path): #makes an array of all folders in modfolder
-	var dir = Directory.new()
-	var array = []
-	if dir.dir_exists(path) == false:
-		dir.make_dir(path)
-	if dir.open(path) == OK:
-		dir.list_dir_begin()
-		
-		var file_name = dir.get_next()
-		while file_name != "":
-			if dir.current_is_dir() && !file_name in ['.','..',null]:
-				array.append(path + file_name)
-			file_name = dir.get_next()
-		return array
-
 func QuickSave():
 	SaveGame('QuickSave')
 
@@ -1166,9 +406,6 @@ func autosave():
 #	var savegame = File.new()
 #	var dir = Directory.new()
 #	var savesdir = dir_contents(userfolder + 'saves')
-	
-	
-	
 #	var filearray = globals.dir_contents()
 #	var path = 'user://saves/'
 #	if filearray.has(path+"autosave2"):
@@ -1192,55 +429,44 @@ func autosave():
 
 func SaveGame(name):
 	var savedict = state.serialize(); 
-	file.open(userfolder + 'saves/' + name + '.sav', File.WRITE)
+	file.open(variables.userfolder + 'saves/' + name + '.sav', File.WRITE)
 	file.store_line(to_json(savedict))
 	file.close()
 	var metadata = ConfigFile.new()
-	var config_data = {version = gameversion, time = OS.get_datetime(), master_name = state.get_master().get_stat('name'), day = state.date, hour = state.hour, population = state.characters.size(), gold = state.money, master_icon = state.get_master().get_icon(), preset = state.starting_preset}
+	var config_data = {version = gameversion, time = OS.get_datetime(), master_name = game_party.get_master().get_stat('name'), day = game_globals.date, hour = game_globals.hour, population = game_party.characters.size(), gold = game_res.money, master_icon = game_party.get_master().get_icon(), preset = game_globals.starting_preset}
 	for i in config_data:
 		metadata.set_value('details', i, config_data[i])
-	metadata.save(userfolder + "saves/" + name + ".dat")
+	metadata.save(variables.userfolder + "saves/" + name + ".dat")
 	input_handler.SystemMessage("Game saved as " + name + ".sav")
 
 func LoadGame(filename):
-	if !file.file_exists(userfolder+'saves/'+ filename + '.sav') :
-		print("no file %s" % (userfolder+'saves/'+ filename + '.sav'))
+	if !file.file_exists(variables.userfolder+'saves/'+ filename + '.sav') :
+		print("no file %s" % (variables.userfolder+'saves/'+ filename + '.sav'))
 		return
 	
-	input_handler.BlackScreenTransition(1)
+	core_animations.BlackScreenTransition(1)
 	yield(get_tree().create_timer(1), 'timeout')
 	input_handler.CloseableWindowsArray.clear()
 	state.revert()
 	
-	
-	file.open(userfolder+'saves/'+ filename + '.sav', File.READ)
+	file.open(variables.userfolder+'saves/'+ filename + '.sav', File.READ)
 	var savedict = parse_json(file.get_as_text())
 	file.close()
 	
 	state.deserialize(savedict)
 	
 	#current approach
-	CurrentScene.queue_free()
-	ChangeScene('mansion');
+	input_handler.CurrentScene.queue_free()
+	input_handler.ChangeScene('mansion');
 	yield(self, "scene_changed")
 	input_handler.SystemMessage("Game Loaded")
 
 
-func datetime_comp(a, b):
-	if a.year > b.year: return true
-	if a.month > b.month: return true
-	if a.day > b.day: return true
-	if a.hour > b.hour: return true
-	if a.minute > b.minute: return true
-	if a.second > b.second: return true
-	return false
-	
-
 func get_last_save():
-	var dir = dir_contents(userfolder + 'saves')
+	var dir = input_handler.dir_contents(variables.userfolder + 'saves')
 	var dated_dir = {}
 	var tmp = File.new()
-	for i in dir_contents(userfolder + 'saves'):
+	for i in dir:
 		if i.ends_with('.sav') == false:
 			continue
 		dated_dir[i] = OS.get_datetime_from_unix_time(tmp.get_modified_time(i))
@@ -1251,6 +477,15 @@ func get_last_save():
 			b = dated_dir.keys()[i]
 	return b
 
+func datetime_comp(a, b):
+	if a.year > b.year: return true
+	if a.month > b.month: return true
+	if a.day > b.day: return true
+	if a.hour > b.hour: return true
+	if a.minute > b.minute: return true
+	if a.second > b.second: return true
+	return false
+
 func fastif(value, result1, result2):
 	if value:
 		return result1
@@ -1258,9 +493,9 @@ func fastif(value, result1, result2):
 		return result2
 
 func return_to_main_menu():
-	CurrentScene.queue_free()
-	ChangeScene('menu')
-	state.revert()
+	input_handler.CurrentScene.queue_free()
+	input_handler.ChangeScene('menu')
+	state.revert()#TO REMAKE
 
 func addrelations(person, person2, value):
 	if person.has_profession("master") || person2.has_profession("master") || person == person2:
@@ -1283,31 +518,31 @@ func addrelations(person, person2, value):
 func connectrelatives(person1, person2, way):
 	if person1 == null || person2 == null:
 		return
-	if state.relativesdata.has(person1.id) == false:
+	if game_party.relativesdata.has(person1.id) == false:
 		createrelativesdata(person1)
-	if state.relativesdata.has(person2.id) == false:
+	if game_party.relativesdata.has(person2.id) == false:
 		createrelativesdata(person2)
 	if way in ['mother','father']:
-		var entry = state.relativesdata[person1.id]
+		var entry = game_party.relativesdata[person1.id]
 		entry.children.append(person2.id)
 		for i in entry.children:
 			if i != person2.id:
-				var entry2 = state.relativesdata[i]
+				var entry2 = game_party.relativesdata[i]
 				connectrelatives(person2, entry2, 'sibling')
-		entry = state.relativesdata[person2.id]
+		entry = game_party.relativesdata[person2.id]
 		entry[way] = person1.id
 		if typeof(person1) != TYPE_DICTIONARY && typeof(person2) != TYPE_DICTIONARY:
 			addrelations(person1, person2, 200)
 	elif way == 'sibling':
-		var entry = state.relativesdata[person1.id]
-		var entry2 = state.relativesdata[person2.id]
+		var entry = game_party.relativesdata[person1.id]
+		var entry2 = game_party.relativesdata[person2.id]
 		if entry.siblings.has(entry2.id) == false: entry.siblings.append(entry2.id)
 		if entry2.siblings.has(entry.id) == false: entry2.siblings.append(entry.id)
 		for i in entry.siblings + entry2.siblings:
-			if !state.relativesdata[i].siblings.has(entry.id) && i != entry.id:
-				state.relativesdata[i].siblings.append(entry.id)
-			if !state.relativesdata[i].siblings.has(entry2.id) && i != entry2.id:
-				state.relativesdata[i].siblings.append(entry2.id)
+			if !game_party.relativesdata[i].siblings.has(entry.id) && i != entry.id:
+				game_party.relativesdata[i].siblings.append(entry.id)
+			if !game_party.relativesdata[i].siblings.has(entry2.id) && i != entry2.id:
+				game_party.relativesdata[i].siblings.append(entry2.id)
 			if !entry.siblings.has(i) && i != entry.id:
 				entry.siblings.append(i)
 			if !entry2.siblings.has(i) && i != entry2.id:
@@ -1319,39 +554,38 @@ func connectrelatives(person1, person2, way):
 
 func createrelativesdata(person):
 	var newdata = {name = person.get_full_name(), id = person.id, race = person.get_stat('race'), sex = person.get_stat('sex'), mother = -1, father = -1, siblings = [], halfsiblings = [], children = []}
-	state.relativesdata[person.id] = newdata
+	game_party.relativesdata[person.id] = newdata
 
 func clearrelativesdata(id):
 	var entry
-	if state.relativesdata.has(id):
-		entry = state.relativesdata[id]
+	if game_party.relativesdata.has(id):
+		entry = game_party.relativesdata[id]
 		
 		for i in ['mother','father']:
-			if state.relativesdata.has(entry[i]):
-				var entry2 = state.relativesdata[entry[i]]
+			if game_party.relativesdata.has(entry[i]):
+				var entry2 = game_party.relativesdata[entry[i]]
 				entry2.children.erase(id)
 		for i in entry.siblings:
-			if state.relativesdata.has(i):
-				var entry2 = state.relativesdata[i]
+			if game_party.relativesdata.has(i):
+				var entry2 = game_party.relativesdata[i]
 				entry2.siblings.erase(id)
-		
 	
-	state.relativesdata.erase(id)
+	game_party.relativesdata.erase(id)
 
 func checkifrelatives(person, person2):
 	var result = false
 	var data1 
 	var data2
-	if state.relativesdata.has(person.id):
-		data1 = state.relativesdata[person.id]
+	if game_party.relativesdata.has(person.id):
+		data1 = game_party.relativesdata[person.id]
 	else:
 		createrelativesdata(person)
-		data1 = state.relativesdata[person.id]
-	if state.relativesdata.has(person2.id):
-		data2 = state.relativesdata[person2.id]
+		data1 = game_party.relativesdata[person.id]
+	if game_party.relativesdata.has(person2.id):
+		data2 = game_party.relativesdata[person2.id]
 	else:
 		createrelativesdata(person2)
-		data2 = state.relativesdata[person2.id]
+		data2 = game_party.relativesdata[person2.id]
 	for i in ['mother','father']:
 		if str(data1[i]) == str(data2.id) || str(data2[i]) == str(data1.id):
 			result = true
@@ -1359,23 +593,22 @@ func checkifrelatives(person, person2):
 		if i.siblings.has(data1.id) || i.siblings.has(data2.id):
 			result = true
 	
-	
 	return result
 
 func getrelativename(person, person2):
 	var result = null
 	var data1 
 	var data2
-	if state.relativesdata.has(person.id):
-		data1 = state.relativesdata[person.id]
+	if game_party.relativesdata.has(person.id):
+		data1 = game_party.relativesdata[person.id]
 	else:
 		createrelativesdata(person)
-		data1 = state.relativesdata[person.id]
-	if state.relativesdata.has(person2.id):
-		data2 = state.relativesdata[person2.id]
+		data1 = game_party.relativesdata[person.id]
+	if game_party.relativesdata.has(person2.id):
+		data2 = game_party.relativesdata[person2.id]
 	else:
 		createrelativesdata(person2)
-		data2 = state.relativesdata[person2.id]
+		data2 = game_party.relativesdata[person2.id]
 	
 	#print(data1, data2)
 	for i in ['mother','father']:
@@ -1411,10 +644,6 @@ func impregnate(father, mother):
 	var baby = Slave.new()
 	baby.setup_baby(mother, father)
 
-
-var punishcategories = ['spanking','whipping','nippleclap','clitclap','nosehook','mashshow','facesit','afacesit','grovel']
-
-
 func calculate_travel_time(location1, location2):
 	var travel_value1 = 0 #time to travel to location from mansion
 	var travel_value2 = 0 #time to return to mansion from location
@@ -1430,10 +659,10 @@ func check_recipe_resources(temprecipe):
 	if recipe.crafttype == 'basic':
 		var check = true
 		for i in recipe.materials:
-			if state.materials[i] < recipe.materials[i]:
+			if game_res.materials[i] < recipe.materials[i]:
 				check = false
 		for i in recipe.items:
-			if state.if_has_free_items(i, 'gte', recipe.items[i]) == false:
+			if game_res.if_has_free_items(i, 'gte', recipe.items[i]) == false:
 				check = false
 		if check == false:
 			return false
@@ -1441,7 +670,7 @@ func check_recipe_resources(temprecipe):
 		var item = Items.itemlist[recipe.resultitem]
 		var check = true
 		for i in temprecipe.partdict:
-			if state.materials[temprecipe.partdict[i]] < item.parts[i]:
+			if game_res.materials[temprecipe.partdict[i]] < item.parts[i]:
 				check = false
 		if check == false:
 			return false
@@ -1451,33 +680,571 @@ func spend_resources(temprecipe):
 	var recipe = Items.recipes[temprecipe.code]
 	if recipe.crafttype == 'basic':
 		for i in recipe.materials:
-			state.materials[i] -= recipe.materials[i]
+			game_res.materials[i] -= recipe.materials[i]
 		for i in recipe.items:
-			state.remove_item(i, recipe.items[i])
+			game_res.remove_item(i, recipe.items[i])
 	else:
 		var item = Items.itemlist[recipe.resultitem]
 		for i in temprecipe.partdict:
-			state.materials[temprecipe.partdict[i]] -= item.parts[i]
+			game_res.materials[temprecipe.partdict[i]] -= item.parts[i]
 	temprecipe.resources_taken = true
 
 func make_item(temprecipe):
 	var recipe = Items.recipes[temprecipe.code]
 	temprecipe.resources_taken = false
 	if recipe.resultitemtype == 'material':
-		state.materials[recipe.resultitem] += recipe.resultamount
+		game_res.materials[recipe.resultitem] += recipe.resultamount
 	else:
 		var item = Items.itemlist[recipe.resultitem]
-		state.text_log_add("crafting", "Item created: " + item.name)
+		game_res.text_log_add("crafting", "Item created: " + item.name)
 		if item.type == 'usable':
-			globals.AddItemToInventory(globals.CreateUsableItem(item.code))
+			AddItemToInventory(CreateUsableItem(item.code))
 		elif item.type == 'gear':
 			if recipe.crafttype == 'modular':
-				globals.AddItemToInventory(globals.CreateGearItem(item.code, temprecipe.partdict))
+				AddItemToInventory(CreateGearItem(item.code, temprecipe.partdict))
 			else:
-				globals.AddItemToInventory(globals.CreateGearItem(item.code, {}))
+				AddItemToInventory(CreateGearItem(item.code, {}))
 	
 	if temprecipe.repeats > 0:
 		temprecipe.repeats -= 1
 		if temprecipe.repeats == 0:
-			state.craftinglists[Items.recipes[temprecipe.code].worktype].erase(temprecipe)
+			game_res.craftinglists[Items.recipes[temprecipe.code].worktype].erase(temprecipe)
+
+func text_log_add(label, text):
+	log_storage.append({type = label, text = text, time = str(game_globals.date) + ":" + str(round(game_globals.hour))})
+	if log_node != null && weakref(log_node) != null:
+		var newfield = log_node.get_node("ScrollContainer/VBoxContainer/field").duplicate()
+		newfield.show()
+		newfield.get_node("label").bbcode_text = label
+		newfield.get_node("text").bbcode_text = text
+		newfield.get_node("date").bbcode_text = '[right]'+ str(game_globals.date) + " - " + str(round(game_globals.hour)) + ":00[/right]"
+		log_node.get_node("ScrollContainer/VBoxContainer").add_child(newfield)
+		yield(get_tree(), 'idle_frame')
+		var textfield = newfield.get_node('text')
+		textfield.rect_size.y = textfield.get_v_scroll().get_max()
+		newfield.rect_min_size.y = textfield.rect_size.y
+
+func character_stat_change(character, data):
+	var text = character.get_short_name() + ": " + statdata.statdata[data.code].name 
+	if data.operant == '+':
+		text += " + "
+		character.add_stat(data.code, data.value)
+	else:
+		text += " - "
+		character.add_stat(data.code, -data.value)
+	text += str(data.value)
+	text_log_add('char', text)
+#	character.set(data.code, input_handler.math(data.operant, character.get(data.code), data.value))
+
+func make_local_recruit(args):
+	var newchar = Slave.new()
+	if args == null:
+		newchar.generate_random_character_from_data(input_handler.weightedrandom(input_handler.active_location.races))
+	else:
+		var race = 'random'
+		var des_class = null
+		var difficulty = 0
+		if args.has('races'):
+			race = input_handler.weightedrandom(args.races)
+			if race == 'local':
+				race = input_handler.weightedrandom(input_handler.active_area.races)
+			elif race == 'beast':
+				var racearray = []
+				for i in races.racelist.values():
+					if i.tags.has('beast') == true:
+						racearray.append(i.code)
+				race = racearray[randi()%racearray.size()]
+		if args.has('difficulty'):
+			difficulty = round(rand_range(args.difficulty[0], args.difficulty[1]))
+		newchar.generate_random_character_from_data(race, des_class, difficulty)
+		if args.has("bonuses"):
+			newchar.add_stat_bonuses(args.bonuses)
+		if args.has("type"):
+			newchar.set_slave_category(args.type)
+	if newchar.get_stat('slave_class') == '': newchar.set_slave_category('servant')
+	if args.has("is_hirable"): newchar.is_hirable = args.is_hirable
+	return newchar
+
+
+func check_events(action):
+	var eventarray = input_handler.active_location.scriptedevents
+	var erasearray = []
+	var eventtriggered = false
+	for i in eventarray:
+		if i.trigger == action && check_event_reqs(i.reqs) == true:
+			if i.event == 'custom_event':
+				input_handler.interactive_message_custom(scenedata.scenedict[i.args])
+			elif i.has('args'):
+				input_handler.call(i.event, i.args)
+			else:
+				input_handler.call(i.event)
+			eventtriggered = true
+			if i.has('oneshot') && i.oneshot == true:
+				erasearray.append(i)
+			break
+	for i in erasearray:
+		eventarray.erase(i)
+	return eventtriggered
+
+func check_random_event():
+	if randf() > variables.dungeon_encounter_chance:
+		return false
+	var eventarray = input_handler.active_location.randomevents
+	var eventtriggered = false
+	var active_array = []
+	for i in eventarray:
+		var event = scenedata.scenedict[i[0]]
+		if event.has('reqs'):
+			if globals.checkreqs(event.reqs):
+				active_array.append(i)
+		else:
+			active_array.append(i)
+	if active_array.size() > 0:
+		active_array = input_handler.weightedrandom(active_array)
+		var eventtype = "event_selection"
+		var dict = {}
+		if scenedata.scenedict[active_array].has("default_event_type"):
+			eventtype = scenedata.scenedict[active_array].default_event_type
+		if scenedata.scenedict[active_array].has('bonus_args'):
+			dict = scenedata.scenedict[active_array].bonus_args
+		input_handler.interactive_message(active_array, eventtype, dict)
+		eventtriggered = true
+	return eventtriggered
+
+func check_event_reqs(reqs):
+	var check = true
+	for i in reqs:
+		match i.code:
+			'level':
+				check = input_handler.operate(i.operant, current_level, i.value)
+			'stage':
+				check = input_handler.operate(i.operant, current_stage, i.value)
+		if check == false:
+			break
+	return check
+
+func check_location_group():
+	var counter = 0
+	var cleararray = []
+	for i in input_handler.active_location.group:
+		if game_party.characters.has(input_handler.active_location.group[i]): 
+			counter += 1
+		else:
+			cleararray.append(i)
+	for i in cleararray:
+		input_handler.active_location.erase(i)
+	if counter == 0:
+		return false
+	else:
+		return true
+
+func StartCombat(encounter = null):
+	var data
+	if encounter != null:
+		data = Enemydata.encounters[encounter]
+		input_handler.encounter_win_script = Enemydata.encounters[encounter].win_effects
+	
+	if variables.skip_combat == true:
+		input_handler.finish_combat()
+		return
+	
+	if encounter == null:
+		StartAreaCombat()
+		return
+	
+	var enemies
+	var enemy_stats_mod = 1
+	match data.unittype:
+		'randomgroup':
+			enemies = make_enemies(data.unitcode)
+#	var combat = get_combat_node()
+#	combat.encountercode = data.unitcode
+	if input_handler.combat_node == null:
+		input_handler.combat_node = input_handler.get_combat_node()
+	input_handler.combat_node.encountercode = data.unitcode
+	
+	input_handler.combat_node.start_combat(input_handler.active_location.group, enemies, data.bg, data.bgm, enemy_stats_mod)
+
+func StartQuestCombat(encounter):
+	pass
+
+func StartAreaCombat():
+	var enemydata
+	var enemygroup = {}
+	var enemies = []
+	var music = 'combattheme'
+	
+	for i in input_handler.active_location.stagedenemies:
+		if i.stage == current_stage && i.level == current_level:
+			enemydata = i.enemy#[i.enemy,1]
+	if enemydata == null:
+		enemydata = input_handler.active_location.enemies
+	
+	enemies = make_enemies(enemydata)
+	
+	var enemy_stats_mod = (1 - variables.difficulty_per_level) + variables.difficulty_per_level * current_level
+	
+	if input_handler.combat_node == null:
+		input_handler.combat_node = input_handler.get_combat_node()
+	input_handler.combat_node.encountercode = enemydata
+	input_handler.combat_node.start_combat(input_handler.active_location.group, enemies, 'background', music, enemy_stats_mod)
+
+func make_enemies(enemydata):
+	var enemies
+	if typeof(enemydata) == TYPE_ARRAY:
+		enemies = input_handler.weightedrandom(enemydata)
+		enemies = makerandomgroup(Enemydata.enemygroups[enemies])
+	elif Enemydata.enemygroups.has(enemydata):
+		enemies = makerandomgroup(Enemydata.enemygroups[enemydata])
+	else:
+		enemies = makespecificgroup(enemydata)
+	return enemies
+
+func makespecificgroup(group):
+	var enemies = Enemydata.predeterminatedgroups[group]
+	var combatparty = {1 : null, 2 : null, 3 : null, 4 : null, 5 : null, 6 : null}
+	for i in enemies.group:
+		combatparty[i] = enemies.group[i]
+	
+	return combatparty
+
+func makerandomgroup(enemygroup):
+	var array = []
+	for i in enemygroup.units:
+		var size = round(rand_range(enemygroup.units[i][0],enemygroup.units[i][1]))
+		if size != 0:
+			array.append({units = i, number = size})
+	var countunits = 0
+	for i in array:
+		countunits += i.number
+	if countunits > 6:
+		array[randi()%array.size()].number -= (countunits-6)
+	
+	#Assign units to rows
+	var combatparty = {1 : null, 2 : null, 3 : null, 4 : null, 5 : null, 6 : null}
+	for i in array:
+		var unit = Enemydata.enemies[i.units]
+		while i.number > 0:
+			var temparray = []
+			
+			if true:
+				#smart way
+				for i in combatparty:
+					if combatparty[i] != null:
+						continue
+					var aiposition = unit.ai_position[randi()%unit.ai_position.size()]
+					if aiposition == 'melee' && i in [1,2,3]:
+						temparray.append(i)
+					if aiposition == 'ranged' && i in [4,5,6]:
+						temparray.append(i)
+				
+				if temparray.size() <= 0:
+					for i in combatparty:
+						if combatparty[i] == null:
+							temparray.append(i)
+			else:
+				#stupid way
+				for i in combatparty:
+					if combatparty[i] != null:
+						temparray.append(i)
+			
+			if temparray.size() > 0:
+				combatparty[temparray[randi()%temparray.size()]] = i.units
+			i.number -= 1
+	
+	return combatparty
+
+func remove_location(locationid):
+	var location = world_gen.get_location_from_code(locationid)
+	var area = world_gen.get_area_from_location_code(locationid)
+	return_characters_from_location(locationid)
+	area.locations.erase(location.id)
+	area.questlocations.erase(location.id)
+	game_progress.completed_locations[location.id] = {name = location.name, id = location.id, area = area.code}
+	input_handler.update_slave_list()
+	if input_handler.active_location == location && globals.CurrentScene.get_node("Exploration").is_visible_in_tree():
+		globals.CurrentScene.get_node("Exploration").select_location('Aliron')
+		globals.CurrentScene.get_node("Exploration").build_accessible_locations()
+
+func return_characters_from_location(locationid):
+	var location = world_gen.get_location_from_code(locationid)
+	var area = world_gen.get_area_from_location_code(locationid)
+	for id in game_party.character_order:
+		var person = game_party.characters[id]
+		if person.check_location(location.id, true) || person.travel.travel_target.location == location.id:
+			if variables.instant_travel == false:
+				person.trave.location = 'travel'
+				person.trave.travel_target = {area = '', location = 'mansion'}
+				person.trave.travel_time = area.travel_time + location.travel_time
+			else:
+				person.trave.location = 'mansion'
+				person.return_to_task()
+
+func make_story_character(args):
+	var newchar = Slave.new()
+	newchar.generate_predescribed_character(world_gen.pregen_characters[args])
+	return newchar
+
+func common_effects(effects):
+	for i in effects:
+		match i.code:
+			'money_change':
+				game_res.update_money(i.operant, i.value)
+			'material_change':
+				game_res.update_materials(i.operant, i.material, i.value)
+			'make_story_character':
+				var newslave = Slave.new()
+				newslave.generate_predescribed_character(world_gen.pregen_characters[i.value])
+				#newslave.set_slave_category(newslave.slave_class)
+				game_party.add_slave(newslave)
+			'add_timed_event':
+				var newevent = {reqs = [], code = i.value}
+				for k in i.args:
+					match k.type:
+						'add_to_date':
+							var newreq = [{type = 'date', operant = 'eq', value = self.date + round(rand_range(k.date[0], k.date[1]))}, {type = 'hour', operant = 'eq', value = k.hour}]
+							newevent.reqs += newreq
+						'fixed_date':
+							var newreq = [{type = 'date', operant = 'eq', value = k.date}, {type = 'hour', operant = 'eq', value = k.hour}]
+							newevent.reqs += newreq
+				game_progress.stored_events.timed_events.append(newevent)
+			'remove_timed_events':
+				var array = []
+				for k in game_progress.stored_events.timed_events:
+					if k.code in i.value:
+						array.append(k)
+				for k in array:
+					game_progress.stored_events.timed_events.erase(k)
+			'unique_character_changes':
+				var character = game_party.get_unique_slave(i.value)
+				for k in i.args:
+					if k.code == 'sextrait':
+						match k.operant:
+							'add':
+								character.add_sex_trait(k.value)
+					elif k.code == 'tag':
+						match k.operant:
+							'remove':
+								if k.value == 'no_sex':
+									var text = character.get_short_name() + ": " + "Sex unlocked"
+									text_log_add('char', text)
+								character.tags.erase(k.value)
+					else:
+						character_stat_change(character, k)
+			'start_event':
+				input_handler.interactive_message(i.data, 'start_event', i.args)
+			'spend_money_for_scene_character':
+				game_res.update_money('-', input_handler.scene_characters[i.value].calculate_price())
+#				money -= input_handler.scene_characters[i.value].calculate_price()
+#				text_log_add('money',"Gold used: " + str(input_handler.scene_characters[i.value].calculate_price()))
+			'mod_scene_characters':
+				if i.type == 'all':
+					for k in input_handler.scene_characters:
+						k.add_stat_bonuses(i.value)
+			'bool_scene_characters':
+				if i.type == 'all':
+					for k in input_handler.scene_characters:
+						k.set(i.name, i.value)
+			'affect_scene_characters':
+				if i.type == 'all':
+					for k in input_handler.scene_characters:
+						k.set(i.name, i.value)
+			'change_type_scene_characters':
+				if i.type == 'all':
+					for k in input_handler.scene_characters:
+						k.set_slave_category(i.value)
+			'active_character_switch':
+				input_handler.active_character = input_handler.scene_characters[i.value]
+			'affect_active_character':
+				match i.type:
+					'damage':
+						input_handler.active_character.hp -= i.value
+					'stat':
+						input_handler.active_character.set(i.name, input_handler.active_character.get(i.name) + i.value)
+			'make_loot':
+				input_handler.scene_loot = world_gen.make_chest_loot(input_handler.weightedrandom(i.pool))
+			'open_loot':
+				input_handler.get_spec_node(input_handler.NODE_LOOTTABLE).open(input_handler.scene_loot, '[center]Acquired Items:[/center]')
+			'make_scene_character':
+				for k in i.value:
+					var newcharacter
+					var number = 1
+					if k.has("number"):
+						number = round(rand_range(k.number[0], k.number[1]))
+					while number > 0:
+						match k.type:
+							'raw':
+								newcharacter #= Slave.new()
+								newcharacter.is_active = false
+								newcharacter.generate_random_character_from_data(k.race, k.class, k.difficulty)
+								newcharacter.set_slave_category(k.slave_type)
+							'function':
+								newcharacter = call(k.function, k.args)
+						input_handler.active_character = newcharacter
+						input_handler.scene_characters.append(newcharacter)
+
+						number -= 1
+			'update_guild':
+				input_handler.exploration_node.enter_guild(input_handler.active_faction)
+			'create_character':
+				input_handler.get_spec_node(input_handler.NODE_CHARCREATE, ['slave', i.type])
+			'main_progress':
+				game_progress.update_progress(i.operant, i.value)
+			'progress_quest':
+				var quest_exists = false
+				for k in game_progress.active_quests:
+					if k.code == i.value:
+						quest_exists = true
+						k.stage = i.stage
+						text_log_add("quests", "Quest Updated: " + tr(scenedata.quests[k.code].stages[k.stage].name) + ". ")
+				if quest_exists == false:
+					game_progress.active_quests.append({code = i.value, stage = i.stage})
+					text_log_add("quests", "Quest Received: " + tr(scenedata.quests[i.value].stages[i.stage].name) + ". ")
+			'complete_quest':
+				for k in game_progress.active_quests:
+					if k.code == i.value:
+						game_progress.active_quests.erase(k)
+						text_log_add("quests","Quest Completed: " + tr(scenedata.quests[k.code].stages[k.stage].name) + ". ")
+						break
+				game_progress.completed_quests.append(i.value)
+			'complete_active_location':
+				input_handler.remove_location(input_handler.active_location.id)
+			'complete_event':
+				pass
+			'reputation':
+				var data = world_gen.get_faction_from_code(i.name)
+				var guild = game_world.areas[data.area].factions[data.code]
+				guild.reputation = input_handler.math(i.operant, guild.reputation, i.value)
+				guild.totalreputation = input_handler.math(i.operant, guild.totalreputation, i.value)
+			'decision':
+				if !game_progress.decisions.has(i.value):
+					game_progress.decisions.append(i.value)
+			'screen_black_transition':
+				core_animations.BlackScreenTransition(i.value)
+			'start_combat':
+				input_handler.current_enemy_group = i.value
+				input_handler.get_spec_node(input_handler.NODE_COMBATPOSITIONS)
+			'start_quest_combat':
+				globals.StartQuestCombat(i.value)
+			'make_quest_location':
+				world_gen.make_quest_location(i.value)
+			'remove_quest_location':
+				input_handler.remove_location(i.value)
+			'set_music':
+				input_handler.SetMusic(i.value)
+			'lose_game':
+				input_handler.PlaySound('transition_sound')
+				globals.return_to_main_menu()
+
+func checkreqs(array):
+	var check = true
+	for i in array:
+		if i.has('orflag'):
+			check = check or valuecheck(i)
+		else:
+			check = check and valuecheck(i)
+	return check
+
+func valuecheck(dict):
+	if !dict.has('type'): return true
+	match dict['type']:
+		"no_check":
+			return true
+		"has_money":
+			return game_res.if_has_money(dict['value'])
+#		"has_property":
+#			return if_has_property(dict['prop'], dict['value'])
+		"has_hero":
+			return game_party.if_has_hero(dict['name'])
+		"has_material":
+			return game_res.if_has_material(dict['material'], dict.operant, dict['value'])
+		"date":
+			if variables.no_event_wait_time: return true
+			return input_handler.operate(dict.operant, game_globals.date, dict.value)
+		'hour':
+			if variables.no_event_wait_time: return true
+			return input_handler.operate(dict.operant, game_globals.hour, dict.value)
+		"gamestart":
+			return game_globals.newgame
+		"has_upgrade":
+			return game_res.if_has_upgrade(dict.name, dict.value)
+		"main_progress":
+			return game_progress.if_has_progress(dict.value, dict.operant)
+		"area_progress":
+			return game_progress.if_has_area_progress(dict.value, dict.operant, dict.area)
+		"decision":
+			return game_progress.decisions.has(dict.name) == dict.value
+		"has_multiple_decisions": 
+			var counter = 0
+			for i in dict.decisions:
+				if game_progress.decisions.has(i):
+					counter += 1
+			return input_handler.operate(dict.operant, counter, dict.value)
+		"quest_stage":
+			return game_progress.if_quest_stage(dict.name, dict.value, dict.operant)
+		"quest_completed":
+			return game_progress.completed_quests.has(dict.name)
+		"party_level":
+			return game_party.if_party_level(dict.operant, dict.value)
+		"hero_level":
+			if game_party.if_has_hero(dict.name) == false:
+				return false
+			else:
+				return game_party.if_hero_level(dict.name, dict.operant, dict.value)
+		"has_items":
+			return game_res.if_has_items(dict.name, dict.operant, dict.value)
+		"has_free_items":
+			return game_res.if_has_free_items(dict.name, dict.operant, dict.value)
+		'disabled':
+			return false
+		'master_check':
+			var master_char = game_party.get_master()
+			if master_char == null:
+				return false
+			else:
+				return master_char.checkreqs(dict.value)
+		'active_character_checks':
+			var character = input_handler.active_character
+			if character == null:return false
+			return character.checkreqs(dict.value)
+		'master_is_beast':
+			return game_party.if_master_is_beast(dict.value)
+		'unique_character_at_mansion':
+			var character = game_party.get_unique_slave(dict.value)
+			if character == null:return false
+			return character.checkreqs([{code = 'is_free', check = true}])
+		'has_money_for_scene_slave':
+			return game_res.money >= input_handler.scene_characters[dict.value].calculate_price()
+		'random':
+			return globals.rng.randf()*100 <= dict.value
+		'dialogue_seen':
+			return input_handler.operate(dict.operant, game_progress.seen_dialogues.has(dict.value), true)
+		'dialogue_selected':
+			return input_handler.operate(dict.operant, game_progress.selected_dialogues.has(dict.value), true)
+		'active_quest_stage':
+			if game_progress.get_active_quest(dict.value) == null || dict.has('stage') == false:
+				if dict.has('state') && dict.state == false:
+					return true
+				else:
+					return false
+			if dict.has('state') && dict.state == false:
+				return game_progress.get_active_quest(dict.value).stage != dict.stage
+			else:
+				return game_progress.get_active_quest(dict.value).stage == dict.stage
+		'faction_reputation':
+			var data = world_gen.get_faction_from_code(dict.code)
+			var guild = game_world.areas[data.area].factions[data.code]
+			return input_handler.operate(dict.operant, guild.totalreputation, dict.value)
+		'group_size':#not sure about this implementation instead of area - party approach
+			var counter = 0
+			for i in game_party.characters.values():
+				if i.location == input_handler.active_location.id:
+					counter += 1
+			return input_handler.operate(dict.operant, counter, dict.value)
+		'location_has_specific_slaves': 
+			var counter = 0
+			for i in game_party.characters.values():
+				if i.check_location(dict.location) && i.checkreqs(dict.reqs) == true && !i.has_profession('master'):
+					counter += 1
+			return counter >= dict.value
 

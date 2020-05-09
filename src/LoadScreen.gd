@@ -64,7 +64,7 @@ func update_progress():
 
 func set_new_scene(scene_resource):
 	current_scene = scene_resource.instance()
-	globals.CurrentScene = current_scene
+	input_handler.CurrentScene = current_scene
 	get_node("/root").add_child(current_scene)
 	get_node("/root").remove_child(self)
 	globals.emit_signal("scene_changed")

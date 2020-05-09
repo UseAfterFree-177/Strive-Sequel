@@ -7,10 +7,10 @@ var recipes = []
 #warning-ignore-all:return_value_discarded
 
 func _ready():
-	globals.AddPanelOpenCloseAnimation($NumberSelect)
+	input_handler.AddPanelOpenCloseAnimation($NumberSelect)
 	$NumberSelect/NumberConfirm.connect("pressed", self, "confirm_craft")
 	$NumberSelect/HSlider.connect("value_changed", self, "number_change")
-	globals.AddPanelOpenCloseAnimation($NumberSelect/MaterialSelect)
+	input_handler.AddPanelOpenCloseAnimation($NumberSelect/MaterialSelect)
 	
 	for i in [$NumberSelect/MaterialSetupPanel/Part1, $NumberSelect/MaterialSetupPanel/Part2, $NumberSelect/MaterialSetupPanel/Part3]:
 		i.connect("pressed", self, 'choosematerial', [i])
@@ -45,15 +45,15 @@ var filtercategories = {
 func open():
 	show()
 	for i in craftcategories:
-		$categories.get_node(i).visible = state.checkreqs(craftcategories[i].reqs)
+		$categories.get_node(i).visible = game_res.checkreqs(craftcategories[i].reqs)
 	if craft_category != null:
 		select_category(craft_category)
 	input_handler.ActivateTutorial('crafting')
 
 func clear():
 	craft_category = null
-	globals.ClearContainer($CraftScheldue/VBoxContainer)
-	globals.ClearContainer($CraftSelect/VBoxContainer)
+	input_handler.ClearContainer($CraftScheldue/VBoxContainer)
+	input_handler.ClearContainer($CraftSelect/VBoxContainer)
 
 func select_category(category):
 	craft_category = category
@@ -68,10 +68,10 @@ func select_category(category):
 	rebuild_scheldue()
 
 func rebuild_scheldue():
-	globals.ClearContainer($CraftScheldue/VBoxContainer)
+	input_handler.ClearContainer($CraftScheldue/VBoxContainer)
 	
-	for i in state.craftinglists[craft_category]:
-		var newnode = globals.DuplicateContainerTemplate($CraftScheldue/VBoxContainer)
+	for i in game_res.craftinglists[craft_category]:
+		var newnode = input_handler.DuplicateContainerTemplate($CraftScheldue/VBoxContainer)
 		var recipe = Items.recipes[i.code]
 		var item = Items[recipe.resultitemtype + 'list'][recipe.resultitem]
 		newnode.get_node("icon").texture = item.icon
@@ -81,14 +81,14 @@ func rebuild_scheldue():
 		newnode.connect("pressed",self,'confirm_cancel_craft', [i])
 		newnode.get_node("progress").text = str(floor(i.workunits)) + "/" + str(i.workunits_needed)
 		newnode.arraydata = i
-		newnode.parentnodearray = state.craftinglists[craft_category]
+		newnode.parentnodearray = game_res.craftinglists[craft_category]
 		newnode.target_node = self
 		newnode.target_function = 'rebuild_scheldue'
 	
 
 func rebuild_recipe_list():
 	var array = []
-	globals.ClearContainer($CraftSelect/VBoxContainer)
+	input_handler.ClearContainer($CraftSelect/VBoxContainer)
 	
 	for i in $filter.get_children():
 		i.hide()
@@ -96,7 +96,7 @@ func rebuild_recipe_list():
 	$filter/all.show()
 	
 	for i in Items.recipes.values():
-		if i.worktype != craft_category || state.checkreqs(i.unlockreqs) == false:
+		if i.worktype != craft_category || globals.checkreqs(i.unlockreqs) == false:
 			continue
 		if item_filter == 'all':
 			array.append(i)
@@ -127,7 +127,7 @@ func rebuild_recipe_list():
 	array.sort_custom(self, 'sort_craft_list')
 	
 	for i in array:
-		var newbutton = globals.DuplicateContainerTemplate($CraftSelect/VBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($CraftSelect/VBoxContainer)
 		var item
 		if i.resultitemtype == 'item':
 			item = Items.itemlist[i.resultitem]
@@ -142,13 +142,13 @@ func rebuild_recipe_list():
 		
 		if i.crafttype == 'basic':
 			for k in i.items:
-				var newnode = globals.DuplicateContainerTemplate(newbutton.get_node("HBoxContainer"))
+				var newnode = input_handler.DuplicateContainerTemplate(newbutton.get_node("HBoxContainer"))
 				var recipeitem = Items.itemlist[k]
 				globals.connecttempitemtooltip(newnode, recipeitem, 'geartemplate')
 				newnode.texture = recipeitem.icon
 				newnode.get_node("Label").text = str(i.items[k])
 			for k in i.materials:
-				var newnode = globals.DuplicateContainerTemplate(newbutton.get_node("HBoxContainer"))
+				var newnode = input_handler.DuplicateContainerTemplate(newbutton.get_node("HBoxContainer"))
 				var recipeitem = Items.materiallist[k]
 				globals.connectmaterialtooltip(newnode,recipeitem,'')
 				newnode.texture = recipeitem.icon
@@ -156,14 +156,14 @@ func rebuild_recipe_list():
 		elif i.crafttype == 'modular':
 			newbutton.get_node("icon").material = load("res://assets/ItemShader.tres").duplicate()
 			for k in item.parts:
-				var newnode = globals.DuplicateContainerTemplate(newbutton.get_node("HBoxContainer"))
+				var newnode = input_handler.DuplicateContainerTemplate(newbutton.get_node("HBoxContainer"))
 				var partdata = Items.Parts[k]
 				newnode.texture = partdata.icon
 				newnode.hint_tooltip = "Materials required for: " + tr(partdata.name)
 				newnode.get_node("Label").text = str(item.parts[k])
 		
 		
-		var progressnode = globals.DuplicateContainerTemplate(newbutton.get_node("HBoxContainer"))
+		var progressnode = input_handler.DuplicateContainerTemplate(newbutton.get_node("HBoxContainer"))
 		progressnode.texture = load("res://assets/images/gui/craftgui/Time.png")
 		progressnode.get_node("Label").text = str(i.workunits)
 		progressnode.hint_tooltip = 'Progress required per craft'
@@ -214,7 +214,7 @@ func confirm_craft():
 	data.workunits_needed = selected_item.workunits
 	data.materials = selected_item.items.duplicate()
 	data.resources_taken = false
-	state.craftinglists[list].append(data)
+	game_res.craftinglists[list].append(data)
 	if selected_item.crafttype == 'modular':
 		data.partdict = partdict.duplicate()
 	
@@ -230,7 +230,7 @@ func confirm_cancel_craft(entry):
 
 func cancel_item_craft():
 	var entry = cancelentry
-	state.craftinglists[craft_category].erase(entry)
+	game_res.craftinglists[craft_category].erase(entry)
 	select_category(craft_category)
 
 var itemtemplate
@@ -282,7 +282,7 @@ func selectcraftitem(item):
 
 
 func choosematerial(button):
-	globals.ClearContainer($NumberSelect/MaterialSelect/Container/VBoxContainer)
+	input_handler.ClearContainer($NumberSelect/MaterialSelect/Container/VBoxContainer)
 	$NumberSelect/MaterialSelect.show()
 	chosenpartbutton = button
 	var part = button.get_meta('part')
@@ -292,7 +292,7 @@ func choosematerial(button):
 	$NumberSelect/MaterialSelect/PartLabel.text = text
 	
 	for i in Items.materiallist.values():
-		var tempmaterial = state.materials[i.code]
+		var tempmaterial = game_res.materials[i.code]
 		if !i.has("parts") || tempmaterial < 1:
 			continue
 		if i.parts.has(part):
@@ -304,9 +304,9 @@ func choosematerial(button):
 			var parttext = '[center]' + tr(i.name) + '[/center]\n'
 			for k in i.parts[part]:
 				if Items.itemlist[itemtemplate].itemtype == 'armor':
-					parttext += globals.statdata[k].name + ": " +  str(float(i.parts[part][k])/2) + ", "
+					parttext += statdata.statdata[k].name + ": " +  str(float(i.parts[part][k])/2) + ", "
 				else:
-					parttext += globals.statdata[k].name + ": " +  str(i.parts[part][k]) + ", "
+					parttext += statdata.statdata[k].name + ": " +  str(i.parts[part][k]) + ", "
 			parttext = parttext.substr(0, parttext.length()-2)
 			newbutton.get_node("Label").bbcode_text = parttext
 			globals.connecttexttooltip(newbutton, '[center]' + i.name + "[/center]\n" + i.descript)
@@ -386,7 +386,7 @@ func CreateItem():
 	#$NumberSelect/CreateItem.disabled = true
 	enditem.substractitemcost()
 	var time = 1.5
-	input_handler.SmoothValueAnimation($NumberSelect/CraftProgress, time, 0, 100)
+	core_animations.SmoothValueAnimation($NumberSelect/CraftProgress, time, 0, 100)
 	yield(get_tree().create_timer(time), 'timeout')
 	$NumberSelect/CraftProgress.value = 0
 	input_handler.SystemMessage(tr("ITEMCREATED") +": " + enditem.name)

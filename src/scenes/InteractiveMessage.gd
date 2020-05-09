@@ -10,7 +10,7 @@ var previous_text = ''
 func open(scene, not_save = false):
 	if scene.has("variations"):
 		for i in scene.variations:
-			if state.checkreqs(i.reqs):
+			if globals.checkreqs(i.reqs):
 				open(i)
 				break
 		
@@ -20,7 +20,7 @@ func open(scene, not_save = false):
 	current_scene = scene
 	hold_selection = true
 	if scene.has("common_effects"): 
-		state.common_effects(scene.common_effects)
+		globals.common_effects(scene.common_effects)
 	if typeof(scene.text) == TYPE_STRING:
 		scene.text = [{text = scene.text, reqs = []}]
 	
@@ -32,10 +32,10 @@ func open(scene, not_save = false):
 	$RichTextLabel.modulate.a = 0
 	$ScrollContainer.modulate.a = 0
 	if scene.tags.has("blackscreen_transition_common"):
-		input_handler.BlackScreenTransition(1)
+		core_animations.BlackScreenTransition(1)
 		yield(get_tree().create_timer(1), "timeout")
 	elif scene.tags.has("blackscreen_transition_slow"):
-		input_handler.BlackScreenTransition(2)
+		core_animations.BlackScreenTransition(2)
 		yield(get_tree().create_timer(2), "timeout")
 	
 	if scene.has("character") == false:
@@ -48,7 +48,7 @@ func open(scene, not_save = false):
 			#$ImagePanel/SceneImage.texture = load("res://assets/images/scenes/image_wip.png")
 	else:
 		if $CharacterImage.texture == images.sprites[scene.character] == false:
-			input_handler.UnfadeAnimation($CharacterImage,0.5)
+			core_animations.UnfadeAnimation($CharacterImage,0.5)
 		$ImagePanel.hide()
 		$CharacterImage.texture = images.sprites[scene.character]
 		$CharacterImage.show()
@@ -56,7 +56,7 @@ func open(scene, not_save = false):
 	
 	if self.visible == false:
 		self.visible = true
-		input_handler.UnfadeAnimation(self, 0.2)
+		core_animations.UnfadeAnimation(self, 0.2)
 		$RichTextLabel.bbcode_text = ''
 		previous_text = ''
 		yield(get_tree().create_timer(0.2), "timeout")
@@ -70,12 +70,12 @@ func open(scene, not_save = false):
 	for i in scenetext:
 		if i.has("previous_dialogue_option") && typeof(i.previous_dialogue_option) != TYPE_ARRAY:
 			i.previous_dialogue_option = [i.previous_dialogue_option]
-		if (i.has("previous_dialogue_option") && !previous_dialogue_option in i.previous_dialogue_option) || !state.checkreqs(i.reqs):
+		if (i.has("previous_dialogue_option") && !previous_dialogue_option in i.previous_dialogue_option) || !globals.checkreqs(i.reqs):
 			continue
-		if state.seen_dialogues.has(i.text) == false && not_save == false:
-			state.seen_dialogues.append(i.text)
+		if game_progress.seen_dialogues.has(i.text) == false && not_save == false:
+			game_progress.seen_dialogues.append(i.text)
 		if i.has("bonus_effects"):
-			state.common_effects(i.bonus_effects)
+			globals.common_effects(i.bonus_effects)
 		newtext += tr(i.text)
 	scenetext = newtext
 	scenetext = tr(scenetext)
@@ -85,17 +85,17 @@ func open(scene, not_save = false):
 		scenetext = scenetext.replace("[areaname]", input_handler.active_area.name)
 		scenetext = scenetext.replace("[locationtypename]", input_handler.active_location.classname)
 	if scene.tags.has("master_translate"):
-		if state.get_master() == null:
+		if game_party.get_master() == null:
 			print("master_not_found")
 			return
-		scenetext = state.get_master().translate(scenetext)
+		scenetext = game_party.get_master().translate(scenetext)
 	if scene.tags.has("active_character_translate"):
 		scenetext = input_handler.active_character.translate(scenetext)
 	if scene.tags.has("scene_character_translate"):
 		scenetext = input_handler.scene_characters[0].translate(scenetext.replace("[scnchar","["))
-	input_handler.UnfadeAnimation($RichTextLabel,1)
-	input_handler.UnfadeAnimation($ScrollContainer,1)
-	globals.ClearContainer($ScrollContainer/VBoxContainer)
+	core_animations.UnfadeAnimation($RichTextLabel,1)
+	core_animations.UnfadeAnimation($ScrollContainer,1)
+	input_handler.ClearContainer($ScrollContainer/VBoxContainer)
 	if scene.tags.has("scene_characters_sell"):#
 		var counter = 0
 		var text = ''
@@ -112,15 +112,15 @@ func open(scene, not_save = false):
 	var options = scene.options
 	for i in options:
 		#yield(get_tree(), 'idle_frame')
-		if i.has('remove_after_first_use') && state.selected_dialogues.has(i.text):
+		if i.has('remove_after_first_use') && game_progress.selected_dialogues.has(i.text):
 			continue
 		var disable = false
-		if state.checkreqs(i.reqs) == false:
+		if globals.checkreqs(i.reqs) == false:
 			if i.has('not_hide') == true:
 				disable = true
 			else:
 				continue
-		var newbutton = globals.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
 		newbutton.get_node("Label").bbcode_text = tr(i.text)
 		newbutton.get_node("hotkey").text = str(counter)
 		yield(get_tree(), 'idle_frame')
@@ -139,7 +139,7 @@ func open(scene, not_save = false):
 		elif scene.tags.has("skill_event") && !i.code == 'cancel_skill_usage':
 			newbutton.connect("pressed", input_handler.active_character, 'use_social_skill', [i.code, input_handler.target_character])
 		elif scene.tags.has("custom_effect"):
-			newbutton.connect('pressed', globals.custom_effects, i.code)
+			newbutton.connect('pressed', ResourceScripts.singletones.custom_effects, i.code)
 		elif scene.tags.has("dialogue_scene") && !i.code in ['close','quest_fight']:
 			newbutton.connect('pressed', self, 'dialogue_next', [i.code, i.dialogue_argument])
 		else:
@@ -154,7 +154,7 @@ func open(scene, not_save = false):
 			match i.type:
 				'next_dialogue':
 					newbutton.get_node("Label").bbcode_text = globals.TextEncoder("{color=yellow|"+newbutton.get_node("Label").bbcode_text +"}")
-		if state.selected_dialogues.has(i.text):
+		if game_progress.selected_dialogues.has(i.text):
 			newbutton.get_node("Label").bbcode_text = globals.TextEncoder("{color=gray_text_dialogue|"+newbutton.get_node("Label").bbcode_text +"}")
 		
 		if i.has('disabled') && i.disabled == true:
@@ -175,10 +175,10 @@ func complete_skirmish():
 	close()
 
 func update_scene_characters():
-	globals.ClearContainer($EventCharacters/VBoxContainer)
-	globals.ClearContainer($PlayerCharacters/VBoxContainer)
+	input_handler.ClearContainer($EventCharacters/VBoxContainer)
+	input_handler.ClearContainer($PlayerCharacters/VBoxContainer)
 	for i in input_handler.scene_characters:
-		var newbutton = globals.DuplicateContainerTemplate($EventCharacters/VBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($EventCharacters/VBoxContainer)
 		newbutton.get_node("Label").text = i.get_short_name()
 		newbutton.get_node('icon').texture = i.get_icon()
 		globals.connectslavetooltip(newbutton, i)
@@ -197,7 +197,7 @@ func add_chest_options(scene):
 	var chest_data = input_handler.scene_loot
 	var text = "\n\nChest Lock: " +  str(chest_data.lock.type) 
 	if chest_data.lock.type != 'none':
-		text += "\nDifficulty: " + input_handler.lock_difficulty(chest_data.lock.difficulty)
+		text += "\nDifficulty: " + custom_text.lock_difficulty(chest_data.lock.difficulty)
 	scene.text.append({text = text, reqs = []})
 	if chest_data.lock.type == 'none':
 		scene.options.insert(0,{code = 'open_chest', reqs = [], text = "DIALOGUECHESTOPEN"})
@@ -244,7 +244,7 @@ func select_option(number):
 			button.emit_signal("pressed")
 
 func close(transition = false):
-	input_handler.FadeAnimation(self, 0.2)
+	core_animations.FadeAnimation(self, 0.2)
 	yield(get_tree().create_timer(0.2), "timeout")
 	hide()
 	if transition == false:
@@ -267,21 +267,13 @@ func recruit_from_scene(order = 0):
 	recruit()
 
 func recruit():
-	if state.characters.size() >= state.get_pop_cap():
-		if state.get_pop_cap() < variables.max_population_cap:
+	if game_party.characters.size() >= game_res.get_pop_cap():
+		if game_res.get_pop_cap() < variables.max_population_cap:
 			input_handler.SystemMessage("You don't have enough rooms")
 		else:
 			input_handler.SystemMessage("Population limit reached")
 		return
-	var person = input_handler.active_character
-	if variables.instant_travel == false:
-		person.travel_target = {area = '', location = 'mansion'}
-		person.travel_time = input_handler.active_area.travel_time + input_handler.active_location.travel_time
-		person.work = 'travel'
-		person.location = 'travel'
-	else:
-		person.location = 'mansion'
-	state.add_slave(person)
+	input_handler.active_character.recruit()
 	close()
 
 func create_location_recruit(args):
@@ -298,26 +290,26 @@ func inspect_active_character():
 	#input_handler.get_spec_node(input_handler.NODE_SLAVEPANEL, [input_handler.active_character])
 
 func inspect_character_child():
-	input_handler.ShowSlavePanel(state.babies[input_handler.active_character.pregnancy.baby])
+	input_handler.ShowSlavePanel(game_party.babies[input_handler.active_character.pregnancy.baby])
 	#input_handler.get_spec_node(input_handler.NODE_SLAVEPANEL, [state.babies[input_handler.active_character.pregnancy.baby]])
 
 func keepbaby():
 	var node = input_handler.get_spec_node(input_handler.NODE_TEXTEDIT) #input_handler.GetTextEditNode()
-	var person = state.babies[input_handler.active_character.pregnancy.baby]
+	var person = game_party.babies[input_handler.active_character.pregnancy.baby]
 	person.get_random_name()
 	node.open(self, 'set_baby_name', person.name)
 
 func removebaby():
 	close()
-	state.babies[input_handler.active_character.pregnancy.baby].is_active = false
-	state.babies.erase(input_handler.active_character.pregnancy.baby)
+	game_party.babies[input_handler.active_character.pregnancy.baby].is_active = false
+	game_party.babies.erase(input_handler.active_character.pregnancy.baby)
 	input_handler.active_character.pregnancy.baby = null
 
 func set_baby_name(text):
-	var person = state.babies[input_handler.active_character.pregnancy.baby]
+	var person = game_party.babies[input_handler.active_character.pregnancy.baby]
 	person.name = text
 	person.surname = input_handler.active_character.surname
-	state.add_slave(person, true)
+	game_party.add_slave(person, true)
 	var mother = characters_pool.get_char_by_id(person.relatives.mother)
 	if mother == null:
 		person.set_slave_category('slave')

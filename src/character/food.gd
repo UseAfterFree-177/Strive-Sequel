@@ -54,8 +54,8 @@ func get_food():
 	for j in ['high','med','low']:
 		for i in food_filter[j]:
 			var food = Items.materiallist[i]
-			if state.materials[i] >= food_consumption:
-				state.materials[i] -= food_consumption
+			if game_res.materials[i] >= food_consumption:
+				game_res.materials[i] -= food_consumption
 				eaten = true
 			if eaten == true:
 				if food.tags.has(food_love):
@@ -88,4 +88,4 @@ func get_food():
 		starvation = true
 		parent.add_stat('obedience', -75)
 		parent.hp -= 25
-		state.text_log_add('food', parent.get_short_name() + ": has no food.")
+		globals.text_log_add('food', parent.get_short_name() + ": has no food.")

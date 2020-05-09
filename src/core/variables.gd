@@ -57,7 +57,36 @@ var system_messages = {
 	
 }
 
+var hexcolordict = {
+	red = '#ff5e5e',
+	yellow = "#ffff00",
+	brown = "#8B572A",
+	gray = "#4B4B4B",
+	gray_text_dialogue = "#90d4aa",
+	green = '#00b700',
+	white = '#ffffff',
+	aqua = '#24ffdb',
+	factor1 = '#ff5e5e',
+	factor2 = '#f6922a',
+	factor3 = '#4dff83',
+	factor4 = '#13a40d',
+	factor5 = '#25b8ff',
+	factor6 = '#bc53ff',
+	levelup_text_color = "#10ff10",
+}
 
+var textcodedict = { #not used for some reason...
+	color = {start = '[color=', end = '[/color]'},
+	url = {start = '[url=',end = '[/url]'}
+}
+
+var gearlist = ['chest', 'gloves', 'boots', 'rhand', 'lhand', 'neck', 'ring1', 'ring2']
+#var punishcategories = ['spanking', 'whipping', 'nippleclap', 'clitclap', 'nosehook', 'mashshow', 'facesit', 'afacesit', 'grovel']
+
+var LocalizationFolder = "res://localization/"
+#var state
+
+var userfolder = 'user://'
 
 #mode for applying absolute random damage mod
 const relative_random_add = true

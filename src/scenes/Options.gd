@@ -9,8 +9,8 @@ func _ready():
 		i.get_node("CheckBox").connect('pressed', self, 'mutepressed', [i.get_node("CheckBox")])
 	$TabContainer/Graphics/fullscreen.connect("pressed",self,"togglefullscreen")
 	$CloseButton.connect("pressed",self,'close')
-	$TabContainer/Graphics/fullscreen.pressed = globals.globalsettings.fullscreen
-	$TabContainer/Graphics/factors.pressed = globals.globalsettings.factors_as_words
+	$TabContainer/Graphics/fullscreen.pressed = input_handler.globalsettings.fullscreen
+	$TabContainer/Graphics/factors.pressed = input_handler.globalsettings.factors_as_words
 	$TabContainer/Gameplay/VBoxContainer/malerate.connect("value_changed", self, 'male_rate_change')
 	$TabContainer/Gameplay/VBoxContainer/futarate.connect("value_changed", self, "futa_rate_change")
 	
@@ -18,10 +18,10 @@ func _ready():
 	
 	for i in ['furry','furry_multiple_nipples', 'futa_balls', 'turn_based_time_flow', 'show_full_consent']:
 		get_node("TabContainer/Gameplay/" + i).connect("pressed", self, "gameplay_rule", [i])
-		get_node("TabContainer/Gameplay/" + i).pressed = globals.globalsettings[i]
+		get_node("TabContainer/Gameplay/" + i).pressed = input_handler.globalsettings[i]
 	
 	for i in cheats:
-		var newbutton = globals.DuplicateContainerTemplate($TabContainer/debug/ScrollContainer/VBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($TabContainer/debug/ScrollContainer/VBoxContainer)
 		newbutton.pressed = variables.get(i)
 		newbutton.text = i
 		newbutton.connect("pressed", self, 'cheat_toggle', [i, newbutton])
@@ -29,39 +29,39 @@ func _ready():
 
 func open():
 	show()
-	male_rate_change(globals.globalsettings.malechance)
-	futa_rate_change(globals.globalsettings.futachance)
+	male_rate_change(input_handler.globalsettings.malechance)
+	futa_rate_change(input_handler.globalsettings.futachance)
 	
 	for i in $TabContainer/Audio/VBoxContainer.get_children():
-		i.value = globals.globalsettings[i.name+'vol']
-		i.get_node("CheckBox").pressed = globals.globalsettings[i.name+'mute']
+		i.value = input_handler.globalsettings[i.name+'vol']
+		i.get_node("CheckBox").pressed = input_handler.globalsettings[i.name+'mute']
 		i.editable = !i.get_node("CheckBox").pressed
 
 func togglefullscreen():
-	globals.globalsettings.fullscreen = $TabContainer/Graphics/fullscreen.pressed
-	OS.window_fullscreen = globals.globalsettings.fullscreen
-	if globals.globalsettings.fullscreen == false:
+	input_handler.globalsettings.fullscreen = $TabContainer/Graphics/fullscreen.pressed
+	OS.window_fullscreen = input_handler.globalsettings.fullscreen
+	if input_handler.globalsettings.fullscreen == false:
 		OS.window_position = Vector2(0,0)
 
 func soundsliderchange(value,name):
 	if value <= -39:
 		value = -80
-	globals.globalsettings[name+'vol'] = value
+	input_handler.globalsettings[name+'vol'] = value
 	if name == 'sound':
 		input_handler.PlaySound("menu_open")
 	updatesounds()
 
 func mutepressed(node):
 	var name = node.get_parent().name
-	globals.globalsettings[name + 'mute'] = node.pressed
+	input_handler.globalsettings[name + 'mute'] = node.pressed
 	node.get_parent().editable = !node.pressed
 	updatesounds()
 
 func updatesounds():
 	var counter = 0
 	for i in ['master','music','sound']:
-		AudioServer.set_bus_mute(counter, globals.globalsettings[i+'mute'])
-		AudioServer.set_bus_volume_db(counter, globals.globalsettings[i+'vol'])
+		AudioServer.set_bus_mute(counter, input_handler.globalsettings[i+'mute'])
+		AudioServer.set_bus_volume_db(counter, input_handler.globalsettings[i+'vol'])
 		counter += 1
 
 
@@ -73,18 +73,18 @@ func cheat_toggle(i, button):
 
 func male_rate_change(value):
 	$TabContainer/Gameplay/VBoxContainer/malerate.value = value
-	globals.globalsettings.malechance = value
+	input_handler.globalsettings.malechance = value
 	var text = 'Male generation chance: ' + str(value) + "%"
 	$TabContainer/Gameplay/VBoxContainer/malerate/Label.text = text
 
 func futa_rate_change(value):
 	$TabContainer/Gameplay/VBoxContainer/futarate.value = value
-	globals.globalsettings.futachance = value
+	input_handler.globalsettings.futachance = value
 	var text = 'Futa generation chance: ' + str(value) + "%"
 	$TabContainer/Gameplay/VBoxContainer/futarate/Label.text = text
 
 func gameplay_rule(rule):
-	globals.globalsettings[rule] = get_node("TabContainer/Gameplay/" + rule).pressed
+	input_handler.globalsettings[rule] = get_node("TabContainer/Gameplay/" + rule).pressed
 
 func toggle_factors():
-	globals.globalsettings.factors_as_words = $TabContainer/Graphics/factors.pressed
+	input_handler.globalsettings.factors_as_words = $TabContainer/Graphics/factors.pressed

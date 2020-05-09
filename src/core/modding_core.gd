@@ -2,8 +2,8 @@ extends Node
 #3.1 version for data modding
 #script modding to be added in 3.2 version 
 
-var modconfig_pass = "user://mods.ini"
-var modfolder_pass = "user://mods"
+var modconfig_path = "user://mods.ini"
+var modfolder_path = "user://mods"
 
 var mods_list = [] #name, data_file
 var mod_tables = {} #table, mod
@@ -32,14 +32,14 @@ func process_script_mods():
 
 func get_mods_list():
 	var f := File.new()
-	if !f.file_exists(modconfig_pass) : 
-		f.open(modconfig_pass, File.WRITE)
+	if !f.file_exists(modconfig_path) : 
+		f.open(modconfig_path, File.WRITE)
 		var tres = []
 		f.store_line(to_json(tres))
 		f.close()
 		mods_list.clear()
 		return
-	f.open(modconfig_pass, File.READ)
+	f.open(modconfig_path, File.READ)
 	var tres = f.get_as_text()
 	f.close()
 	mods_list = parse_json(tres)
@@ -48,7 +48,7 @@ func get_mods_list():
 func save_mod_list():
 	check_avail()
 	var f:= File.new()
-	f.open(modconfig_pass, File.WRITE)
+	f.open(modconfig_path, File.WRITE)
 	f.store_line(to_json(mods_list))
 	f.close()
 
@@ -61,10 +61,10 @@ func check_avail():
 func get_avail_mods():
 	var res = []
 	var d := Directory.new()
-	if !d.dir_exists(modfolder_pass): 
-		d.make_dir(modfolder_pass)
+	if !d.dir_exists(modfolder_path): 
+		d.make_dir(modfolder_path)
 		return res
-	d.open(modfolder_pass)
+	d.open(modfolder_path)
 	d.list_dir_begin(true, true)
 	var temppath = d.get_next()
 	while temppath != "":
@@ -154,7 +154,7 @@ func process_data_file(path : String, file: String, tablename : String):
 	process_images_dir(tablename, 'i_sprites', images.sprites)
 	#adding audio data is not added
 	#until runtime loading of audio would be tested and fixed
-	process_dir(tablename, 'statdata', globals.statdata)
+	process_dir(tablename, 'statdata', statdata.statdata)
 	#tutorial data is not avaliable for now
 	#process_dir(tablename, 'effects', .effect_table)
 	process_dir(tablename, 'w_factions', world_gen.factiondata)

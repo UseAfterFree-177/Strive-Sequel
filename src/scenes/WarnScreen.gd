@@ -9,7 +9,7 @@ func _ready():
 func Accept():
 	hide()
 	input_handler.SetMusic("intro")
-	globals.globalsettings.warnseen = true
+	input_handler.globalsettings.warnseen = true
 
 func Quit():
 	get_parent().quit()

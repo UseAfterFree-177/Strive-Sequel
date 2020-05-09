@@ -16,12 +16,12 @@ func open(character, category, triggernode, triggerfunction):
 		for i in person.skills.combat_skills:
 			skillarray.append(Skilldata.Skilllist[i])
 	
-	globals.ClearContainer($ScrollContainer/VBoxContainer)
-	var newbutton = globals.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
+	input_handler.ClearContainer($ScrollContainer/VBoxContainer)
+	var newbutton = input_handler.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
 	newbutton.get_node("Label").text = "Clear"
 	newbutton.connect("pressed",self,"select", [null])
 	for i in skillarray:
-		newbutton = globals.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
+		newbutton = input_handler.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
 		newbutton.get_node('icon').texture = i.icon
 		newbutton.get_node("Label").text = i.name
 		newbutton.connect("pressed", self, "select", [i.code])

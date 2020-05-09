@@ -8,7 +8,7 @@ func _ready():
 func build_world():
 	for i in lands:
 		make_area(i)
-		state.area_order.append(lands[i].code)
+		game_world.area_order.append(lands[i].code)
 
 var backgrounds = {
 	aliron = load("res://assets/images/backgrounds/Aliron.png"),
@@ -172,7 +172,7 @@ var lands = {
 
 func make_area(code):
 	var areadata = lands[code].duplicate(true)
-	state.areas[areadata.code] = areadata
+	game_world.areas[areadata.code] = areadata
 	areadata.population = round(rand_range(areadata.population[0],areadata.population[1]))
 	areadata.quests = {global = {}}
 	areadata.questlocations = {}
@@ -187,16 +187,16 @@ func make_area(code):
 	for i in areadata.starting_locations:
 		var location = make_location(i, areadata)
 		areadata.locations[location.id] = location
-		state.location_links[location.id] = {area = code, category = 'locations'} 
+		game_world.location_links[location.id] = {area = code, category = 'locations'} 
 		input_handler.active_location = location
 	areadata.factions = {}
 	areadata.quests.factions = {}
 	areadata.shop = {}
 	update_area_shop(areadata)
 	if areadata.has('capital_name'):
-		state.capitals.append(areadata.capital_name)
+		game_world.capitals.append(areadata.capital_name)
 		areadata.capital = {}
-		state.location_links[areadata.capital_name] = {name = areadata.capital_name, area = areadata.code, type = 'capital', travel_time = 0, category = 'capital'}
+		game_world.location_links[areadata.capital_name] = {name = areadata.capital_name, area = areadata.code, type = 'capital', travel_time = 0, category = 'capital'}
 		areadata.capital[areadata.capital_name] = {name = areadata.capital_name, area = areadata.code, type = 'capital', travel_time = 0, category = 'capital'}
 	for i in areadata.guilds:
 		make_guild(i, areadata)
@@ -204,15 +204,15 @@ func make_area(code):
 	#update_guilds(areadata)
 
 func get_area_from_location_code(code):
-	var data = state.location_links[code]
-	return state.areas[data.area]
+	var data = game_world.location_links[code]
+	return game_world.areas[data.area]
 
 func get_location_from_code(code):
-	var data = state.location_links[code]
-	return state.areas[data.area][data.category][code]
+	var data = game_world.location_links[code]
+	return game_world.areas[data.area][data.category][code]
 
 func get_faction_from_code(code):
-	return state.factions[code]
+	return game_world.factions[code]
 
 func update_area_shop(area):
 	area.shop.clear()
@@ -426,7 +426,7 @@ func make_guild(code, area):
 		make_slave_for_guild(guilddatatemplate)
 		data.slavenumber -= 1
 	
-	state.factions[guilddatatemplate.code] = {code = guilddatatemplate.code, name = guilddatatemplate.name, area = guilddatatemplate.area}
+	game_world.factions[guilddatatemplate.code] = {code = guilddatatemplate.code, name = guilddatatemplate.name, area = guilddatatemplate.area}
 	
 	area.factions[guilddatatemplate.code] = guilddatatemplate
 
@@ -454,9 +454,9 @@ func make_quest_for_guild(guilddatatemplate, difficulty):
 	var newquest = make_quest(guilddatatemplate.questpool[difficulty][randi()%guilddatatemplate.questpool[difficulty].size()])
 	newquest.source = guilddatatemplate.code
 	newquest.area = guilddatatemplate.area
-	newquest.travel_time = state.areas[guilddatatemplate.area].travel_time + round(randf()*6)
+	newquest.travel_time = game_world.areas[guilddatatemplate.area].travel_time + round(randf()*6)
 	newquest.difficulty = difficulty
-	state.areas[newquest.area].quests.factions[newquest.source][newquest.id] = newquest
+	game_world.areas[newquest.area].quests.factions[newquest.source][newquest.id] = newquest
 
 func make_settlement(code, area):
 	var settlement = locations[code].duplicate(true)
@@ -464,12 +464,12 @@ func make_settlement(code, area):
 	settlement.travel_time = round(rand_range(3,8))
 	var text = locationnames[settlement.name+"1"][randi()%locationnames[settlement.name + "1"].size()] + locationnames[settlement.name+"2"][randi()%locationnames[settlement.name + "2"].size()]
 	settlement.name = text
-	settlement.id = "L" + str(state.locationcounter)
+	settlement.id = "L" + str(game_world.locationcounter)
 	settlement.group = {}
 	settlement.type = 'settlement'
 	settlement.levels = {}
 	settlement.shop = {}
-	state.locationcounter += 1
+	game_world.locationcounter += 1
 	if settlement.has('background_pool'):
 		settlement.background = settlement.background_pool[randi()%settlement.background_pool.size()]
 		settlement.erase("background_pool")
@@ -534,7 +534,7 @@ func make_settlement(code, area):
 	
 	
 	area.locations[settlement.id] = settlement
-	state.location_links[settlement.id] = {area = area.code, category = 'locations'} 
+	game_world.location_links[settlement.id] = {area = area.code, category = 'locations'} 
 
 var locations = {
 	settlement_small = {
@@ -589,7 +589,7 @@ func make_location(code, area):
 	if location.has('singlename'):
 		text = location.singlename
 	location.name = text
-	location.id = "L" + str(state.locationcounter)
+	location.id = "L" + str(game_world.locationcounter)
 	location.travel_time = round(rand_range(1,4))
 	location.code = code
 	var levelnumber = round(rand_range(location.levels[0], location.levels[1]))
@@ -615,7 +615,7 @@ func make_location(code, area):
 		location.scriptedevents.append({trigger = 'finish_combat', event = 'custom_event', args = 'event_dungeon_complete_loot_easy', reqs = [{code = 'level', value = location.levels.size(), operant = 'gte'}, {code = 'stage', value = location.levels["L"+str(location.levels.size())].stages-1, operant = 'gte'}]})
 	
 	#location.scriptedevents.append({trigger = 'complete_location', event = 'finish_quest_dungeon', reqs = [], args = {}})
-	state.locationcounter += 1
+	game_world.locationcounter += 1
 	location.erase('difficulties')
 	return location
 
@@ -648,13 +648,13 @@ func update_guilds(area):
 				if quest.time_limit < 0:
 					fail_quest(quest)
 			else:
-				if quest.state == 'complete' || int(state.date) % 7 == 0:
+				if quest.state == 'complete' || int(game_globals.date) % 7 == 0:
 					cleararray.append(quest.id)
 					#area.quests.factions[faction].erase(quest.id)
 		for i in cleararray:
 			area.quests.factions[faction].erase(i)
 	
-	if int(state.date) % 7 == 0:
+	if int(game_globals.date) % 7 == 0:
 		for i in area.factions.values():
 			for k in i.slaves:
 				characters_pool.get_char_by_id(k).is_active = false
@@ -665,13 +665,13 @@ func update_guilds(area):
 			fill_faction_quests(faction, area.code)
 
 func update_locations():
-	for i in state.areas.values():
+	for i in game_world.areas.values():
 		for j in i.locations.values():
 			for k in j.events:
 				j.events[k] -= 1
 
 func fill_faction_quests(faction, area):
-	var areadata = state.areas[area]
+	var areadata = game_world.areas[area]
 	var factiondata = areadata.factions[faction]
 	
 	#get existing quests data
@@ -689,8 +689,8 @@ func fail_quest(quest):
 	for i in quest.requirements:
 		if i.code in ['complete_location','complete_dungeon']:
 			input_handler.return_characters_from_location(i.location)
-			state.areas[i.area].locations.erase(i.location)
-			state.areas[i.area].questlocations.erase(i.location)
+			game_world.areas[i.area].locations.erase(i.location)
+			game_world.areas[i.area].questlocations.erase(i.location)
 
 
 var questdata = {
@@ -1080,8 +1080,8 @@ func make_quest(questcode):
 	var template = questdata[questcode].duplicate(true)#array[randi()%array.size()]
 	var data = quest_template.duplicate(true)
 	
-	data.id = "Q" + str(state.questcounter)
-	state.questcounter += 1
+	data.id = "Q" + str(game_progress.questcounter)
+	game_progress.questcounter += 1
 	data.code = template.code
 	data.name = template.name
 	data.descript = template.descript
@@ -1109,9 +1109,9 @@ func make_quest(questcode):
 			tempdata.statreqs = []
 			for i in tempdata.mandatory_conditions:
 				if i.code == 'sex':
-					if i.value.has('male') && globals.globalsettings.malechance <= 10:
+					if i.value.has('male') && input_handler.globalsettings.malechance <= 10:
 						i.value.erase("male")
-					if i.value.has("female") && globals.globalsettings.malechance + globals.globalsettings.futachance >= 90:
+					if i.value.has("female") && input_handler.globalsettings.malechance + input_handler.globalsettings.futachance >= 90:
 						i.value.rase("female")
 				if typeof(i.value) == TYPE_ARRAY:
 					i.value = i.value[randi()%i.value.size()] 
@@ -1196,11 +1196,11 @@ func take_quest(quest, area):
 			location.questid = quest.id
 			i.location = location.id
 			i.area = area.code
-			state.location_links[location.id] = {area = area.code, category = 'questlocations'}
+			game_world.location_links[location.id] = {area = area.code, category = 'questlocations'}
 
 func find_location_from_req(req):
 	var location = null
-	if state.areas[req.area].questlocation.has(req.location):
+	if game_world.areas[req.area].questlocation.has(req.location):
 		location = req.location
 	return location
 
@@ -1209,15 +1209,15 @@ func make_quest_location(code):
 	var locationdata = make_location(code, data.area)
 	locationdata.id = code
 	locationdata.travel_time = round(rand_range(data.travel_time[0], data.travel_time[1]))
-	var area = state.areas[data.area]
+	var area = game_world.areas[data.area]
 	area.questlocations[locationdata.id] = locationdata
-	state.location_links[locationdata.id] = {area = data.area, category = 'questlocations'} 
+	game_world.location_links[locationdata.id] = {area = data.area, category = 'questlocations'} 
 	input_handler.active_location = locationdata
 
 func make_repeatable_quest_location(quest,area,req):
 	var locationdata = {}
-	locationdata.id = "L" + str(state.locationcounter)
-	state.locationcounter += 1
+	locationdata.id = "L" + str(game_world.locationcounter)
+	game_world.locationcounter += 1
 	locationdata = make_location(req.type, area)
 	req.locationname = locationdata.name
 	match req.code:
@@ -1268,7 +1268,7 @@ func make_chest_loot(chest):
 				var tempitem = i.name
 				var amount = round(rand_range(i.min, i.max))
 				if Items.materiallist.has(tempitem):
-					globals.AddOrIncrementDict(dict.materials, {tempitem : amount})
+					input_handler.AddOrIncrementDict(dict.materials, {tempitem : amount})
 				if Items.itemlist.has(tempitem):
 					var item = Items.itemlist[tempitem]
 					match item.type:
@@ -1289,7 +1289,7 @@ func make_chest_loot(chest):
 						if k.type != 'food' && i.grade.has(k.tier) && !k.tags.has('no_random'):
 							array.append(k.code)
 					tempdict = {array[randi()%array.size()] : round(rand_range(i.min, i.max))}
-				globals.AddOrIncrementDict(dict.materials, tempdict)
+				input_handler.AddOrIncrementDict(dict.materials, tempdict)
 			'usable':
 				var array = []
 				for k in Items.itemlist.values():

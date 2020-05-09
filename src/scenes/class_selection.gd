@@ -12,14 +12,14 @@ func _ready():
 	
 	$ClassPanel/Unlock.connect('pressed', self, 'unlock_class')
 	$CheckBox.connect("pressed", self, "checkbox_locked")
-	globals.AddPanelOpenCloseAnimation($ClassPanel)
+	input_handler.AddPanelOpenCloseAnimation($ClassPanel)
 
 func open(tempperson, tempmode = 'normal'):
 	person = tempperson
 	mode = tempmode
 	current_class = null
 	show()
-	globals.ClearContainer($ScrollContainer/GridContainer)
+	input_handler.ClearContainer($ScrollContainer/GridContainer)
 	
 	var array = []
 	for i in Skilldata.professions.values():
@@ -32,7 +32,7 @@ func open(tempperson, tempmode = 'normal'):
 	array.sort_custom(self, 'sort_classes')
 	
 	for i in array:
-		var newbutton = globals.DuplicateContainerTemplate($ScrollContainer/GridContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($ScrollContainer/GridContainer)
 		newbutton.get_node('icon').texture = i.icon
 		var name = i.name
 		if i.has('altname') && person.checkreqs(i.altnamereqs):
@@ -43,7 +43,7 @@ func open(tempperson, tempmode = 'normal'):
 			newbutton.disabled = true
 		newbutton.get_node('name').text = name
 		newbutton.connect('pressed',self,"open_class", [i.code])
-		globals.connecttexttooltip(newbutton, globals.descriptions.get_class_details(person, i, true, true))
+		globals.connecttexttooltip(newbutton, ResourceScripts.singletones.descriptions.get_class_details(person, i, true, true))
 
 func checkbox_locked():
 	open(person, mode)
@@ -62,7 +62,7 @@ func sort_classes(first,second):
 
 func open_class(classcode):
 	var tempclass = Skilldata.professions[classcode]
-	var text = globals.descriptions.get_class_details(person, tempclass)
+	var text = ResourceScripts.singletones.descriptions.get_class_details(person, tempclass)
 	current_class = classcode
 	$ClassPanel.open(classcode,person)
 	if person.has_profession(tempclass.code):
@@ -74,9 +74,9 @@ func open_class(classcode):
 		$ClassPanel/Unlock.disabled = person.base_exp < person.get_next_class_exp()
 		$ClassPanel/Unlock.show()
 		if person.base_exp < person.get_next_class_exp():
-			$ClassPanel/ExpLabel.set("custom_colors/font_color", globals.hexcolordict.red)
+			$ClassPanel/ExpLabel.set("custom_colors/font_color", variables.hexcolordict.red)
 		else:
-			$ClassPanel/ExpLabel.set("custom_colors/font_color", globals.hexcolordict.green)
+			$ClassPanel/ExpLabel.set("custom_colors/font_color", variables.hexcolordict.green)
 	
 	$ClassPanel/ExpLabel.text = text
 
@@ -90,6 +90,6 @@ func unlock_class():
 	yield(get_tree().create_timer(0.2),"timeout")
 	input_handler.ShowSlavePanel(person)
 	#input_handler.get_spec_node(input_handler.NODE_SLAVEPANEL, [person])
-	state.text_log_add("class", person.translate("[name] has acquired new Class: " + Skilldata.professions[current_class].name))
+	globals.text_log_add("class", person.translate("[name] has acquired new Class: " + Skilldata.professions[current_class].name))
 	input_handler.PlaySound("ding")
 	input_handler.update_slave_list()

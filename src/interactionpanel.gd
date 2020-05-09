@@ -600,11 +600,11 @@ func _ready():
 	
 	
 	var i = 4
-	if globals.CurrentScene == null:
+	if input_handler.CurrentScene == null:
 		globals.AddItemToInventory(globals.CreateUsableItem("alcohol"))
 		globals.AddItemToInventory(globals.CreateUsableItem("aphrodisiac"))
 		globals.AddItemToInventory(globals.CreateUsableItem("strong_pheromones", 10))
-		state.materials.rope = 1
+		game_res.materials.rope = 1
 		while i > 0:
 			i -= 1
 			createtestdummy()
@@ -773,7 +773,7 @@ func startsequence(actors):
 		newmember.consent = person.consent
 		newmember.name = person.get_short_name()
 		newmember.sex_traits = person.sex_traits + person.negative_sex_traits
-		if person.eqipment.gear.crotch != null && state.items[person.eqipment.gear.crotch].itembase == 'strapon':
+		if person.equipment.gear.crotch != null && game_res.items[person.equipment.gear.crotch].itembase == 'strapon':
 			newmember.strapon = true
 		newmember.lewd = 100
 		for i in newmember.sex_traits:
@@ -803,7 +803,7 @@ func startsequence(actors):
 	var args = []
 	for i in participants:
 		array.append(i.person.id)
-		if i.person == state.get_master():
+		if i.person == game_party.get_master():
 			args.append("partner_is_master")
 	input_handler.get_person_for_chat(array, 'sex_start', args)
 
@@ -962,7 +962,7 @@ func rebuildparticipantslist():
 				newnode.modulate = Color(1,0.5,0.5)
 			
 			var tooltiptext 
-			if globals.globalsettings.show_full_consent:
+			if input_handler.globalsettings.show_full_consent:
 				tooltiptext = i.getname() + " (Minimum Consent: [color=aqua]"+ str(i.consent_level) + "[/color])\nActor Consent: [color=aqua]"+ str(giver_consent) +"[/color] (" + giver_name + ") "  +"\n" + giver_text + "\nReceiver Consent: [color=aqua]" + str(taker_consent) + "[/color] ("+ taker_name + ') '  + "\n" + taker_text
 			else:
 				tooltiptext = i.getname() 
@@ -1234,12 +1234,12 @@ func count_action_consent(action, giver, taker):
 		taker_text += "Is virgin: -10\n"
 	
 	
-	if giver.person == state.get_master():
+	if giver.person == game_party.get_master():
 		giver_consent = 100
 		giver_text = "Maximum"
 		taker_consent += 5
 		taker_text += "Partner is " + taker.person.translate("[master]") + ": +5\n"
-	if taker.person == state.get_master():
+	if taker.person == game_party.get_master():
 		taker_consent = 100
 		taker_text = "Maximum"
 		giver_consent += 5
@@ -2176,7 +2176,7 @@ func endencounter():
 	for i in participants:
 		consenttext[i.person.id] = '\nParticipation: +1'
 		
-		i.person.lastsexday = state.date
+		i.person.lastsexday = game_globals.date
 		
 		i.person.lust += 20 + i.orgasms*5*i.person.sexuals_factor
 		i.consentgain += i.orgasms*2

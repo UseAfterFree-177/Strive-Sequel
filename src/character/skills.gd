@@ -111,21 +111,21 @@ func restore_skill_charge(code):
 		if social_skills_charges[code] <= 0:
 			social_cooldowns.erase(code)
 			social_skills_charges.erase(code)
-	if state.global_skills_used.has(code):
-		state.global_skills_used[code] -= 1
-		if state.global_skills_used[code] <= 0:
-			state.global_skills_used.erase(code)
+	if game_party.global_skills_used.has(code):
+		game_party.global_skills_used[code] -= 1
+		if game_party.global_skills_used[code] <= 0:
+			game_party.global_skills_used.erase(code)
 
 func use_social_skill(s_code, target):
 	var template = Skilldata.Skilllist[s_code]
 	if template.has('special'):
-		globals.custom_effects.call(template.special, self)
+		ResourceScripts.singletones.custom_effects.call(template.special, self)
 		return
 	if target != null:
 		var check = parent.check_skill_availability(s_code, target)
 		if check.check == false:
 			#input_handler.SystemMessage(check.descript)
-			state.text_log_add('skill',check.descript)
+			globals.text_log_add('skill',check.descript)
 			return
 	
 	social_cooldowns[s_code] = template.cooldown
@@ -147,10 +147,10 @@ func use_social_skill(s_code, target):
 				social_skills_charges[s_code] = 1
 		
 		if template.has("globallimit"):
-			if state.global_skills_used.has(template.code):
-				state.global_skills_used[template.code] += 1
+			if game_party.global_skills_used.has(template.code):
+				game_party.global_skills_used[template.code] += 1
 			else:
-				state.global_skills_used[template.code] = 1
+				game_party.global_skills_used[template.code] = 1
 		
 		input_handler.active_character = self
 		input_handler.target_character = target
@@ -167,7 +167,7 @@ func use_social_skill(s_code, target):
 	
 	#paying costs
 	if template.has('goldcost'):
-		state.money -= template.goldcost
+		game_res.money -= template.goldcost
 	parent.mp -= template.manacost
 	
 	if typeof(template.charges) == TYPE_INT && template.charges > 0 && variables.social_skill_unlimited_charges == false:
@@ -177,20 +177,20 @@ func use_social_skill(s_code, target):
 			social_skills_charges[s_code] = 1
 	
 	if template.has("globallimit"):
-		if state.global_skills_used.has(template.code):
-			state.global_skills_used[template.code] += 1
+		if game_party.global_skills_used.has(template.code):
+			game_party.global_skills_used[template.code] += 1
 		else:
-			state.global_skills_used[template.code] = 1
+			game_party.global_skills_used[template.code] = 1
 	
 	#calcuate 'all' receviers
 	var targ_targ = [target]
 	var targ_cast = [self]
 	var targ_all = []
-	for h_id in state.characters:
+	for h_id in game_party.characters:
 		if parent.id == h_id || target != null and target.id == h_id: continue
-		if state.characters[h_id].get_work() == 'travel':continue
-		if !parent.same_location_with(state.characters[h_id]): continue
-		targ_all.push_back(state.characters[h_id])
+		if game_party.characters[h_id].get_work() == 'travel':continue
+		if !parent.same_location_with(game_party.characters[h_id]): continue
+		targ_all.push_back(game_party.characters[h_id])
 	
 	#create s_skill and process triggers
 	var s_skill = S_Skill.new()
@@ -203,9 +203,9 @@ func use_social_skill(s_code, target):
 	s_skill.resolve_value(true)
 	s_skill.apply_random()
 	s_skill.setup_effects_final()
-	parent.process_skill_cast_event(s_skill, variables.TR_S_CAST)
+	parent.process_event(variables.TR_S_CAST, s_skill)
 	if target != null:
-		target.process_skill_cast_event(s_skill, variables.TR_S_TARGET)
+		target.process_event(variables.TR_S_TARGET, s_skill)
 	#assumption that no social skill will have more than 1 repeat or target_number 
 	#s_skill.calculate_dmg() not really needed
 	#to implement not fully described social chance-to-success system 
@@ -287,7 +287,7 @@ func use_social_skill(s_code, target):
 					tmp = h.stat_update(stat, i.value, true)
 					if i.is_drain: parent.stat_update(stat, -tmp)
 
-			effect_text += "\n" + h.get_short_name() + ", " + globals.statdata[stat].name
+			effect_text += "\n" + h.get_short_name() + ", " + statdata.statdata[stat].name
 			var maxstat = 100
 			if h.get_stat(stat+'max') != null:
 				maxstat = h.get_stat(stat + "max")
@@ -342,9 +342,9 @@ func use_social_skill(s_code, target):
 		
 	#postdamage triggers
 	s_skill.process_event(variables.TR_POSTDAMAGE)
-	parent.process_skill_cast_event(s_skill, variables.TR_POSTDAMAGE)
+	parent.process_event(variables.TR_POSTDAMAGE, s_skill)
 	if target != null:
-		target.process_skill_cast_event(s_skill, variables.TR_POSTDAMAGE)
+		target.process_event(variables.TR_POSTDAMAGE, s_skill)
 	
 	input_handler.update_slave_list()
 	input_handler.update_slave_panel()

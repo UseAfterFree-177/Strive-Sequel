@@ -241,7 +241,7 @@ func add_sex_trait(code):
 	if !sex_traits.has(code):
 		sex_traits.push_back(code)
 		var text = get_short_name() + ": " + "New Sexual Trait Acquired - " + Traitdata.sex_traits[code].name
-		state.text_log_add('char', text)
+		globals.text_log_add('char', text)
 
 func remove_sex_trait(code, absolute = true):
 	if absolute: unlocked_sex_traits.erase(code)
@@ -285,7 +285,7 @@ func fill_masternoun():
 			statlist.masternoun = tr('PROFMASTER').to_lower()
 		else:
 			statlist.masternoun = tr('PROFMASTERALT').to_lower()
-	elif state.get_master().get_stat('sex') == 'male':
+	elif game_party.get_master().get_stat('sex') == 'male':
 		statlist.masternoun = tr('PROFMASTER').to_lower()
 	else:
 		statlist.masternoun = tr('PROFMASTERALT').to_lower()
@@ -462,7 +462,7 @@ func setup_baby(mother, father):
 	pregdata.baby = parent.id
 	pregdata.duration = variables.pregduration
 	mother.set_stat('', pregdata.duplicate())
-	state.babies[parent.id] = parent
+	game_party.babies[parent.id] = parent
 
 func create(temp_race, temp_gender, temp_age):
 	
@@ -488,7 +488,7 @@ func create(temp_race, temp_gender, temp_age):
 	
 	get_sex_features()
 	
-	if globals.globalsettings.furry == false && statlist.race.find("Beastkin") >= 0:
+	if input_handler.globalsettings.furry == false && statlist.race.find("Beastkin") >= 0:
 		statlist.race = statlist.race.replace("Beastkin","Halfkin")
 	
 	get_racial_features()
@@ -497,9 +497,9 @@ func create(temp_race, temp_gender, temp_age):
 	
 	statlist.personality = variables.personality_array[randi()%variables.personality_array.size()]
 	
-	for i in globals.descriptions.bodypartsdata:
-		if globals.descriptions.bodypartsdata[i].has(statlist[i]):
-			if globals.descriptions.bodypartsdata[i][statlist[i]].bodychanges.size() > 0:
+	for i in ResourceScripts.singletones.descriptions.bodypartsdata:
+		if ResourceScripts.singletones.descriptions.bodypartsdata[i].has(statlist[i]):
+			if ResourceScripts.singletones.descriptions.bodypartsdata[i][statlist[i]].bodychanges.size() > 0:
 				apply_custom_bodychange(i, statlist[i])
 #	add_trait('core_trait')
 #	learn_c_skill('attack')
@@ -523,7 +523,7 @@ func get_racial_features():
 		else:
 			self.set(i, input_handler.weightedrandom(race_template.bodyparts[i]))
 	
-	if race_template.tags.has("multibreasts") && globals.globalsettings.furry_multiple_nipples == true:
+	if race_template.tags.has("multibreasts") && input_handler.globalsettings.furry_multiple_nipples == true:
 		statlist.multiple_tits = variables.furry_multiple_nipples_number
 	
 	parent.food.get_racial_features(statlist.race)
@@ -560,7 +560,7 @@ func get_sex_features():
 
 func apply_custom_bodychange(target, part):
 	statlist[target] = part
-	for i in globals.descriptions.bodypartsdata[target][part].bodychanges:
+	for i in ResourceScripts.singletones.descriptions.bodypartsdata[target][part].bodychanges:
 		if parent.checkreqs(i.reqs) == true:
 			var newvalue = i.value
 			if typeof(newvalue) == TYPE_ARRAY:
@@ -577,9 +577,9 @@ func get_random_race():
 	return input_handler.weightedrandom(array)
 
 func get_random_sex():
-	if randf()*100 <= globals.globalsettings.malechance:
+	if randf()*100 <= input_handler.globalsettings.malechance:
 		return 'male'
-	elif randf()*100 <= globals.globalsettings.futachance && globals.globalsettings.futa == true:
+	elif randf()*100 <= input_handler.globalsettings.futachance && input_handler.globalsettings.futa == true:
 		return 'futa'
 	else:
 		return 'female'
@@ -637,7 +637,7 @@ func get_body_image():
 		return load(statlist.body_image)
 
 func baby_transform():
-	var mother = state.characters[statlist.relatives.mother]
+	var mother = game_party.characters[statlist.relatives.mother]
 	statlist.name = 'Child of ' + mother.get_stat('name')
 	if mother.get_stat('surname') != '':
 		statlist.name += " " + mother.get_stat('surname')
@@ -701,7 +701,7 @@ func translate(text):
 	var tempmasternoun = statlist.masternoun
 	if tempmasternoun in ['master','mistress']:
 		if input_handler.meowingcondition(self) == true:tempmasternoun = 'myaster'
-		if state.get_master() != null && state.get_master().get_stat('sex') != 'male':
+		if game_party.get_master() != null && game_party.get_master().get_stat('sex') != 'male':
 			if input_handler.meowingcondition(self) == true:tempmasternoun = 'mewstress'
 	
 	text = text.replace("[master]", tempmasternoun)

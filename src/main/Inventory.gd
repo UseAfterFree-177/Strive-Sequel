@@ -87,17 +87,17 @@ func hide():
 	emit_signal("inventory_hidden")
 
 func buildinventory():
-	globals.ClearContainer(itemcontainer)
-	globals.ClearContainer($HiddenContainer/GridContainer)
+	input_handler.ClearContainer(itemcontainer)
+	input_handler.ClearContainer($HiddenContainer/GridContainer)
 	itemarray.clear()
-	for i in state.materials:
-		if state.materials[i] <= 0:
+	for i in game_res.materials:
+		if game_res.materials[i] <= 0:
 			continue
-		var newbutton = globals.DuplicateContainerTemplate(itemcontainer)
+		var newbutton = input_handler.DuplicateContainerTemplate(itemcontainer)
 		var material = Items.materiallist[i]
 		var type = get_item_category(material)
 		newbutton.get_node('Image').texture = material.icon
-		newbutton.get_node('Number').text = input_handler.transform_number(state.materials[i])
+		newbutton.get_node('Number').text = custom_text.transform_number(game_res.materials[i])
 		newbutton.get_node('Number').show()
 		newbutton.set_meta('type', type)
 		newbutton.get_node("Name").text = material.name
@@ -106,16 +106,16 @@ func buildinventory():
 		newbutton.set_meta("item", i)
 		newbutton.connect("pressed",self,'useitem', [i, 'material'])
 		itemarray.append(newbutton)
-	for i in state.items.values():
+	for i in game_res.items.values():
 		if i.owner != null:
 			continue
-		var newnode = globals.DuplicateContainerTemplate(itemcontainer)
+		var newnode = input_handler.DuplicateContainerTemplate(itemcontainer)
 		if i.durability != null:
 			newnode.get_node("Number").show()
-			newnode.get_node("Number").text = str(globals.calculatepercent(i.durability, i.maxdurability)) + '%'
+			newnode.get_node("Number").text = str(input_handler.calculatepercent(i.durability, i.maxdurability)) + '%'
 		if i.amount != null:
 			newnode.get_node("Number").show()
-			newnode.get_node("Number").text = input_handler.transform_number(i.amount)
+			newnode.get_node("Number").text = custom_text.transform_number(i.amount)
 		else:
 			newnode.get_node("Number").hide()
 		i.set_icon(newnode.get_node("Image"))
@@ -204,11 +204,11 @@ func rebuildinventory():
 					i.get_node("Number").text = str(item.amount)
 	if mode == 'character':
 		$GearPanel/BodyImage.texture = selectedhero.get_body_image()
-		for i in selectedhero.eqipment.gear:
-			if selectedhero.eqipment.gear[i] == null:
+		for i in selectedhero.equipment.gear:
+			if selectedhero.equipment.gear[i] == null:
 				$GearPanel.get_node(i + "/icon").texture = null
 			else:
-				var item = state.items[selectedhero.eqipment.gear[i]]
+				var item = game_res.items[selectedhero.equipment.gear[i]]
 				item.set_icon($GearPanel.get_node(i + "/icon"))
 		$StatsPanel.open(selectedhero)
 
@@ -225,7 +225,7 @@ func useitem(item, type):
 	if mode == null:
 		return
 	elif mode == 'character' && selectedhero != null:
-		if selectedhero.location != 'mansion':
+		if !selectedhero.check_location('mansion', true):
 			input_handler.SystemMessage("Can't use or equip items while away from Mansion.")
 			return
 		if type == 'gear':
@@ -304,7 +304,7 @@ func sellwindow(item, type):
 	$NumberSelectPanel/SpinBox.value = 0
 	if type == 'material':
 		var material = Items.Materials[item]
-		maxamount = state.materials[item]
+		maxamount = game_res.materials[item]
 		itemprice = material.price
 		amount = 1
 		text = tr("SELLCONFIRM") + " " + material.name + "?" 
@@ -328,9 +328,9 @@ func updateprice():
 
 func NumberConfirm():
 	if numbermode == 'sell':
-		state.money += amount*itemprice
+		game_res.money += amount*itemprice
 		if typeof(activeitem) == TYPE_STRING:
-			state.materials[activeitem] -= amount
+			game_res.materials[activeitem] -= amount
 		else:
 			activeitem.amount -= amount# (activeitem.id)
 	$NumberSelectPanel.hide()
@@ -349,28 +349,28 @@ func NumberMax():
 	updateprice()
 
 func show_equip_tooltip(slot):
-	if selectedhero.eqipment.gear[slot] == null:
+	if selectedhero.equipment.gear[slot] == null:
 		return
 	else:
-		var item = state.items[selectedhero.eqipment.gear[slot]]
+		var item = game_res.items[selectedhero.equipment.gear[slot]]
 		item.tooltip($GearPanel.get_node(slot))
 
 func unequip(slot):
-	if selectedhero.location != 'mansion':
+	if selectedhero.check_location('mansion', true):
 		input_handler.SystemMessage("Can't use or equip items while away from Mansion.")
 		return
-	if selectedhero.eqipment.gear[slot] != null:
-		selectedhero.unequip(state.items[selectedhero.eqipment.gear[slot]])
+	if selectedhero.equipment.gear[slot] != null:
+		selectedhero.unequip(game_res.items[selectedhero.equipment.gear[slot]])
 		#input_handler.GetItemTooltip().hide()
 		input_handler.get_spec_node(input_handler.NODE_ITEMTOOLTIP).hide()
 		input_handler.update_slave_panel()
 		buildinventory()
 
 func rebuild_characters():
-	globals.ClearContainer($CharacterPanel/ScrollContainer/VBoxContainer)
-	for id in state.character_order:
-		var i = state.characters[id]
-		var newnode = globals.DuplicateContainerTemplate($CharacterPanel/ScrollContainer/VBoxContainer)
+	input_handler.ClearContainer($CharacterPanel/ScrollContainer/VBoxContainer)
+	for id in game_party.character_order:
+		var i = game_party.characters[id]
+		var newnode = input_handler.DuplicateContainerTemplate($CharacterPanel/ScrollContainer/VBoxContainer)
 		newnode.get_node("Label").text = i.get_full_name()
 		if i == selectedhero: newnode.pressed = true
 		newnode.connect("pressed", self, "open", [{mode = 'character', person = i}])

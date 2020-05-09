@@ -34,15 +34,9 @@ var summons = [] #pos
 var activeaction
 var activeitem
 var activecharacter
+var customcursor = null
 
 var autoskill = null
-
-var cursors = {
-	default = load("res://assets/images/gui/universal/cursordefault.png"),
-	attack = load("res://assets/images/gui/universal/cursorfight.png"),
-	support = load("res://assets/images/gui/universal/cursorsupport.png"),
-	
-}
 
 var enemypaneltextures = {
 	normal = null,
@@ -95,12 +89,12 @@ func start_combat(newplayergroup, newenemygroup, background, music = 'battle1', 
 	hide()
 	$ItemPanel/debugvictory.visible = debug
 	if variables.combat_tests == false:
-		input_handler.BlackScreenTransition(0.5)
+		core_animations.BlackScreenTransition(0.5)
 		yield(get_tree().create_timer(0.5), 'timeout')
 	input_handler.emit_signal("CombatStarted", encountercode)
 	input_handler.ActivateTutorial("combat")
 	show()
-	globals.combat_node = self
+	input_handler.combat_node = self
 	turns = 0
 	$Combatlog/RichTextLabel.clear()
 	enemygroup.clear()
@@ -142,7 +136,7 @@ func FinishCombat(victory = true):
 		tchar.is_active = false
 	CombatAnimations.force_end()
 	hide()
-	globals.combat_node = null
+	input_handler.combat_node = null
 	if victory: input_handler.finish_combat()
 	else: input_handler.combat_defeat()
 
@@ -231,7 +225,7 @@ var rewardsdict
 func victory():
 	CombatAnimations.check_start()
 	if CombatAnimations.is_busy: yield(CombatAnimations, 'alleffectsfinished')
-	Input.set_custom_mouse_cursor(cursors.default)
+	Input.set_custom_mouse_cursor(images.cursors.default)
 	yield(get_tree().create_timer(0.5), 'timeout')
 	fightover = true
 	$Rewards/CloseButton.disabled = true
@@ -271,9 +265,9 @@ func victory():
 					counter = i[2]
 				while counter > 0:
 					if randf() <= i[1]:
-						globals.AddOrIncrementDict(loot, {i[0] : 1})
+						input_handler.AddOrIncrementDict(loot, {i[0] : 1})
 					counter -= 1
-				globals.AddOrIncrementDict(rewardsdict.materials, loot)
+				input_handler.AddOrIncrementDict(rewardsdict.materials, loot)
 			elif Items.itemlist.has(i[0]):
 				var itemtemp = Items.itemlist[i[0]]
 				var counter = 1
@@ -304,21 +298,21 @@ func victory():
 #					var newitem = globals.CreateUsableItem(j.code, round(rand_range(j.min, j.max)))
 #					rewardsdict.items.append(newitem)
 	
-	globals.ClearContainer($Rewards/ScrollContainer/HBoxContainer)
-	globals.ClearContainer($Rewards/ScrollContainer2/HBoxContainer)
+	input_handler.ClearContainer($Rewards/ScrollContainer/HBoxContainer)
+	input_handler.ClearContainer($Rewards/ScrollContainer2/HBoxContainer)
 	var exp_per_character = ceil(rewardsdict.xp/playergroup.size())
 	for i in playergroup.values():
 		var tchar = characters_pool.get_char_by_id(i)
 		var gained_exp = exp_per_character * tchar.get_stat('exp_mod')
 		tchar.xp_module.base_exp += gained_exp
-		var newbutton = globals.DuplicateContainerTemplate($Rewards/ScrollContainer2/HBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($Rewards/ScrollContainer2/HBoxContainer)
 		newbutton.texture = tchar.get_icon()
 		newbutton.get_node("name").text = tchar.get_short_name()
 		newbutton.get_node("amount").text = str(gained_exp)
 		if tchar.hp <= 0:
 			tchar.hp = 1
 			tchar.defeated = false
-#		var newbutton = globals.DuplicateContainerTemplate($Rewards/HBoxContainer/first)
+#		var newbutton = input_handler.DuplicateContainerTemplate($Rewards/HBoxContainer/first)
 #		if $Rewards/HBoxContainer/first.get_children().size() >= 5:
 #			$Rewards/HBoxContainer/first.remove_child(newbutton)
 #			$Rewards/HBoxContainer/second.add_child(newbutton)
@@ -343,25 +337,25 @@ func victory():
 	
 	$Rewards.visible = true
 	$Rewards.modulate.a = 0
-	input_handler.UnfadeAnimation($Rewards)
+	core_animations.UnfadeAnimation($Rewards)
 	$Rewards.set_meta("result", 'victory')
 	$Rewards/gold/Label.text = str("+") + str(rewardsdict.gold)
 	for i in rewardsdict.materials:
 		var item = Items.materiallist[i]
-		var newbutton = globals.DuplicateContainerTemplate($Rewards/ScrollContainer/HBoxContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($Rewards/ScrollContainer/HBoxContainer)
 		#newbutton.hide()
 		newbutton.texture = item.icon
 		newbutton.get_node("name").text = item.name
 		newbutton.get_node("amount").text = str(rewardsdict.materials[i])
-		state.materials[i] += rewardsdict.materials[i]
+		game_res.materials[i] += rewardsdict.materials[i]
 		globals.connectmaterialtooltip(newbutton, item)
 	for i in rewardsdict.items:
-		var newnode = globals.DuplicateContainerTemplate($Rewards/ScrollContainer/HBoxContainer)
+		var newnode = input_handler.DuplicateContainerTemplate($Rewards/ScrollContainer/HBoxContainer)
 		#newnode.hide()
 		newnode.texture = load(i.icon)
 		globals.AddItemToInventory(i)
 		newnode.get_node("name").text = i.name
-		globals.connectitemtooltip(newnode, state.items[globals.get_item_id_by_code(i.itembase)])
+		globals.connectitemtooltip(newnode, game_res.items[globals.get_item_id_by_code(i.itembase)])
 		if i.amount == null || i.amount == 0:
 			newnode.get_node("amount").visible = false
 		else:
@@ -390,7 +384,7 @@ func victory():
 func defeat():
 	CombatAnimations.check_start()
 	if CombatAnimations.is_busy: yield(CombatAnimations, 'alleffectsfinished')
-	Input.set_custom_mouse_cursor(cursors.default)
+	Input.set_custom_mouse_cursor(images.cursors.default)
 	fightover = true
 	FinishCombat(false)
 
@@ -642,8 +636,8 @@ func make_fighter_panel(fighter, spot):
 		panel.get_node("mplabel").show()
 	panel.set_meta('character',fighter)
 	panel.get_node("Icon").texture = fighter.get_icon()
-	panel.get_node("HP").value = globals.calculatepercent(fighter.hp, fighter.get_stat('hpmax'))
-	panel.get_node("MP").value = globals.calculatepercent(fighter.mp, fighter.get_stat('mpmax'))
+	panel.get_node("HP").value = input_handler.calculatepercent(fighter.hp, fighter.get_stat('hpmax'))
+	panel.get_node("MP").value = input_handler.calculatepercent(fighter.mp, fighter.get_stat('mpmax'))
 	panel.hp = fighter.hp
 	panel.update_hp_label(fighter.hp, 100.0)
 	panel.update_mp_label(fighter.mp, 100.0)
@@ -674,10 +668,12 @@ func FighterShowStats(fighter):
 func FighterMouseOver(fighter):
 	FighterShowStats(fighter)
 	if allowaction == true && (allowedtargets.enemy.has(fighter.position) || allowedtargets.ally.has(fighter.position)):
-		if fighter.combatgroup == 'enemy':
-			Input.set_custom_mouse_cursor(cursors.attack)
+		if customcursor != null:
+			Input.set_custom_mouse_cursor(images.cursors[customcursor])
+		elif fighter.combatgroup == 'enemy':
+			Input.set_custom_mouse_cursor(images.cursors.attack)
 		else:
-			Input.set_custom_mouse_cursor(cursors.support)
+			Input.set_custom_mouse_cursor(images.cursors.support)
 		var cur_targets = [];
 		cur_targets = CalculateTargets(Skilldata.Skilllist[activeaction], fighter); 
 		Stop_Target_Glow();
@@ -691,7 +687,7 @@ func FighterMouseOverFinish(fighter):
 	if variables.CombatAllyHpAlwaysVisible == false || fighter.combatgroup == 'enemy':
 		panel.get_node("hplabel").hide()
 		panel.get_node("mplabel").hide()
-	Input.set_custom_mouse_cursor(cursors.default)
+	Input.set_custom_mouse_cursor(images.cursors.default)
 	if !allowaction: return
 	Stop_Target_Glow()
 	for f in allowedtargets.enemy:
@@ -749,7 +745,7 @@ func buildplayergroup(group):
 		if int(i) > 6: break
 		if group[i] == null:
 			continue
-		var fighter = state.characters[group[i]] 
+		var fighter = game_party.characters[group[i]] 
 		fighter.combatgroup = 'ally'
 		battlefield[int(i)] = fighter.id
 		make_fighter_panel(fighter, i)
@@ -796,7 +792,7 @@ func use_skill(skill_code, caster, target):
 	
 	if caster.combatgroup == 'ally':
 		for i in skill.catalysts:
-			state.materials[i] -= skill.catalysts[i]
+			game_res.materials[i] -= skill.catalysts[i]
 		if skill.charges > 0:
 			if caster.combat_skill_charges.has(skill.code):
 				caster.combat_skill_charges[skill.code] += 1
@@ -1158,7 +1154,7 @@ func Highlight(pos, type):
 	var node = battlefieldpositions[pos].get_node("Character")
 	match type:
 		'selected':
-			input_handler.SelectionGlow(node)
+			core_animations.SelectionGlow(node)
 #		'target':
 #			input_handler.TargetGlow(node)
 #		'targetsupport':
@@ -1212,12 +1208,12 @@ func Off_Target_Glow ():
 		node.get_node('border').visible = false;
 
 func ClearSkillPanel():
-	globals.ClearContainer($SkillPanel/ScrollContainer/GridContainer)
+	input_handler.ClearContainer($SkillPanel/ScrollContainer/GridContainer)
 
 func RebuildSkillPanel():
 	ClearSkillPanel()
 	for i in activecharacter.skills.combat_skill_panel:
-		var newbutton = globals.DuplicateContainerTemplate($SkillPanel/ScrollContainer/GridContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($SkillPanel/ScrollContainer/GridContainer)
 		var skill = Skilldata.Skilllist[activecharacter.skills.combat_skill_panel[i]]
 		newbutton.get_node("Icon").texture = skill.icon
 		newbutton.get_node("manacost").text = str(skill.manacost)
@@ -1230,7 +1226,7 @@ func RebuildSkillPanel():
 			newbutton.get_node("Icon").material = load("res://assets/sfx/bw_shader.tres")
 			newbutton.get_node("cooldown").visible = true
 			newbutton.get_node("cooldown").text = str(activecharacter.skills.combat_cooldowns[skill.code])
-			newbutton.get_node("cooldown").set("custom_colors/font_color", globals.hexcolordict.yellow)
+			newbutton.get_node("cooldown").set("custom_colors/font_color", variables.hexcolordict.yellow)
 		if skill.charges > 0:
 			var leftcharges = skill.charges
 			if activecharacter.combat_skill_charges.has(skill.code):
@@ -1242,7 +1238,7 @@ func RebuildSkillPanel():
 				newbutton.get_node("Icon").material = load("res://assets/sfx/bw_shader.tres")
 				newbutton.get_node("cooldown").visible = true
 				newbutton.get_node("cooldown").text = str(activecharacter.skills.daily_cooldowns[skill.code])
-				newbutton.get_node("cooldown").set("custom_colors/font_color", globals.hexcolordict.red)
+				newbutton.get_node("cooldown").set("custom_colors/font_color", variables.hexcolordict.red)
 		if !activecharacter.checkreqs(skill.reqs):
 			newbutton.disabled = true
 			newbutton.get_node("Icon").material = load("res://assets/sfx/bw_shader.tres")
@@ -1254,7 +1250,7 @@ func RebuildSkillPanel():
 		globals.connectskilltooltip(newbutton, skill.code, activecharacter)
 
 func SelectSkill(skill):
-	Input.set_custom_mouse_cursor(cursors.default)
+	Input.set_custom_mouse_cursor(images.cursors.default)
 	skill = Skilldata.Skilllist[skill]
 	#need to add daily restriction check
 	if activecharacter.mp < skill.manacost || activecharacter.skills.combat_cooldowns.has(skill.code) :
@@ -1262,7 +1258,7 @@ func SelectSkill(skill):
 		call_deferred('SelectSkill', 'attack')
 		return
 	for i in skill.catalysts:
-		if state.materials[i] < skill.catalysts[i]:
+		if game_res.materials[i] < skill.catalysts[i]:
 			input_handler.SystemMessage("Missing catalyst: " + Items.materiallist[i].name)
 			call_deferred('SelectSkill', 'attack');
 			break
@@ -1276,6 +1272,8 @@ func SelectSkill(skill):
 	allowaction = true
 	if allowedtargets.ally.size() == 0 and allowedtargets.enemy.size() == 0:
 		checkwinlose();
+	if skill.has('cursor'): customcursor = skill.cursor
+	else: customcursor = null
 	if skill.target == 'self':
 		globals.closeskilltooltip()
 		activecharacter.selectedskill = activecharacter.get_skill_by_tag('default')
@@ -1286,12 +1284,12 @@ func RebuildItemPanel():
 	
 	ClearItemPanel()
 	
-	for i in state.items.values():
+	for i in game_res.items.values():
 		if i.itemtype == 'usable' && Items.itemlist[i.itembase].has('combat_effect'):
 			array.append(i)
 	
 	for i in array:
-		var newbutton = globals.DuplicateContainerTemplate($ItemPanel/ScrollContainer/GridContainer)
+		var newbutton = input_handler.DuplicateContainerTemplate($ItemPanel/ScrollContainer/GridContainer)
 		newbutton.get_node("Icon").texture = load(i.icon)
 		newbutton.get_node("Label").text = str(i.amount)
 		newbutton.set_meta('skill', i.useskill)
@@ -1299,7 +1297,7 @@ func RebuildItemPanel():
 		globals.connectitemtooltip(newbutton, i)
 
 func ClearItemPanel():
-	globals.ClearContainer($ItemPanel/ScrollContainer/GridContainer)
+	input_handler.ClearContainer($ItemPanel/ScrollContainer/GridContainer)
 
 func ActivateItem(item):
 	activeaction = Items.itemlist[item.code].combat_effect
@@ -1309,8 +1307,8 @@ func ActivateItem(item):
 
 func get_weapon_sound(caster):
 	var item = caster.equipment.gear.rhand
-	if state.items.has(item):
-		item = state.items[item]
+	if game_res.items.has(item):
+		item = game_res.items[item]
 	else:
 		item = null
 	if item == null:
