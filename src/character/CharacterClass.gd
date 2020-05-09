@@ -530,7 +530,7 @@ func decipher_single(ch):
 		'stat':
 			if typeof(i.value) == TYPE_ARRAY: i.value = calculate_number_from_string_array(i.value)
 			if i.stat.find("factor") > 0:
-				text2 += statdata.statdata[i.stat].name + ': ' + ResourceScripts.singletones.descriptions.factor_descripts[i.value] + " "
+				text2 += statdata.statdata[i.stat].name + ': ' + ResourceScripts.descriptions.factor_descripts[i.value] + " "
 			else:
 				text2 += statdata.statdata[i.stat].name + ': ' + str(i.value) + " "
 			match i.operant:
@@ -592,7 +592,7 @@ func make_description():
 	input_handler.text_characters.clear()
 	input_handler.text_characters.append(self)
 	#input_handler.active_character = self
-	return globals.TextEncoder(translate(ResourceScripts.singletones.descriptions.create_character_description(self)))
+	return globals.TextEncoder(translate(ResourceScripts.descriptions.create_character_description(self)))
 
 func show_race_description():
 	var race = get_stat('race')

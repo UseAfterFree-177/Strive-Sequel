@@ -119,7 +119,7 @@ func restore_skill_charge(code):
 func use_social_skill(s_code, target):
 	var template = Skilldata.Skilllist[s_code]
 	if template.has('special'):
-		ResourceScripts.singletones.custom_effects.call(template.special, self)
+		ResourceScripts.custom_effects.call(template.special, self)
 		return
 	if target != null:
 		var check = parent.check_skill_availability(s_code, target)

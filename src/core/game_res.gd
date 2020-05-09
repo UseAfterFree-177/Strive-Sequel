@@ -117,3 +117,9 @@ func update_materials(operant, material, value):
 #			globals.text_log_add('money',"Gold used: " + str(value))
 		'=':
 			materials[material] = value
+
+func get_item_id_by_code(itembase):
+	for item in items.values():
+		if item.itembase == itembase:
+			return item.id
+	return null

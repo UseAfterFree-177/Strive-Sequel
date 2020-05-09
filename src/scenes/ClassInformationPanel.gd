@@ -9,7 +9,7 @@ func open(classcode, person):
 	show()
 	
 	$TextureRect.texture = tempclass.icon
-	$TextureRect/name.text = ResourceScripts.singletones.descriptions.get_class_name(tempclass, person)
+	$TextureRect/name.text = ResourceScripts.descriptions.get_class_name(tempclass, person)
 	
 	input_handler.ClearContainer($SocialSkills/HBoxContainer)
 	input_handler.ClearContainer($CombatSkills/HBoxContainer)
@@ -18,15 +18,15 @@ func open(classcode, person):
 	$SocialLabel.visible = $SocialSkills.visible
 	$CombatSkills.visible = tempclass.combatskills.size() > 0
 	$CombatLabel.visible = $CombatLabel.visible
-	var text = ResourceScripts.singletones.descriptions.get_class_bonuses(person, tempclass) 
+	var text = ResourceScripts.descriptions.get_class_bonuses(person, tempclass) 
 	if text != '':
 		text += '\n' 
-	text += ResourceScripts.singletones.descriptions.get_class_traits(person, tempclass)
+	text += ResourceScripts.descriptions.get_class_traits(person, tempclass)
 	$bonus.bbcode_text = text
 	
 	text = "[center]"+tr('CLASSREQS')+"[/center]\n\n"
 	if tempclass.reqs.size() > 0:
-		text += ResourceScripts.singletones.descriptions.get_class_reqs(person, tempclass)
+		text += ResourceScripts.descriptions.get_class_reqs(person, tempclass)
 	else:
 		text += tr("REQSNONE")
 	$reqs.bbcode_text = text

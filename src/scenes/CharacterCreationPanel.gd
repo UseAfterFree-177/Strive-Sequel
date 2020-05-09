@@ -92,7 +92,7 @@ func open_class_list():
 		newbutton.get_node("name").text = tempclass.name
 		newbutton.connect('pressed', self, "select_class", [tempclass.code])
 		newbutton.connect('signal_RMB_release',input_handler,'show_class_info', [tempclass.code, person])
-		var text = ResourceScripts.singletones.descriptions.get_class_details(person, tempclass, true, true) + "\n\n{color=aqua|" + tr("CLASSRIGHTCLICKDETAILS") + "}"
+		var text = ResourceScripts.descriptions.get_class_details(person, tempclass, true, true) + "\n\n{color=aqua|" + tr("CLASSRIGHTCLICKDETAILS") + "}"
 		globals.connecttexttooltip(newbutton, text)
 		if person.checkreqs(tempclass.reqs) == false:
 			newbutton.disabled = true

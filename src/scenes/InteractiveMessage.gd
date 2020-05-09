@@ -139,7 +139,7 @@ func open(scene, not_save = false):
 		elif scene.tags.has("skill_event") && !i.code == 'cancel_skill_usage':
 			newbutton.connect("pressed", input_handler.active_character, 'use_social_skill', [i.code, input_handler.target_character])
 		elif scene.tags.has("custom_effect"):
-			newbutton.connect('pressed', ResourceScripts.singletones.custom_effects, i.code)
+			newbutton.connect('pressed', ResourceScripts.custom_effects, i.code)
 		elif scene.tags.has("dialogue_scene") && !i.code in ['close','quest_fight']:
 			newbutton.connect('pressed', self, 'dialogue_next', [i.code, i.dialogue_argument])
 		else:

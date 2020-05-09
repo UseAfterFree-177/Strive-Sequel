@@ -497,9 +497,9 @@ func create(temp_race, temp_gender, temp_age):
 	
 	statlist.personality = variables.personality_array[randi()%variables.personality_array.size()]
 	
-	for i in ResourceScripts.singletones.descriptions.bodypartsdata:
-		if ResourceScripts.singletones.descriptions.bodypartsdata[i].has(statlist[i]):
-			if ResourceScripts.singletones.descriptions.bodypartsdata[i][statlist[i]].bodychanges.size() > 0:
+	for i in ResourceScripts.descriptions.bodypartsdata:
+		if ResourceScripts.descriptions.bodypartsdata[i].has(statlist[i]):
+			if ResourceScripts.descriptions.bodypartsdata[i][statlist[i]].bodychanges.size() > 0:
 				apply_custom_bodychange(i, statlist[i])
 #	add_trait('core_trait')
 #	learn_c_skill('attack')
@@ -560,7 +560,7 @@ func get_sex_features():
 
 func apply_custom_bodychange(target, part):
 	statlist[target] = part
-	for i in ResourceScripts.singletones.descriptions.bodypartsdata[target][part].bodychanges:
+	for i in ResourceScripts.descriptions.bodypartsdata[target][part].bodychanges:
 		if parent.checkreqs(i.reqs) == true:
 			var newvalue = i.value
 			if typeof(newvalue) == TYPE_ARRAY:

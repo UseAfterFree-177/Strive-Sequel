@@ -65,14 +65,14 @@ func new_charcter_description(character):
 				text += tr("NOSEXDETAILSDESCRIPT")
 				add_no_sex_descript = true
 			continue
-		var charpart = character.get(i)
+		var charpart = character.get_stat(i)
 		if str(charpart) != '':
 			var newtext = ''
 			if bodypartsdata[i].has(charpart):
 				newtext = bodypartsdata[i][charpart].chardescript
-				if bodypartsdata[i][charpart].has('combine') && str(character.get(bodypartsdata[i][charpart].combine)) != '':
-					newtext = bodypartsdata[bodypartsdata[i][charpart].combine][str(charpart) + "_" + str(character.get(bodypartsdata[i][charpart].combine))].chardescript
-				elif bodypartsdata[i][charpart].has('combine') && character.get(bodypartsdata[i][charpart].combine) == '':
+				if bodypartsdata[i][charpart].has('combine') && str(character.get_stat(bodypartsdata[i][charpart].combine)) != '':
+					newtext = bodypartsdata[bodypartsdata[i][charpart].combine][str(charpart) + "_" + str(character.get_stat(bodypartsdata[i][charpart].combine))].chardescript
+				elif bodypartsdata[i][charpart].has('combine') && character.get_stat(bodypartsdata[i][charpart].combine) == '':
 					newtext = ''
 			elif bodypartsdata[i].has('default'):
 				newtext = bodypartsdata[i].default.chardescript
@@ -352,7 +352,7 @@ var bodypartsdata = {
 		grey = {code = 'grey', name = '', chardescript = '', bodychanges = []},
 		fair = {code = 'fair', name = '', chardescript = '', bodychanges = []},
 		olive = {code = 'olive', name = '', chardescript = '', bodychanges = []},
-		tan = {code = 'tan', name = '', chardescript = '', bodychanges = []},
+		'tan' : {code = 'tan', name = '', chardescript = '', bodychanges = []},
 		brown = {code = 'brown', name = '', chardescript = '', bodychanges = []},
 		dark = {code = 'dark', name = '', chardescript = '', bodychanges = []},
 		slime = {code = 'slime', name = '', chardescript = '', bodychanges = []},

@@ -208,8 +208,8 @@ func _input(event):
 			if CloseableWindowsArray.size() != 0:
 				CloseTopWindow()
 			else:
-				if globals.CurrentScene.name == 'mansion' && event.is_action("ESC"):
-					globals.CurrentScene.get_node("MenuPanel").open()
+				if CurrentScene.name == 'mansion' && event.is_action("ESC"):
+					CurrentScene.get_node("MenuPanel").open()
 	if event.is_action_released("F9"):
 		OS.window_fullscreen = !OS.window_fullscreen
 		input_handler.globalsettings.fullscreen = OS.window_fullscreen
@@ -218,9 +218,9 @@ func _input(event):
 	if CurrentScreen == 'mansion' && str(event.as_text().replace("Kp ",'')) in str(range(1,9)) && CloseableWindowsArray.size() == 0 && text_field_input == false:
 		if str(int(event.as_text())) in str(range(1,4)) && !event.is_pressed():
 			if input_handler.globalsettings.turn_based_time_flow == false:
-				globals.CurrentScene.changespeed(globals.CurrentScene.timebuttons[int(event.as_text())-1])
+				CurrentScene.changespeed(CurrentScene.timebuttons[int(event.as_text())-1])
 			else:
-				globals.CurrentScene.timeflowhotkey(int(event.as_text()))
+				CurrentScene.timeflowhotkey(int(event.as_text()))
 	elif CurrentScreen == 'scene' && str(event.as_text().replace("Kp ",'')) in str(range(1,9)):
 		get_tree().get_root().get_node("dialogue").select_option(int(event.as_text()))
 	if event.is_action_pressed('full_screen'):
@@ -697,7 +697,7 @@ func check_mouse_in_nodes(nodes):
 	var check = false
 	for i in nodes:
 		if weakref(i) != null:
-			if i.get_global_rect().has_point(globals.CurrentScene.get_global_mouse_position()):
+			if i.get_global_rect().has_point(CurrentScene.get_global_mouse_position()):
 				check = true
 	return check
 
@@ -870,8 +870,18 @@ func dir_contents(target):
 		print("An error occurred when trying to access the path.")
 
 func evaluate(input): #used to read strings as conditions when needed
+	#qickfix for moving charclass stat template
+	var res = ''
+	input = input.replace('  ', ' ')
+	var temp = input.split(' == ')
+	if temp[0].match("active_slave.*"): 
+		var temp1 = temp[0].split('.')
+		temp[0] = "%s.get_stat('%s')" % [temp1[0], temp1[1]]
+	if temp.size() > 1: res = "%s == %s" % [temp[0], temp[1]]
+	else: res = temp[0]
+	
 	var script = GDScript.new()
-	script.set_source_code("var active_slave\nfunc eval():\n\treturn " + input)
+	script.set_source_code("var active_slave\nfunc eval():\n\treturn " + res)
 	script.reload()
 	var obj = Reference.new()
 	obj.set_script(script)

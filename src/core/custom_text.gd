@@ -46,3 +46,28 @@ func transform_number(number):
 		number /= 1000.0
 	
 	return str(stepify(number, 0.1)) + array[magnitude]# % (num,[magnitude])
+
+func RomanNumberConvert(value):
+	var rval = ''
+	match value:
+		1:
+			rval = 'I'
+		2:
+			rval = 'II'
+		3:
+			rval = 'III'
+		4:
+			rval = 'IV'
+		5:
+			rval = 'V'
+		6:
+			rval = 'VI'
+		7:
+			rval = 'VII'
+		8:
+			rval = 'VIII' 
+		9:
+			rval = 'IX'
+		10:
+			rval = 'X'
+	return rval

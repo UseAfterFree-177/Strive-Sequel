@@ -43,7 +43,7 @@ func open(tempperson, tempmode = 'normal'):
 			newbutton.disabled = true
 		newbutton.get_node('name').text = name
 		newbutton.connect('pressed',self,"open_class", [i.code])
-		globals.connecttexttooltip(newbutton, ResourceScripts.singletones.descriptions.get_class_details(person, i, true, true))
+		globals.connecttexttooltip(newbutton, ResourceScripts.descriptions.get_class_details(person, i, true, true))
 
 func checkbox_locked():
 	open(person, mode)
@@ -62,7 +62,7 @@ func sort_classes(first,second):
 
 func open_class(classcode):
 	var tempclass = Skilldata.professions[classcode]
-	var text = ResourceScripts.singletones.descriptions.get_class_details(person, tempclass)
+	var text = ResourceScripts.descriptions.get_class_details(person, tempclass)
 	current_class = classcode
 	$ClassPanel.open(classcode,person)
 	if person.has_profession(tempclass.code):

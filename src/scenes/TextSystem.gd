@@ -254,7 +254,7 @@ func AdvanceScene():
 				if !debug:QuestSet(NewEffect.value, NewEffect.args)
 			'game':
 				ReceiveInput = false
-				if !debug: globals.CurrentScene.GameOverShow()
+				if !debug: input_handler.CurrentScene.GameOverShow()
 				StopEvent()
 			'stop':
 				StopEvent()

@@ -225,7 +225,7 @@ func update():
 			i.get_node("Label").text = str(floor(person.get_stat(i.name)))
 			continue
 		if input_handler.globalsettings.factors_as_words:
-			i.get_node("Label").text = ResourceScripts.singletones.descriptions.factor_descripts[int(floor(person.get_stat(i.name)))]
+			i.get_node("Label").text = ResourceScripts.descriptions.factor_descripts[int(floor(person.get_stat(i.name)))]
 			i.get_node("Label").set("custom_colors/font_color", variables.hexcolordict['factor'+str(int(floor(person.get_stat(i.name))))]) 
 		else:
 			i.get_node("Label").text = str(floor(person.get(i.name)))
@@ -295,11 +295,11 @@ func update():
 	for i in person.xp_module.professions:
 		var newnode = input_handler.DuplicateContainerTemplate($professions)
 		var prof = Skilldata.professions[i]
-		var name = ResourceScripts.singletones.descriptions.get_class_name(prof, person)
+		var name = ResourceScripts.descriptions.get_class_name(prof, person)
 		newnode.get_node("Label").text = name
 		newnode.texture = prof.icon
 		newnode.connect('signal_RMB_release',input_handler, 'show_class_info', [prof.code, person])
-		var temptext = "[center]"+ResourceScripts.singletones.descriptions.get_class_name(prof,person) + "[/center]\n"+ResourceScripts.singletones.descriptions.get_class_bonuses(person, prof) + ResourceScripts.singletones.descriptions.get_class_traits(person, prof)
+		var temptext = "[center]"+ResourceScripts.descriptions.get_class_name(prof,person) + "[/center]\n"+ResourceScripts.descriptions.get_class_bonuses(person, prof) + ResourceScripts.descriptions.get_class_traits(person, prof)
 		temptext += "\n\n{color=aqua|" + tr("CLASSRIGHTCLICKDETAILS") + "}"
 		globals.connecttexttooltip(newnode, temptext)
 	#input_handler.active_character = person

@@ -89,8 +89,8 @@ func _ready():
 	for i in statdata.worktoolnames:
 		statdata.worktoolnames[i] = tr("WORKTOOL" + i.to_upper())
 	
-	for i in ResourceScripts.singletones.descriptions.bodypartsdata:
-		for k in ResourceScripts.singletones.descriptions.bodypartsdata[i].values():
+	for i in ResourceScripts.descriptions.bodypartsdata:
+		for k in ResourceScripts.descriptions.bodypartsdata[i].values():
 			k.name = tr("BODYPART" + i.to_upper() + k.code.to_upper())
 #			text += k.name + ' = "' + k.code + '",\n'
 			k.chardescript = tr("BODYPART" + i.to_upper() + k.code.to_upper() + "DESCRIPT")
@@ -180,13 +180,8 @@ func AddItemToInventory(item, dont_duplicate = true):
 			game_res.items[item.id] = item
 			game_res.itemcounter += 1
 
-
 func get_item_id_by_code(itembase):
-	for item in game_res.items.values():
-		if item.itembase == itembase:
-			return item.id
-	return null
-
+	return game_res.get_item_id_by_code(itembase)
 
 func connecttexttooltip(node, text):
 	if node.is_connected("mouse_entered",self,'showtexttooltip'):
@@ -280,30 +275,6 @@ func loadimage(path):
 	var temptexture = ImageTexture.new()
 	temptexture.create_from_image(image)
 	return temptexture
-
-func RomanNumberConvert(value):
-	var rval = ''
-	match value:
-		1:
-			rval = 'I'
-		2:
-			rval = 'II'
-		3:
-			rval = 'III'
-		4:
-			rval = 'IV'
-		5:
-			rval = 'V'
-		6:
-			rval = 'VI'
-		7:
-			rval = 'VII'
-		8:
-			rval = 'VIII' 
-		9:
-			rval = 'IX'
-		10:
-			rval = 'X'
 
 
 func TextEncoder(text, node = null):
@@ -962,9 +933,9 @@ func remove_location(locationid):
 	area.questlocations.erase(location.id)
 	game_progress.completed_locations[location.id] = {name = location.name, id = location.id, area = area.code}
 	input_handler.update_slave_list()
-	if input_handler.active_location == location && globals.CurrentScene.get_node("Exploration").is_visible_in_tree():
-		globals.CurrentScene.get_node("Exploration").select_location('Aliron')
-		globals.CurrentScene.get_node("Exploration").build_accessible_locations()
+	if input_handler.active_location == location && input_handler.CurrentScene.get_node("Exploration").is_visible_in_tree():
+		input_handler.CurrentScene.get_node("Exploration").select_location('Aliron')
+		input_handler.CurrentScene.get_node("Exploration").build_accessible_locations()
 
 func return_characters_from_location(locationid):
 	var location = world_gen.get_location_from_code(locationid)
