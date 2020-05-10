@@ -45,7 +45,7 @@ var filtercategories = {
 func open():
 	show()
 	for i in craftcategories:
-		$categories.get_node(i).visible = game_res.checkreqs(craftcategories[i].reqs)
+		$categories.get_node(i).visible = ResourceScripts.game_res.checkreqs(craftcategories[i].reqs)
 	if craft_category != null:
 		select_category(craft_category)
 	input_handler.ActivateTutorial('crafting')
@@ -70,7 +70,7 @@ func select_category(category):
 func rebuild_scheldue():
 	input_handler.ClearContainer($CraftScheldue/VBoxContainer)
 	
-	for i in game_res.craftinglists[craft_category]:
+	for i in ResourceScripts.game_res.craftinglists[craft_category]:
 		var newnode = input_handler.DuplicateContainerTemplate($CraftScheldue/VBoxContainer)
 		var recipe = Items.recipes[i.code]
 		var item = Items[recipe.resultitemtype + 'list'][recipe.resultitem]
@@ -81,7 +81,7 @@ func rebuild_scheldue():
 		newnode.connect("pressed",self,'confirm_cancel_craft', [i])
 		newnode.get_node("progress").text = str(floor(i.workunits)) + "/" + str(i.workunits_needed)
 		newnode.arraydata = i
-		newnode.parentnodearray = game_res.craftinglists[craft_category]
+		newnode.parentnodearray = ResourceScripts.game_res.craftinglists[craft_category]
 		newnode.target_node = self
 		newnode.target_function = 'rebuild_scheldue'
 	
@@ -214,7 +214,7 @@ func confirm_craft():
 	data.workunits_needed = selected_item.workunits
 	data.materials = selected_item.items.duplicate()
 	data.resources_taken = false
-	game_res.craftinglists[list].append(data)
+	ResourceScripts.game_res.craftinglists[list].append(data)
 	if selected_item.crafttype == 'modular':
 		data.partdict = partdict.duplicate()
 	
@@ -230,7 +230,7 @@ func confirm_cancel_craft(entry):
 
 func cancel_item_craft():
 	var entry = cancelentry
-	game_res.craftinglists[craft_category].erase(entry)
+	ResourceScripts.game_res.craftinglists[craft_category].erase(entry)
 	select_category(craft_category)
 
 var itemtemplate
@@ -292,7 +292,7 @@ func choosematerial(button):
 	$NumberSelect/MaterialSelect/PartLabel.text = text
 	
 	for i in Items.materiallist.values():
-		var tempmaterial = game_res.materials[i.code]
+		var tempmaterial = ResourceScripts.game_res.materials[i.code]
 		if !i.has("parts") || tempmaterial < 1:
 			continue
 		if i.parts.has(part):
@@ -386,7 +386,7 @@ func CreateItem():
 	#$NumberSelect/CreateItem.disabled = true
 	enditem.substractitemcost()
 	var time = 1.5
-	core_animations.SmoothValueAnimation($NumberSelect/CraftProgress, time, 0, 100)
+	ResourceScripts.core_animations.SmoothValueAnimation($NumberSelect/CraftProgress, time, 0, 100)
 	yield(get_tree().create_timer(time), 'timeout')
 	$NumberSelect/CraftProgress.value = 0
 	input_handler.SystemMessage(tr("ITEMCREATED") +": " + enditem.name)

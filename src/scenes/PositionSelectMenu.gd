@@ -39,7 +39,7 @@ func slave_position_selected(character):
 	character = character.id
 	var positiontaken = false
 	var oldheroposition = null
-	if active_location.group.has(pos) && game_party.characters[active_location.group[pos]].check_location(active_location.id, true):
+	if active_location.group.has(pos) && ResourceScripts.game_party.characters[active_location.group[pos]].check_location(active_location.id, true):
 		positiontaken = true
 	
 	for i in active_location.group:
@@ -56,8 +56,8 @@ func slave_position_selected(character):
 
 func build_location_group():
 	for i in positiondict:
-		if active_location.group.has('pos'+str(i)) && game_party.characters[active_location.group['pos'+str(i)]] != null:
-			var character = game_party.characters[active_location.group['pos'+str(i)]]
+		if active_location.group.has('pos'+str(i)) && ResourceScripts.game_party.characters[active_location.group['pos'+str(i)]] != null:
+			var character = ResourceScripts.game_party.characters[active_location.group['pos'+str(i)]]
 			get_node(positiondict[i]+"/Image").texture = character.get_icon()
 			get_node(positiondict[i]+"/Image").show()
 			get_node(positiondict[i]+"/Image/hp").text = str(floor(character.hp)) + '/' + str(floor(character.hpmax))

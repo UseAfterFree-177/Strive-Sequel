@@ -54,8 +54,8 @@ func get_food():
 	for j in ['high','med','low']:
 		for i in food_filter[j]:
 			var food = Items.materiallist[i]
-			if game_res.materials[i] >= food_consumption:
-				game_res.materials[i] -= food_consumption
+			if ResourceScripts.game_res.materials[i] >= food_consumption:
+				ResourceScripts.game_res.materials[i] -= food_consumption
 				eaten = true
 			if eaten == true:
 				if food.tags.has(food_love):

@@ -260,7 +260,7 @@ func CloseTopWindow():
 	var node = CloseableWindowsArray.back()
 	if typeof(node) == TYPE_STRING:
 		return
-	elif core_animations.BeingAnimated.has(node):
+	elif ResourceScripts.core_animations.BeingAnimated.has(node):
 		return
 	node.hide()
 	#CloseableWindowsArray.pop_back(); #i think this is required #It's not, breaks multiple windows order
@@ -275,17 +275,17 @@ func UnlockOpenWindow():
 
 func OpenClose(node):
 	node.show()
-	core_animations.OpenAnimation(node)
+	ResourceScripts.core_animations.OpenAnimation(node)
 	CloseableWindowsArray.append(node)
 
 func Close(node):
 	CloseableWindowsArray.erase(node)
-	core_animations.CloseAnimation(node)
+	ResourceScripts.core_animations.CloseAnimation(node)
 
 func Open(node):
 	if CloseableWindowsArray.has(node):
 		return
-	core_animations.OpenAnimation(node)
+	ResourceScripts.core_animations.OpenAnimation(node)
 	CloseableWindowsArray.append(node)
 
 func ChangeScene(name):
@@ -507,7 +507,7 @@ func SystemMessage(text, time = 4):
 	SystemMessageNode.get_node('Text').bbcode_text = text
 	SystemMessageNode.show()
 	SystemMessageNode.modulate.a = 1
-	core_animations.FadeAnimation(SystemMessageNode, 1, basetime)
+	ResourceScripts.core_animations.FadeAnimation(SystemMessageNode, 1, basetime)
 
 func ShowOutline(node):
 	node.material = load('res://assets/portret_shader.tres').duplicate()
@@ -566,8 +566,8 @@ func calculate_number_from_string_array(arr, caster, target):
 
 func dialogue_option_selected(option):
 	get_spec_node(self.NODE_DIALOGUE).previous_text = tr(option)
-	if !game_progress.selected_dialogues.has(option):
-		game_progress.selected_dialogues.append(option)
+	if !ResourceScripts.game_progress.selected_dialogues.has(option):
+		ResourceScripts.game_progress.selected_dialogues.append(option)
 
 func interactive_message(code, type, args):
 	var data = scenedata.scenedict[code].duplicate(true)
@@ -597,7 +597,7 @@ func interactive_message(code, type, args):
 			data.text = data.text.replace("[dungeonname]", args.locationname)
 		'childbirth':
 			active_character = args.pregchar
-			var baby = game_party.babies[active_character.pregnancy.baby]
+			var baby = ResourceScripts.game_party.babies[active_character.pregnancy.baby]
 			scene_characters.append(baby)
 		'event_selection':
 			data.location = active_location
@@ -626,8 +626,8 @@ func interactive_dialogue_start(code, stage):
 
 
 func ActivateTutorial(code):
-	if game_progress.show_tutorial == true && game_progress.active_tutorials.has(code) == false && game_progress.seen_tutorials.has(code) == false:
-		game_progress.active_tutorials.append(code)
+	if ResourceScripts.game_progress.show_tutorial == true && ResourceScripts.game_progress.active_tutorials.has(code) == false && ResourceScripts.game_progress.seen_tutorials.has(code) == false:
+		ResourceScripts.game_progress.active_tutorials.append(code)
 		get_spec_node(self.NODE_TUTORIAL).rebuild()
 		#get_tutorial_node().rebuild()
 
@@ -763,10 +763,10 @@ func start_scene(scene):
 
 func combat_defeat():
 	for i in active_location.group:
-		if game_party.characters.has(active_location.group[i]) && game_party.characters[active_location.group[i]].hp <= 0:
-			game_party.characters[active_location.group[i]].hp = 1
-			game_party.characters[active_location.group[i]].defeated = false
-			game_party.characters[active_location.group[i]].is_active = true
+		if ResourceScripts.game_party.characters.has(active_location.group[i]) && ResourceScripts.game_party.characters[active_location.group[i]].hp <= 0:
+			ResourceScripts.game_party.characters[active_location.group[i]].hp = 1
+			ResourceScripts.game_party.characters[active_location.group[i]].defeated = false
+			ResourceScripts.game_party.characters[active_location.group[i]].is_active = true
 	get_spec_node(input_handler.NODE_DIALOGUE).close()
 	if exploration_node != null && active_location.has('progress'):
 		exploration_node.enter_level(globals.current_level)
@@ -787,10 +787,33 @@ func character_boss_defeat():
 	difficulty = rand_range(difficulty[0], difficulty[1])
 	interactive_message('character_boss_defeat', 'character_event', {characterdata = {type = 'raw',race = character_race, class = character_class, difficulty = difficulty, slave_type = 'slave'}})
 
+func loadimage(path, type = ""):
+	#var file = File.new()
+	if typeof(path) == TYPE_OBJECT:
+		return path
+	if path == null || path == '':
+		return null
+	#indexed image check
+	if type != "":
+		var lib = images.get(type)
+		if lib != null:
+			if lib.has(path): return lib[path]
+	#indexed resource check
+	var tmp = ResourcePreloader.new()
+	if tmp.has_resource(path):
+		tmp.free()
+		return load(path)
+	tmp.free()
+	#custom path loader
+	return load_image_from_path(path)
+
+#	if ResourcePreloader.new().has_resource(statlist.icon_image) == false:
+#		return globals.loadimage(statlist.icon_image)
+#	else:
+#		return load(statlist.icon_image)
+
 func load_image_from_path(path:String):
 	if !(path.is_abs_path() or path.is_rel_path()): return null
-#	if path.is_rel_path() and path.begins_with("res"):
-#		return load(path)
 	if !File.new().file_exists(path): return null
 	var temp = Image.new()
 	temp.load(path)

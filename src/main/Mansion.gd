@@ -16,7 +16,7 @@ func timeflowhotkey(hotkey):
 
 func advance_turn():
 	input_handler.PlaySound("button_click")
-	var number = game_globals.hour_turns_set
+	var number = ResourceScripts.game_globals.hour_turns_set
 	while number > 0:
 		advance_hour()
 		number -= 1
@@ -73,12 +73,11 @@ func _ready():
 
 	globals.log_node = $Log
 	
-	game_party.connect("task_added", self, 'build_task_bar')
+	globals.connect("task_added", self, 'build_task_bar')
 	yield(get_tree(), 'idle_frame')
-	$TimeNode/Date.text = "Day: " + str(game_globals.date) + ", Hour: " + str(game_globals.hour) + ":00"
+	$TimeNode/Date.text = "Day: " + str(ResourceScripts.game_globals.date) + ", Hour: " + str(ResourceScripts.game_globals.hour) + ":00"
 	if variables.generate_test_chars:
-#		state.revert() to remake
-		game_world.make_world()
+		ResourceScripts.game_world.make_world()
 		var character = Slave.new()
 		character.create('HalfkinCat', 'male', 'random')
 		character.set_stat('consent', 100)
@@ -195,10 +194,10 @@ func _ready():
 		character.is_players_character = true
 		
 		#state.revert()
-		game_res.money = 505590
+		ResourceScripts.game_res.money = 505590
 		for i in Items.materiallist:
-			game_res.materials[i] = 200
-		game_res.materials.bandage = 0
+			ResourceScripts.game_res.materials[i] = 200
+		ResourceScripts.game_res.materials.bandage = 0
 		globals.AddItemToInventory(globals.CreateGearItem("handcuffs", {}))
 		globals.AddItemToInventory(globals.CreateGearItem("pet_suit", {}))
 		globals.AddItemToInventory(globals.CreateGearItem("tail_plug", {}))
@@ -227,12 +226,12 @@ func _ready():
 		globals.AddItemToInventory(globals.CreateGearItem("chest_base_cloth", {ArmorBaseCloth = 'clothsilk', ArmorTrim = 'wood'}))
 		#$SlaveList.rebuild()
 		#state.common_effects([{code = 'make_quest_location', value = 'quest_fighters_lich'}])
-		game_progress.show_tutorial = true
+		ResourceScripts.game_progress.show_tutorial = true
 #		state.active_quests.append({code = "lich_enc_initiate", stage = 'stage1'})
 		#state.decisions = ["fighters_election_support",'mages_election_support','workers_election_support']
 	#	state.mainprogress = 0
-		game_progress.active_quests.append({code = 'election_global_quest', stage = 'stage1'})
-		for i in game_world.areas.plains.factions.values():
+		ResourceScripts.game_progress.active_quests.append({code = 'election_global_quest', stage = 'stage1'})
+		for i in ResourceScripts.game_world.areas.plains.factions.values():
 			i.totalreputation += 500
 		character.unlock_class("pet")
 		character.unlock_class("souleater")
@@ -245,15 +244,15 @@ func _ready():
 		character.xp_module.base_exp = 500
 		#input_handler.get_spec_node(input_handler.NODE_LOOTTABLE).open(world_gen.make_chest_loot('mages_join_reward'), 'Teh Loot')
 		#input_handler.get_loot_node().open(world_gen.make_chest_loot('warriors_join_reward'), ' Loot')
-		input_handler.active_location = game_world.areas.plains.locations[game_world.areas.plains.locations.keys()[3]]#[state.areas.plains.locations.size()-1]]
-		input_handler.active_area = game_world.areas.plains
+		input_handler.active_location = ResourceScripts.game_world.areas.plains.locations[ResourceScripts.game_world.areas.plains.locations.keys()[3]]#[state.areas.plains.locations.size()-1]]
+		input_handler.active_area = ResourceScripts.game_world.areas.plains
 		#state.decisions = ['fighters_election_support', 'workers_election_support', 'servants_election_support', 'mages_election_support']
 		#input_handler.add_random_chat_message(newchar, 'hire')
 		#input_handler.interactive_message("starting_dialogue4", '',{})
 		
 		#input_handler.interactive_message('intro', '', {})
 		
-		for i in game_world.areas.plains.factions.values():
+		for i in ResourceScripts.game_world.areas.plains.factions.values():
 			i.reputation = 500
 		
 	elif globals.start_new_game == true:
@@ -269,7 +268,7 @@ func _ready():
 		show()
 		
 		input_handler.ActivateTutorial("introduction")
-		if starting_presets.preset_data[game_globals.starting_preset].story == true:
+		if starting_presets.preset_data[ResourceScripts.game_globals.starting_preset].story == true:
 			input_handler.interactive_message('intro', '', {})
 	build_task_bar()
 	$SlaveList.rebuild()
@@ -286,7 +285,7 @@ func open_travels():
 
 func quest_test():
 	$SlaveList.update()
-	for i in game_party.characters.values():print(i.get_stat('name'), i.get_stat('has_womb'))
+	for i in ResourceScripts.game_party.characters.values():print(i.get_stat('name'), i.get_stat('has_womb'))
 	#state.areas.plains.factions.servants.totalreputation = 500
 	#print(input_handler.CloseableWindowsArray)
 #	for i in state.characters.values():
@@ -298,10 +297,10 @@ func quest_test():
 func _process(delta):
 	if self.visible == false:
 		return
-	$gold.text = custom_text.transform_number(game_res.money)#str(state.money)
-	$food.text = custom_text.transform_number(game_res.get_food()) + " - " + str(game_party.get_food_consumption())
+	$gold.text = custom_text.transform_number(ResourceScripts.game_res.money)#str(state.money)
+	$food.text = custom_text.transform_number(ResourceScripts.game_res.get_food()) + " - " + str(ResourceScripts.game_party.get_food_consumption())
 	
-	$population.text = "Population: "+ str(game_party.characters.size()) +"/" + str(game_res.get_pop_cap())
+	$population.text = "Population: "+ str(ResourceScripts.game_party.characters.size()) +"/" + str(ResourceScripts.game_res.get_pop_cap())
 	#buildscreen()
 	update_task_bar()
 	if input_handler.globalsettings.turn_based_time_flow == false:
@@ -335,40 +334,28 @@ func _process(delta):
 				advance_hour()
 
 func advance_hour():
-	game_globals.hour += 1
-	if game_globals.hour >= variables.HoursPerDay:
+	ResourceScripts.game_globals.hour += 1
+	if ResourceScripts.game_globals.hour >= variables.HoursPerDay:
 		advance_day()
-	for i in game_party.characters.values():
+	for i in ResourceScripts.game_party.characters.values():
 		i.pretick()
-	for i in game_party.characters.values():
+	for i in ResourceScripts.game_party.characters.values():
 		i.act_prepared()
-	for i in game_party.characters.values():
+	for i in ResourceScripts.game_party.characters.values():
 		i.tick()
-	$TimeNode/Date.text = "Day: " + str(game_globals.date) + ", Hour: " + str(game_globals.hour) + ":00"
+	$TimeNode/Date.text = "Day: " + str(ResourceScripts.game_globals.date) + ", Hour: " + str(ResourceScripts.game_globals.hour) + ":00"
 	if input_handler.globalsettings.turn_based_time_flow:
-		$TimeNode/dayprogress.value = game_globals.hour
+		$TimeNode/dayprogress.value = ResourceScripts.game_globals.hour
 	
 #	$gold.text = str(state.money)
 #	$food.text = str(state.get_food()) + " - " + str(state.get_food_consumption())
-	$population.text = "Population: "+ str(game_party.characters.size()) +"/" + str(game_res.get_pop_cap())
+	$population.text = "Population: "+ str(ResourceScripts.game_party.characters.size()) +"/" + str(ResourceScripts.game_res.get_pop_cap())
 	globals.emit_signal("hour_tick")
 
 func advance_day():
-	game_party.update_global_cooldowns()
-	game_globals.hour = 0
-	game_globals.date += 1
-	game_globals.daily_interactions_left = 1
-	for i in game_party.characters.values():
-		i.cooldown_tick()
-		i.process_event(variables.TR_DAY)
-	for i in game_world.areas.values():
-		world_gen.update_guilds(i)
-		if int(game_globals.date) % variables.shop_restock_days == 0:
-			world_gen.update_area_shop(i)
-			for k in i.locations.values():
-				if k.has('shop'):
-					world_gen.update_area_shop(k)
-	world_gen.update_locations()
+	ResourceScripts.game_globals.advance_day()
+	ResourceScripts.game_party.advance_day()
+	ResourceScripts.game_world.advance_day()
 	globals.autosave()
 
 func set_time_buttons():
@@ -379,7 +366,7 @@ func set_time_buttons():
 			$"TimeNode/2speed".visible = false
 			$TimeNode/finish_turn.visible = true
 			$TimeNode/dayprogress.max_value = variables.HoursPerDay
-			$TimeNode/dayprogress.value = game_globals.hour
+			$TimeNode/dayprogress.value = ResourceScripts.game_globals.hour
 			$TimeNode/HidePanel.hide()
 			$TimeNode/turns.show()
 			$TimeNode/lessturn.show()
@@ -417,24 +404,24 @@ func restoreoldspeed(value):
 func build_task_bar():
 	input_handler.ClearContainer($TaskProgress/ScrollContainer/VBoxContainer)
 	
-	for i in game_party.active_tasks:
+	for i in ResourceScripts.game_party.active_tasks:
 		var newnode = input_handler.DuplicateContainerTemplate($TaskProgress/ScrollContainer/VBoxContainer)
 		newnode.get_node("Label").text = races.tasklist[i.code].name
 		if i.code in ['alchemy','tailor','cooking','smith','cooking']:
-			if game_res.craftinglists[i.code].size() <= 0:
+			if ResourceScripts.game_res.craftinglists[i.code].size() <= 0:
 				newnode.hide()
 			else:
 				newnode.show()
-				newnode.get_node("ProgressBar").max_value = game_res.craftinglists[i.code][0].workunits_needed
-				newnode.get_node("ProgressBar").value = game_res.craftinglists[i.code][0].workunits
-				var recipe = Items.recipes[game_res.craftinglists[i.code][0].code]
+				newnode.get_node("ProgressBar").max_value = ResourceScripts.game_res.craftinglists[i.code][0].workunits_needed
+				newnode.get_node("ProgressBar").value = ResourceScripts.game_res.craftinglists[i.code][0].workunits
+				var recipe = Items.recipes[ResourceScripts.game_res.craftinglists[i.code][0].code]
 				if recipe.resultitemtype == 'material':
-					newnode.get_node("icon").texture = Items.materiallist[game_res.craftinglists[i.code][0].code].icon
+					newnode.get_node("icon").texture = Items.materiallist[ResourceScripts.game_res.craftinglists[i.code][0].code].icon
 					newnode.get_node("icon/Label").show()
-					newnode.get_node("icon/Label").text = str(game_res.materials[game_res.craftinglists[i.code][0].code])
+					newnode.get_node("icon/Label").text = str(ResourceScripts.game_res.materials[ResourceScripts.game_res.craftinglists[i.code][0].code])
 				else:
-					newnode.get_node("icon").texture = Items.itemlist[Items.recipes[game_res.craftinglists[i.code][0].code].resultitem].icon
-				if game_res.craftinglists[i.code][0].has('partdict'):
+					newnode.get_node("icon").texture = Items.itemlist[Items.recipes[ResourceScripts.game_res.craftinglists[i.code][0].code].resultitem].icon
+				if ResourceScripts.game_res.craftinglists[i.code][0].has('partdict'):
 					newnode.get_node('icon').material = load("res://assets/ItemShader.tres")
 				else:
 					newnode.get_node('icon').material = null
@@ -443,20 +430,20 @@ func build_task_bar():
 			newnode.get_node("ProgressBar").max_value = i.threshhold
 			newnode.get_node("ProgressBar").value = i.progress
 		elif i.product == 'building':
-			if game_res.selected_upgrade.code == '':
+			if ResourceScripts.game_res.selected_upgrade.code == '':
 				newnode.hide()
 			else:
 				newnode.show()
 				newnode.get_node("icon").texture = races.tasklist[i.code].production[i.product].icon
-				newnode.get_node("ProgressBar").max_value = upgradedata.upgradelist[game_res.selected_upgrade.code].levels[game_res.selected_upgrade.level].taskprogress
-				newnode.get_node("ProgressBar").value = game_res.upgrade_progresses[game_res.selected_upgrade.code].progress
+				newnode.get_node("ProgressBar").max_value = upgradedata.upgradelist[ResourceScripts.game_res.selected_upgrade.code].levels[ResourceScripts.game_res.selected_upgrade.level].taskprogress
+				newnode.get_node("ProgressBar").value = ResourceScripts.game_res.upgrade_progresses[ResourceScripts.game_res.selected_upgrade.code].progress
 				
 		else:
 			newnode.get_node("icon").texture = Items.materiallist[races.tasklist[i.code].production[i.product].item].icon
 			newnode.get_node("ProgressBar").max_value = i.threshhold
 			newnode.get_node("ProgressBar").value = i.progress
 			newnode.get_node("icon/Label").show()
-			newnode.get_node("icon/Label").text = str(game_res.materials[races.tasklist[i.code].production[i.product].item])
+			newnode.get_node("icon/Label").text = str(ResourceScripts.game_res.materials[races.tasklist[i.code].production[i.product].item])
 		newnode.set_meta("dict", i)
 		
 
@@ -466,46 +453,46 @@ func update_task_bar():
 			var task = i.get_meta('dict')
 			var text = 'Active workers: '
 			for k in task.workers:
-				if !game_party.characters.has(k):
+				if !ResourceScripts.game_party.characters.has(k):
 					continue
-				text += "\n" + game_party.characters[k].name
+				text += "\n" + ResourceScripts.game_party.characters[k].name
 			globals.connecttexttooltip(i, text)
 			if task.code in ['alchemy','tailor','cook','smith','cooking']:
-				if game_res.craftinglists[task.code].size() <= 0:
+				if ResourceScripts.game_res.craftinglists[task.code].size() <= 0:
 					i.hide()
 				else:
 					i.show()
-					var recipe = Items.recipes[game_res.craftinglists[task.code][0].code]
-					i.get_node("ProgressBar").max_value = game_res.craftinglists[task.code][0].workunits_needed
-					i.get_node("ProgressBar").value = game_res.craftinglists[task.code][0].workunits
+					var recipe = Items.recipes[ResourceScripts.game_res.craftinglists[task.code][0].code]
+					i.get_node("ProgressBar").max_value = ResourceScripts.game_res.craftinglists[task.code][0].workunits_needed
+					i.get_node("ProgressBar").value = ResourceScripts.game_res.craftinglists[task.code][0].workunits
 					if recipe.resultitemtype == 'material':
-						i.get_node("icon").texture = Items.materiallist[Items.recipes[game_res.craftinglists[task.code][0].code].resultitem].icon
+						i.get_node("icon").texture = Items.materiallist[Items.recipes[ResourceScripts.game_res.craftinglists[task.code][0].code].resultitem].icon
 						i.get_node("icon/Label").show()
-						i.get_node("icon/Label").text = str(game_res.materials[game_res.craftinglists[task.code][0].code])
+						i.get_node("icon/Label").text = str(ResourceScripts.game_res.materials[ResourceScripts.game_res.craftinglists[task.code][0].code])
 					else:
-						i.get_node("icon").texture = Items.itemlist[Items.recipes[game_res.craftinglists[task.code][0].code].resultitem].icon
-					if game_res.craftinglists[task.code][0].has('partdict'):
+						i.get_node("icon").texture = Items.itemlist[Items.recipes[ResourceScripts.game_res.craftinglists[task.code][0].code].resultitem].icon
+					if ResourceScripts.game_res.craftinglists[task.code][0].has('partdict'):
 						i.get_node('icon').material = load("res://assets/ItemShader.tres").duplicate()
-						var itemtemplate = Items.itemlist[game_res.craftinglists[task.code][0].code]
-						for k in game_res.craftinglists[task.code][0].partdict:
+						var itemtemplate = Items.itemlist[ResourceScripts.game_res.craftinglists[task.code][0].code]
+						for k in ResourceScripts.game_res.craftinglists[task.code][0].partdict:
 							var part = 'part' +  str(itemtemplate.partcolororder[k]) + 'color'
-							var color = Items.materiallist[game_res.craftinglists[task.code][0].partdict[k]].color
+							var color = Items.materiallist[ResourceScripts.game_res.craftinglists[task.code][0].partdict[k]].color
 							i.get_node("icon").material.set_shader_param(part, color)
 			elif task.code == 'building':
-				if game_res.selected_upgrade.code == '':
+				if ResourceScripts.game_res.selected_upgrade.code == '':
 					i.hide()
 				else:
 					i.show()
 					i.get_node("icon").texture = races.tasklist[task.code].production[task.product].icon
-					i.get_node("ProgressBar").max_value = upgradedata.upgradelist[game_res.selected_upgrade.code].levels[int(game_res.selected_upgrade.level)].taskprogress
-					i.get_node("ProgressBar").value = game_res.upgrade_progresses[game_res.selected_upgrade.code].progress
+					i.get_node("ProgressBar").max_value = upgradedata.upgradelist[ResourceScripts.game_res.selected_upgrade.code].levels[int(ResourceScripts.game_res.selected_upgrade.level)].taskprogress
+					i.get_node("ProgressBar").value = ResourceScripts.game_res.upgrade_progresses[ResourceScripts.game_res.selected_upgrade.code].progress
 			else:
 				i.visible = task.workers.size() != 0
 				i.get_node("ProgressBar").value = task.progress
 				if task.product == 'prostitutegold':
-					i.get_node("icon/Label").text = str(game_res.money)
+					i.get_node("icon/Label").text = str(ResourceScripts.game_res.money)
 				else:
-					i.get_node("icon/Label").text = str(game_res.materials[races.tasklist[task.code].production[task.product].item])
+					i.get_node("icon/Label").text = str(ResourceScripts.game_res.materials[races.tasklist[task.code].production[task.product].item])
 	
 
 func show_task_workers(newnode):

@@ -285,7 +285,7 @@ func fill_masternoun():
 			statlist.masternoun = tr('PROFMASTER').to_lower()
 		else:
 			statlist.masternoun = tr('PROFMASTERALT').to_lower()
-	elif game_party.get_master().get_stat('sex') == 'male':
+	elif ResourceScripts.game_party.get_master().get_stat('sex') == 'male':
 		statlist.masternoun = tr('PROFMASTER').to_lower()
 	else:
 		statlist.masternoun = tr('PROFMASTERALT').to_lower()
@@ -462,7 +462,7 @@ func setup_baby(mother, father):
 	pregdata.baby = parent.id
 	pregdata.duration = variables.pregduration
 	mother.set_stat('', pregdata.duplicate())
-	game_party.babies[parent.id] = parent
+	ResourceScripts.game_party.babies[parent.id] = parent
 
 func create(temp_race, temp_gender, temp_age):
 	
@@ -615,14 +615,18 @@ func random_icon():
 func get_icon():
 	if statlist.icon_image in ['', null]:
 		return null
-	if ResourcePreloader.new().has_resource(statlist.icon_image) == false:
-		return globals.loadimage(statlist.icon_image)
-	else:
-		return load(statlist.icon_image)
+	return input_handler.loadimage(statlist.icon_image)
+
+func get_icon_path():
+	if typeof(statlist.icon_image) != TYPE_STRING:
+		return null
+	if statlist.icon_image in ['', null]:
+		return ""
+	return statlist.icon_image
 
 func get_body_image():
 	if ResourcePreloader.new().has_resource(statlist.body_image) == false && statlist.body_image != 'default':
-		return globals.loadimage(statlist.body_image)
+		return input_handler.loadimage(statlist.body_image)
 	else:
 		if statlist.body_image == 'default':
 			var text = statlist.race.to_lower().replace('halfkin','beastkin')
@@ -637,7 +641,7 @@ func get_body_image():
 		return load(statlist.body_image)
 
 func baby_transform():
-	var mother = game_party.characters[statlist.relatives.mother]
+	var mother = ResourceScripts.game_party.characters[statlist.relatives.mother]
 	statlist.name = 'Child of ' + mother.get_stat('name')
 	if mother.get_stat('surname') != '':
 		statlist.name += " " + mother.get_stat('surname')
@@ -701,7 +705,7 @@ func translate(text):
 	var tempmasternoun = statlist.masternoun
 	if tempmasternoun in ['master','mistress']:
 		if input_handler.meowingcondition(self) == true:tempmasternoun = 'myaster'
-		if game_party.get_master() != null && game_party.get_master().get_stat('sex') != 'male':
+		if ResourceScripts.game_party.get_master() != null && ResourceScripts.game_party.get_master().get_stat('sex') != 'male':
 			if input_handler.meowingcondition(self) == true:tempmasternoun = 'mewstress'
 	
 	text = text.replace("[master]", tempmasternoun)

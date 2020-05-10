@@ -22,9 +22,9 @@ func open():
 	$Label2.hide()
 	$Time.hide()
 	hide_item_selection()
-	for i in game_progress.active_quests:
+	for i in ResourceScripts.game_progress.active_quests:
 		make_active_quest_button(i)
-	for i in game_world.areas.values():
+	for i in ResourceScripts.game_world.areas.values():
 		for guild in i.quests.factions:
 			for quest in i.quests.factions[guild].values():
 				if quest.state == 'taken':
@@ -88,7 +88,7 @@ func show_quest_info(quest):
 					#print(i.location)
 				'complete_dungeon':
 					newbutton.texture = images.quest_icons[i.code]
-					globals.connecttexttooltip(newbutton, "Complete quest dungeon at [color=aqua]" + game_world.areas[i.area].name + "[/color]: [color=yellow]" + i.locationname + "[/color]")
+					globals.connecttexttooltip(newbutton, "Complete quest dungeon at [color=aqua]" + ResourceScripts.game_world.areas[i.area].name + "[/color]: [color=yellow]" + i.locationname + "[/color]")
 				'random_material':
 					newbutton.texture = Items.materiallist[i.type].icon
 					newbutton.get_node("amount").show()
@@ -122,17 +122,17 @@ func show_quest_info(quest):
 					newbutton.get_node("amount").show()
 					globals.connecttempitemtooltip(newbutton, Items.itemlist[i.item], 'geartemplate')
 				'gold':
-					var value = round(i.value + i.value * variables.master_charm_quests_gold_bonus[int(game_party.get_master().get_stat('charm_factor'))])
+					var value = round(i.value + i.value * variables.master_charm_quests_gold_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])
 					newbutton.texture = load('res://assets/images/iconsitems/gold.png')
 					newbutton.get_node("amount").text = str(value)
 					newbutton.get_node("amount").show()
-					newbutton.hint_tooltip = "Gold: " + str(i.value) + " + " + str(round(i.value * variables.master_charm_quests_gold_bonus[int(game_party.get_master().get_stat('charm_factor'))])) + "(Master Charm Bonus)"
+					newbutton.hint_tooltip = "Gold: " + str(i.value) + " + " + str(round(i.value * variables.master_charm_quests_gold_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])) + "(Master Charm Bonus)"
 				'reputation':
-					var value = round(i.value + i.value * variables.master_charm_quests_rep_bonus[int(game_party.get_master().get_stat('charm_factor'))])
+					var value = round(i.value + i.value * variables.master_charm_quests_rep_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])
 					newbutton.texture = images.quest_icons[i.code]
 					newbutton.get_node("amount").text = str(value)
 					newbutton.get_node("amount").show()
-					newbutton.hint_tooltip = "Reputation (" + quest.source + "): " + str(i.value) + " + " + str(round(i.value * variables.master_charm_quests_rep_bonus[int(game_party.get_master().get_stat('charm_factor'))]))+ "(Master Charm Bonus)"
+					newbutton.hint_tooltip = "Reputation (" + quest.source + "): " + str(i.value) + " + " + str(round(i.value * variables.master_charm_quests_rep_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))]))+ "(Master Charm Bonus)"
 				'material':
 					var material = Items.materiallist[i.item]
 					newbutton.texture = material.icon
@@ -183,13 +183,13 @@ func CompleteQuest():
 				'kill_monsters':
 					check = i.value <= i.curvalue
 				"random_material":
-					check = game_res.if_has_material(i.type, 'gte', i.value)
+					check = ResourceScripts.game_res.if_has_material(i.type, 'gte', i.value)
 				"random_item":
 					check = i.completed
 				"slave_delivery":
 					check = i.completed
 				'complete_dungeon','complete_location':
-					check = game_progress.completed_locations.has(i.location)
+					check = ResourceScripts.game_progress.completed_locations.has(i.location)
 			if check == false:
 				break
 		if check == false:
@@ -204,7 +204,7 @@ func select_character_for_quest(reqs):
 	input_handler.ShowSlaveSelectPanel(self, 'character_selected', reqs.statreqs)
 
 func character_selected(character):
-	game_party.remove_slave(character)
+	ResourceScripts.game_party.remove_slave(character)
 	selected_req.completed = true
 	CompleteQuest()
 	input_handler.rebuild_slave_list()
@@ -213,7 +213,7 @@ func CompleteReqs():
 	for i in selectedquest.requirements:
 		match i.code:
 			"random_material":
-				game_res.set_material(i.type, '-', i.value)
+				ResourceScripts.game_res.set_material(i.type, '-', i.value)
 	selectedquest.state = 'complete'
 	globals.text_log_add("quest", "Quest Complete: " + selectedquest.name)
 	Reward()
@@ -223,28 +223,28 @@ func Reward():
 	for i in selectedquest.rewards:
 		match i.code:
 			'gold':
-				game_res.money += round(i.value + i.value * variables.master_charm_quests_gold_bonus[int(game_party.get_master().get_stat('charm_factor'))])
+				ResourceScripts.game_res.money += round(i.value + i.value * variables.master_charm_quests_gold_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])
 			'reputation':
-				game_world.areas[selectedquest.area].factions[selectedquest.source].reputation += round(i.value + i.value * variables.master_charm_quests_rep_bonus[int(game_party.get_master().get_stat('charm_factor'))])
-				game_world.areas[selectedquest.area].factions[selectedquest.source].totalreputation += round(i.value + i.value * variables.master_charm_quests_rep_bonus[int(game_party.get_master().get_stat('charm_factor'))])
+				ResourceScripts.game_world.areas[selectedquest.area].factions[selectedquest.source].reputation += round(i.value + i.value * variables.master_charm_quests_rep_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])
+				ResourceScripts.game_world.areas[selectedquest.area].factions[selectedquest.source].totalreputation += round(i.value + i.value * variables.master_charm_quests_rep_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])
 			'gear':
 				globals.AddItemToInventory(globals.CreateGearItem(i.item, i.itemparts))
 			'gear_static':
 				globals.AddItemToInventory(globals.CreateGearItem(i.item, {}))
 			'material':
-				game_res.materials[i.item] += i.value
+				ResourceScripts.game_res.materials[i.item] += i.value
 			'usable':
 				globals.AddItemToInventory(globals.CreateUsableItem(i.item, i.value))
 	
 	#remake into data system
 	if selectedquest.area == 'plains':
-		for i in game_world.areas[selectedquest.area].factions.values():
-			if i.totalreputation >= 300 && game_progress.get_active_quest("guilds_introduction") != null && game_progress.get_active_quest("guilds_introduction").stage == 'stage1':
-				game_progress.get_active_quest("guilds_introduction").stage = 'stage1_5'
+		for i in ResourceScripts.game_world.areas[selectedquest.area].factions.values():
+			if i.totalreputation >= 300 && ResourceScripts.game_progress.get_active_quest("guilds_introduction") != null && ResourceScripts.game_progress.get_active_quest("guilds_introduction").stage == 'stage1':
+				ResourceScripts.game_progress.get_active_quest("guilds_introduction").stage = 'stage1_5'
 				globals.common_effects([{code = 'add_timed_event', value = "guilds_elections_switch", args = [{type = 'add_to_date', date = [1,1], hour = 7}]}])
-	if game_progress.get_active_quest("guilds_introduction") != null && game_progress.get_active_quest("guilds_introduction").stage == 'stage1_5':
+	if ResourceScripts.game_progress.get_active_quest("guilds_introduction") != null && ResourceScripts.game_progress.get_active_quest("guilds_introduction").stage == 'stage1_5':
 		var counter = false
-		for i in game_progress.stored_events.timed_events:
+		for i in ResourceScripts.game_progress.stored_events.timed_events:
 			if i.code == 'guilds_elections_switch':
 				counter = true
 		if counter == false:
@@ -257,7 +257,7 @@ func CancelQuest():
 	#input_handler.ShowConfirmPanel(self, "cancel_quest_confirm", "Forfeit This Quest?")
 
 func cancel_quest_confirm():
-	world_gen.fail_quest(selectedquest)
+	ResourceScripts.game_world.fail_quest(selectedquest)
 	open()
 
 var selected_items = []
@@ -270,7 +270,7 @@ func select_items_for_quest(quest_req):
 	$ItemSelectionPanel/ConfirmButton.disabled = true
 	input_handler.ClearContainer($ItemSelectionPanel/ScrollContainer/GridContainer)
 	var array = []
-	for i in game_res.items.values():
+	for i in ResourceScripts.game_res.items.values():
 		if !i.itembase == quest_req.type || i.owner != null:
 			continue
 		array.append(i)

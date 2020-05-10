@@ -90,8 +90,8 @@ func showup(node, data, type): #types material materialowned gear geartemplate
 func material_tooltip(data):
 	var item = data.item
 	var text = data.text
-	if game_res.materials.has(data.item) && game_res.materials[data.item] > 0:
-		text += "\n\n" + tr("CURRENTLYINPOSSESSION") + ": " + str(game_res.materials[data.item])
+	if ResourceScripts.game_res.materials.has(data.item) && ResourceScripts.game_res.materials[data.item] > 0:
+		text += "\n\n" + tr("CURRENTLYINPOSSESSION") + ": " + str(ResourceScripts.game_res.materials[data.item])
 	iconnode.texture = item.icon
 	$Cost/Label.text = str(item.price)
 	$Cost.visible = int(item.price) != 0
@@ -213,4 +213,4 @@ func cooldown():
 func hide():
 	parentnode = null
 	set_process(false)
-	core_animations.FadeAnimation(self, 0.2)
+	ResourceScripts.core_animations.FadeAnimation(self, 0.2)

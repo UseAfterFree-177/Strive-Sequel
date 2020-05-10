@@ -184,7 +184,7 @@ func AdvanceScene():
 				ReceiveInput = false
 			'background':
 				if NewEffect.has('time'):
-					core_animations.SmoothTextureChange($Background, images.backgrounds[NewEffect.value], NewEffect.time)
+					ResourceScripts.core_animations.SmoothTextureChange($Background, images.backgrounds[NewEffect.value], NewEffect.time)
 				else:
 					$Background.texture = images.backgrounds[NewEffect.value]
 				$Background.update()
@@ -270,9 +270,9 @@ func SpriteDo(node, value, args):
 		'set':
 			node.texture = images.sprites[args]
 		'unfade':
-			core_animations.UnfadeAnimation(node, args)
+			ResourceScripts.core_animations.UnfadeAnimation(node, args)
 		'fade':
-			core_animations.FadeAnimation(node, args)
+			ResourceScripts.core_animations.FadeAnimation(node, args)
 		'hide':
 			node.texture = null
 
@@ -340,9 +340,9 @@ func blackscreentransition(duration = 0.5):
 	TextField.bbcode_text = ''
 	$Panel/CharPortrait.modulate.a = 0
 	$Panel/DisplayName.modulate.a = 0
-	core_animations.UnfadeAnimation($BlackScreen, duration)
+	ResourceScripts.core_animations.UnfadeAnimation($BlackScreen, duration)
 	input_handler.emit_signal("ScreenChanged")
-	core_animations.FadeAnimation($BlackScreen, duration, duration)
+	ResourceScripts.core_animations.FadeAnimation($BlackScreen, duration, duration)
 
 func blackscreenturnon(args = null):
 	$BlackScreen.visible = true
@@ -354,19 +354,19 @@ func blackscreenturnoff(args = null):
 
 func blackscreenfade(duration = 0.5):
 	input_handler.emit_signal("ScreenChanged")
-	core_animations.FadeAnimation($BlackScreen, duration)
+	ResourceScripts.core_animations.FadeAnimation($BlackScreen, duration)
 
 func blackscreenunfade(duration = 0.5):
 	input_handler.emit_signal("ScreenChanged")
-	core_animations.UnfadeAnimation($BlackScreen, duration)
+	ResourceScripts.core_animations.UnfadeAnimation($BlackScreen, duration)
 
 func shakeanim(duration = 0.2):
 	input_handler.emit_signal("ScreenChanged")
-	core_animations.ShakeAnimation(self, duration)
+	ResourceScripts.core_animations.ShakeAnimation(self, duration)
 
 func shakespr(duration = 0.2):
 	input_handler.emit_signal("ScreenChanged")
-	core_animations.ShakeAnimation(ImageSprite, duration)
+	ResourceScripts.core_animations.ShakeAnimation(ImageSprite, duration)
 
 func GuiDo(value):
 	match value:

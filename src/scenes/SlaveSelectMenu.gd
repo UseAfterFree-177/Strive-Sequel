@@ -13,8 +13,8 @@ func open(targetnode, targetfunc, reqs = [], allow_remove = false):
 		newnode.get_node("text").text = tr("REMOVE")
 		newnode.connect('pressed', targetnode, targetfunc, [null])
 		newnode.connect('pressed',self,'hide')
-	for id in game_party.character_order:
-		var i = game_party.characters[id]
+	for id in ResourceScripts.game_party.character_order:
+		var i = ResourceScripts.game_party.characters[id]
 		if i.checkreqs(reqs) == false:
 			continue
 		var newnode = input_handler.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)

@@ -1,5 +1,5 @@
-#extends Reference
-extends Node
+extends Reference
+#extends Node
 
 var itemcounter = 0
 var money = 0
@@ -16,6 +16,21 @@ func _init():
 		upgrades[i] = 0
 	for i in Items.materiallist:
 		materials[i] = 0
+
+
+func fix_serialization():
+	for i in items:
+		items[i] = dict2inst(items[i])
+#	fix_items_inventory(false)
+
+func serialize():
+#	fix_items_inventory(true)
+	var res = inst2dict(self)
+	res.items = {}
+	for i in items:
+		res.items[i] = inst2dict(items[i])
+#	fix_items_inventory(false)
+	return res
 
 #inventory
 func materials_set(value):

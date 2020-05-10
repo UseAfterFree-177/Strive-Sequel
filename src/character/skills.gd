@@ -111,10 +111,10 @@ func restore_skill_charge(code):
 		if social_skills_charges[code] <= 0:
 			social_cooldowns.erase(code)
 			social_skills_charges.erase(code)
-	if game_party.global_skills_used.has(code):
-		game_party.global_skills_used[code] -= 1
-		if game_party.global_skills_used[code] <= 0:
-			game_party.global_skills_used.erase(code)
+	if ResourceScripts.game_party.global_skills_used.has(code):
+		ResourceScripts.game_party.global_skills_used[code] -= 1
+		if ResourceScripts.game_party.global_skills_used[code] <= 0:
+			ResourceScripts.game_party.global_skills_used.erase(code)
 
 func use_social_skill(s_code, target):
 	var template = Skilldata.Skilllist[s_code]
@@ -147,10 +147,10 @@ func use_social_skill(s_code, target):
 				social_skills_charges[s_code] = 1
 		
 		if template.has("globallimit"):
-			if game_party.global_skills_used.has(template.code):
-				game_party.global_skills_used[template.code] += 1
+			if ResourceScripts.game_party.global_skills_used.has(template.code):
+				ResourceScripts.game_party.global_skills_used[template.code] += 1
 			else:
-				game_party.global_skills_used[template.code] = 1
+				ResourceScripts.game_party.global_skills_used[template.code] = 1
 		
 		input_handler.active_character = self
 		input_handler.target_character = target
@@ -167,7 +167,7 @@ func use_social_skill(s_code, target):
 	
 	#paying costs
 	if template.has('goldcost'):
-		game_res.money -= template.goldcost
+		ResourceScripts.game_res.money -= template.goldcost
 	parent.mp -= template.manacost
 	
 	if typeof(template.charges) == TYPE_INT && template.charges > 0 && variables.social_skill_unlimited_charges == false:
@@ -177,20 +177,20 @@ func use_social_skill(s_code, target):
 			social_skills_charges[s_code] = 1
 	
 	if template.has("globallimit"):
-		if game_party.global_skills_used.has(template.code):
-			game_party.global_skills_used[template.code] += 1
+		if ResourceScripts.game_party.global_skills_used.has(template.code):
+			ResourceScripts.game_party.global_skills_used[template.code] += 1
 		else:
-			game_party.global_skills_used[template.code] = 1
+			ResourceScripts.game_party.global_skills_used[template.code] = 1
 	
 	#calcuate 'all' receviers
 	var targ_targ = [target]
 	var targ_cast = [self]
 	var targ_all = []
-	for h_id in game_party.characters:
+	for h_id in ResourceScripts.game_party.characters:
 		if parent.id == h_id || target != null and target.id == h_id: continue
-		if game_party.characters[h_id].get_work() == 'travel':continue
-		if !parent.same_location_with(game_party.characters[h_id]): continue
-		targ_all.push_back(game_party.characters[h_id])
+		if ResourceScripts.game_party.characters[h_id].get_work() == 'travel':continue
+		if !parent.same_location_with(ResourceScripts.game_party.characters[h_id]): continue
+		targ_all.push_back(ResourceScripts.game_party.characters[h_id])
 	
 	#create s_skill and process triggers
 	var s_skill = S_Skill.new()
@@ -371,3 +371,23 @@ func act_prepared():
 	for prep in prepared_act:
 		use_social_skill(prep, null)
 	prepared_act.clear()
+
+func repair_skill_panels():
+	var ssp = social_skill_panel.duplicate()
+	social_skill_panel.clear()
+	for i in ssp:
+		if Skilldata.Skilllist.has(ssp[i]):
+			social_skill_panel[int(i)] = ssp[i]
+	ssp = combat_skill_panel.duplicate()
+	combat_skill_panel.clear()
+	for i in ssp:
+		if Skilldata.Skilllist.has(ssp[i]):
+			combat_skill_panel[int(i)] = ssp[i]
+	var cleararray = []
+	for i in [social_skills, combat_skills]:
+		for k in i:
+			if Skilldata.Skilllist.has(k) == false:
+				cleararray.append(k)
+	for i in cleararray:
+		for k in [social_skills, combat_skills]:
+			k.erase(i)

@@ -90,14 +90,14 @@ func buildinventory():
 	input_handler.ClearContainer(itemcontainer)
 	input_handler.ClearContainer($HiddenContainer/GridContainer)
 	itemarray.clear()
-	for i in game_res.materials:
-		if game_res.materials[i] <= 0:
+	for i in ResourceScripts.game_res.materials:
+		if ResourceScripts.game_res.materials[i] <= 0:
 			continue
 		var newbutton = input_handler.DuplicateContainerTemplate(itemcontainer)
 		var material = Items.materiallist[i]
 		var type = get_item_category(material)
 		newbutton.get_node('Image').texture = material.icon
-		newbutton.get_node('Number').text = custom_text.transform_number(game_res.materials[i])
+		newbutton.get_node('Number').text = custom_text.transform_number(ResourceScripts.game_res.materials[i])
 		newbutton.get_node('Number').show()
 		newbutton.set_meta('type', type)
 		newbutton.get_node("Name").text = material.name
@@ -106,7 +106,7 @@ func buildinventory():
 		newbutton.set_meta("item", i)
 		newbutton.connect("pressed",self,'useitem', [i, 'material'])
 		itemarray.append(newbutton)
-	for i in game_res.items.values():
+	for i in ResourceScripts.game_res.items.values():
 		if i.owner != null:
 			continue
 		var newnode = input_handler.DuplicateContainerTemplate(itemcontainer)
@@ -130,19 +130,8 @@ func buildinventory():
 	rebuildinventory()
 
 
-var icondict = {
-	food = "res://assets/images/gui/inventory/icon_food1.png",
-	material = "res://assets/images/gui/inventory/icon_res1.png",
-	tool = "res://assets/images/gui/inventory/icon_craft1.png",
-	weapon = "res://assets/images/gui/inventory/icon_weap1.png",
-	armor = "res://assets/images/gui/inventory/icon_armor1.png",
-	costume = "res://assets/images/gui/inventory/icon_cosm1.png",
-	usable = "res://assets/images/gui/inventory/icon_potion1.png",
-	
-}
-
 func get_item_type_icon(item):
-	return load(icondict[get_item_category(item)])
+	return load(images.icondict[get_item_category(item)])
 
 func get_item_category(item):
 	var type
@@ -208,7 +197,7 @@ func rebuildinventory():
 			if selectedhero.equipment.gear[i] == null:
 				$GearPanel.get_node(i + "/icon").texture = null
 			else:
-				var item = game_res.items[selectedhero.equipment.gear[i]]
+				var item = ResourceScripts.game_res.items[selectedhero.equipment.gear[i]]
 				item.set_icon($GearPanel.get_node(i + "/icon"))
 		$StatsPanel.open(selectedhero)
 
@@ -304,7 +293,7 @@ func sellwindow(item, type):
 	$NumberSelectPanel/SpinBox.value = 0
 	if type == 'material':
 		var material = Items.Materials[item]
-		maxamount = game_res.materials[item]
+		maxamount = ResourceScripts.game_res.materials[item]
 		itemprice = material.price
 		amount = 1
 		text = tr("SELLCONFIRM") + " " + material.name + "?" 
@@ -328,9 +317,9 @@ func updateprice():
 
 func NumberConfirm():
 	if numbermode == 'sell':
-		game_res.money += amount*itemprice
+		ResourceScripts.game_res.money += amount*itemprice
 		if typeof(activeitem) == TYPE_STRING:
-			game_res.materials[activeitem] -= amount
+			ResourceScripts.game_res.materials[activeitem] -= amount
 		else:
 			activeitem.amount -= amount# (activeitem.id)
 	$NumberSelectPanel.hide()
@@ -352,15 +341,15 @@ func show_equip_tooltip(slot):
 	if selectedhero.equipment.gear[slot] == null:
 		return
 	else:
-		var item = game_res.items[selectedhero.equipment.gear[slot]]
+		var item = ResourceScripts.game_res.items[selectedhero.equipment.gear[slot]]
 		item.tooltip($GearPanel.get_node(slot))
 
 func unequip(slot):
-	if selectedhero.check_location('mansion', true):
+	if !selectedhero.check_location('mansion', true):
 		input_handler.SystemMessage("Can't use or equip items while away from Mansion.")
 		return
 	if selectedhero.equipment.gear[slot] != null:
-		selectedhero.unequip(game_res.items[selectedhero.equipment.gear[slot]])
+		selectedhero.unequip(ResourceScripts.game_res.items[selectedhero.equipment.gear[slot]])
 		#input_handler.GetItemTooltip().hide()
 		input_handler.get_spec_node(input_handler.NODE_ITEMTOOLTIP).hide()
 		input_handler.update_slave_panel()
@@ -368,8 +357,8 @@ func unequip(slot):
 
 func rebuild_characters():
 	input_handler.ClearContainer($CharacterPanel/ScrollContainer/VBoxContainer)
-	for id in game_party.character_order:
-		var i = game_party.characters[id]
+	for id in ResourceScripts.game_party.character_order:
+		var i = ResourceScripts.game_party.characters[id]
 		var newnode = input_handler.DuplicateContainerTemplate($CharacterPanel/ScrollContainer/VBoxContainer)
 		newnode.get_node("Label").text = i.get_full_name()
 		if i == selectedhero: newnode.pressed = true

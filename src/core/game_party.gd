@@ -1,9 +1,6 @@
-#extends Reference
-extends Node
+extends Reference
+#extends Node
 
-signal task_added
-signal slave_added
-signal slave_arrived
 
 var characters = {} 
 var babies = {}
@@ -20,6 +17,31 @@ var character_order = []
 #	for p in combatparty:
 #		if combatparty[p] == null: continue
 
+func advance_day():
+	update_global_cooldowns()
+	for i in characters.values():
+		i.cooldown_tick()
+		i.process_event(variables.TR_DAY)
+
+func serialize():
+	var res = inst2dict(self)
+	res.characters = {}
+	res.babies = {}
+	for p in characters:
+		res.characters[p] = characters[p].serialize()
+	for p in babies:
+		res.babies[p] = babies[p].serialize()
+	return res
+
+func fix_serialization():
+	for p in characters:
+		characters[p] = dict2inst(characters[p])
+		characters[p].fix_serialization()
+	for p in babies:
+		babies[p] = dict2inst(babies[p])
+		babies[p].fix_serialization()
+	pass
+
 #slaves operations
 func add_slave(person, child = false):
 	if child: characters_pool.move_baby_to_state(person.id) 
@@ -30,7 +52,7 @@ func add_slave(person, child = false):
 		self.easter_egg_characters_acquired.append(person.unique)
 	person.fill_masternoun()
 	globals.text_log_add("slaves","New character acquired: " + person.get_short_name() + ". ")
-	emit_signal("slave_added")
+	globals.emit_signal("slave_added")
 
 func remove_slave(tempslave, permanent = false):
 	tempslave.process_event(variables.TR_REMOVE)

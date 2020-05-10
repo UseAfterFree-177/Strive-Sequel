@@ -34,14 +34,6 @@ var selectedskill = 'attack'
 #to delegate!
 
 
-func fix_serialize(data):
-#	data.resists = resists.duplicate()
-#	data.status_resists = status_resists.duplicate()
-#	data.damage_mods = damage_mods.duplicate()
-#	data.hpmax = hpmax
-#	data.mpmax = mpmax
-	pass
-
 func _init():
 	rebuild_parents()
 
@@ -131,7 +123,7 @@ func generate_ea_character(gendata, desired_class):
 		var temprace = gendata.race
 		if races.race_groups.has(temprace):
 			temprace = races.race_groups[temprace][randi()%races.race_groups[temprace].size()]
-		if game_world.easter_egg_characters_acquired.has(i.name) == false && (temprace == 'random' || gendata.race == i.race):
+		if ResourceScripts.game_world.easter_egg_characters_acquired.has(i.name) == false && (temprace == 'random' || gendata.race == i.race):
 			var char_exists = false
 			for k in characters_pool.characters.values():
 				if k.get_stat('unique') == i.code:
@@ -237,7 +229,7 @@ func return_to_mansion():
 
 func recruit():
 	travel.recruit()
-	game_party.add_slave(self)
+	ResourceScripts.game_party.add_slave(self)
 
 func set_work(task):
 	xp_module.work = task
@@ -359,8 +351,9 @@ func get_work():
 func use_mansion_item(item):
 	skills.use_mansion_item(item)
 
-func get_icon():
-	return statlist.get_icon()
+func get_icon(path = false):
+	if path: return statlist.get_icon_path()
+	else: return statlist.get_icon()
 
 func get_body_image():
 	return statlist.get_body_image()
@@ -374,6 +367,33 @@ func play_sfx(code):
 
 func act_prepared():
 	skills.act_prepared()
+
+func serialize():
+	var res = inst2dict(self)
+	res.statlist = inst2dict(statlist)
+	res.xp_module = inst2dict(xp_module)
+	res.equipment = inst2dict(equipment)
+	res.skills = inst2dict(skills)
+	res.travel = inst2dict(travel)
+	res.effects = inst2dict(effects)
+	res.food = inst2dict(food)
+	return res
+
+func fix_serialization():
+	statlist = dict2inst(statlist)
+	xp_module = dict2inst(xp_module)
+	equipment = dict2inst(equipment)
+	skills = dict2inst(skills)
+	travel = dict2inst(travel)
+	effects = dict2inst(effects)
+	food = dict2inst(food)
+	
+	rebuild_parents()
+	repair_skill_panels()
+	
+
+func repair_skill_panels():
+	skills.repair_skill_panels()
 
 #some AI-related functions
 func need_heal(): 
@@ -415,7 +435,7 @@ func killed():
 #	input_handler.active_character = self
 #	input_handler.interactive_message('slave_escape', '', {})
 	is_active = false 
-	game_party.character_order.erase(id)
+	ResourceScripts.game_party.character_order.erase(id)
 	characters_pool.call_deferred('cleanup')
 	input_handler.update_slave_list()
 
@@ -459,7 +479,7 @@ func valuecheck(ch, ignore_npc_stats_gear = false): #additional flag is never us
 			if i.has('param'): check = equipment.check_gear_equipped(i.value, i.param)
 			else: check = equipment.check_gear_equipped(i.value)
 		'global_profession_limit':
-			check = game_party.check_profession_limit(i.profession, i.value)
+			check = ResourceScripts.game_party.check_profession_limit(i.profession, i.value)
 		'race':
 			check = (get_stat('race') == i.race) == i.check
 		'one_of_races':
@@ -498,7 +518,7 @@ func valuecheck(ch, ignore_npc_stats_gear = false): #additional flag is never us
 		'slave_type':
 			check = input_handler.operate(i.operant, get_stat('slave_class'), i.value)
 		'population':
-			check = input_handler.operate(i.operant, game_party.characters.size(), i.value)
+			check = input_handler.operate(i.operant, ResourceScripts.game_party.characters.size(), i.value)
 		'random':
 			if typeof(i.value) == TYPE_ARRAY: i.value = calculate_number_from_string_array(i.value)
 			check = globals.rng.randf()*100 <= i.value
@@ -622,7 +642,7 @@ func check_escape_chance():
 	return check
 
 func check_escape_possibility():
-	last_escape_day_check = game_globals.date
+	last_escape_day_check = ResourceScripts.game_globals.date
 	if check_escape_chance() == false || get_stat('sleep') == 'jail' || xp_module.professions.has("master") || has_status('no_escape') || randf() < get_stat('timid_factor') * 0.1:
 		return false
 	var shackles_chance = get_stat('shackles_chance')
@@ -643,7 +663,7 @@ func escape():
 	input_handler.active_character = self
 	input_handler.interactive_message('slave_escape', '', {})
 	is_active = false #for now, to replace with corresponding mechanic
-	game_party.character_order.erase(id)
+	ResourceScripts.game_party.character_order.erase(id)
 	characters_pool.call_deferred('cleanup')
 	input_handler.slave_list_node.rebuild()
 	#state.text_log_add(get_short_name() + " has escaped. ")
@@ -674,9 +694,9 @@ func tick():
 	
 	xp_module.work_tick()
 	
-	if last_escape_day_check != game_globals.date && randf() <= 0.2:
+	if last_escape_day_check != ResourceScripts.game_globals.date && randf() <= 0.2:
 		check_escape_possibility()
-		if game_party.characters.has(self.id):
+		if ResourceScripts.game_party.characters.has(self.id):
 			return
 
 #func productivity_get():
@@ -871,7 +891,7 @@ func set_shield(value):
 
 func deal_damage(value, source = 'normal'):
 	var tmp = hp
-	if game_party.characters.has(self.id) && variables.invincible_player:
+	if ResourceScripts.game_party.characters.has(self.id) && variables.invincible_player:
 		return 0
 	value *= (1.0 - get_stat('resists')[source]/100.0)
 	value = int(value);
@@ -932,7 +952,7 @@ func check_skill_availability(s_code, target):
 	if skills.social_skills_charges.has(s_code) && skills.social_skills_charges[s_code] >= template.charges:
 		descript = get_short_name() + ": " + template.name + " - No charges left."
 		check = false
-	if template.has('globallimit') && game_party.global_skills_used.has(s_code) && game_party.global_skills_used[s_code] >= template.globallimit:
+	if template.has('globallimit') && ResourceScripts.game_party.global_skills_used.has(s_code) && ResourceScripts.game_party.global_skills_used[s_code] >= template.globallimit:
 		descript = get_short_name() + ": Can't use this skill today anymore."
 		check = false
 	

@@ -21,7 +21,7 @@ func SavePanelOpen():
 	saveloadmode = 'save'
 	input_handler.ClearContainer($ScrollContainer/VBoxContainer)
 	$LineEdit.editable = true
-	for i in input_handler.dir_contents(globals.userfolder + 'saves'):
+	for i in input_handler.dir_contents(variables.userfolder + 'saves'):
 		var savename = SaveNameTransform(i)
 		if i.ends_with(".dat") == true:
 			var config = ConfigFile.new()
@@ -47,7 +47,7 @@ func LoadPanelOpen():
 	input_handler.ClearContainer($ScrollContainer/VBoxContainer)
 	$LineEdit.editable = false
 	$LineEdit.text = ''
-	for i in input_handler.dir_contents(globals.userfolder + 'saves'):
+	for i in input_handler.dir_contents(variables.userfolder + 'saves'):
 		var savename = SaveNameTransform(i)
 		if i.ends_with(".dat") == true:
 			var config = ConfigFile.new()
@@ -82,7 +82,7 @@ func PressSaveGame(savename):
 		return
 	
 	var file = File.new()
-	if file.file_exists(globals.userfolder + 'saves/' + savename + '.sav'):
+	if file.file_exists(variables.userfolder + 'saves/' + savename + '.sav'):
 		input_handler.get_spec_node(input_handler.NODE_CONFIRMPANEL, [self, 'SaveGame', tr("OVERWRITECONFIRM")])
 		#input_handler.ShowConfirmPanel(self, 'SaveGame',tr("OVERWRITECONFIRM"))
 	else:
@@ -96,7 +96,7 @@ func DeleteSaveGame(savename):
 func DeleteSave():
 	var savename = $LineEdit.text
 	var dir = Directory.new()
-	dir.remove(globals.userfolder + 'saves/' + savename + '.sav')
+	dir.remove(variables.userfolder + 'saves/' + savename + '.sav')
 	ResetSavePanel()
 
 func SaveGame():
@@ -110,7 +110,7 @@ func LoadGame():
 	globals.LoadGame($LineEdit.text)
 
 func SaveNameTransform(path):
-	return path.replace(globals.userfolder + 'saves/',"").replace('.sav', '').replace('.dat','')
+	return path.replace(variables.userfolder + 'saves/',"").replace('.sav', '').replace('.dat','')
 
 func show_save_details(save):
 	if savedata.has(save):
@@ -128,7 +128,7 @@ func show_save_details(save):
 #	text += " - " + str(save.time.month) + "/" + str(save.time.day) + "/" + str(save.time.year).substr(2, 4)
 	$DetailsPanel/RichTextLabel.bbcode_text = globals.TextEncoder(text)
 	$DetailsPanel.show()
-	$DetailsPanel/MasterIcon.texture = globals.loadimage(save.master_icon)
+	$DetailsPanel/MasterIcon.texture = input_handler.loadimage(save.master_icon)
 
 func add_zeros(number):
 	if number > 9:

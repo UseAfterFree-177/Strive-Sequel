@@ -26,11 +26,11 @@ func _ready():
 	$Panel/HBoxContainer/Stop.connect("pressed",self,'stop_tutorial')
 
 func rebuild():
-	if game_progress.show_tutorial == false:
+	if ResourceScripts.game_progress.show_tutorial == false:
 		hide_node()
 		return
 	input_handler.ClearContainerForced($Container)
-	for i in game_progress.active_tutorials:
+	for i in ResourceScripts.game_progress.active_tutorials:
 		if !tutorial_themes.has(i):
 			continue
 		var tut_data = tutorial_themes[i]
@@ -41,7 +41,7 @@ func rebuild():
 		hide_node()
 	else:
 		if self.visible == false:
-			core_animations.UnfadeAnimation(self, 0.3)
+			ResourceScripts.core_animations.UnfadeAnimation(self, 0.3)
 			yield(get_tree().create_timer(0.3), 'timeout')
 			show()
 	
@@ -55,7 +55,7 @@ func show_tutorial_window(data):
 	$Panel/RichTextLabel.bbcode_text = globals.TextEncoder(tutorial_themes[data].text)
 
 func hide_node():
-	core_animations.FadeAnimation(self, 0.3)
+	ResourceScripts.core_animations.FadeAnimation(self, 0.3)
 	yield(get_tree().create_timer(0.3), 'timeout')
 	hide()
 
@@ -64,8 +64,8 @@ func hide_text_window():
 
 func confirm_message():
 	hide_text_window()
-	game_progress.seen_tutorials.append(current_tutorial)
-	game_progress.active_tutorials.erase(current_tutorial)
+	ResourceScripts.game_progress.seen_tutorials.append(current_tutorial)
+	ResourceScripts.game_progress.active_tutorials.erase(current_tutorial)
 	rebuild()
 
 func stop_tutorial():
@@ -73,5 +73,5 @@ func stop_tutorial():
 	#input_handler.ShowConfirmPanel(self, 'stop_tutorial_confirm', "Disable Tutorial Tips?")
 
 func stop_tutorial_confirm():
-	game_progress.show_tutorial = false
+	ResourceScripts.game_progress.show_tutorial = false
 	rebuild()

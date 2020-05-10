@@ -8,7 +8,7 @@ var code
 var icon
 var description = ''
 var stackable = false
-var inventory
+#var inventory
 
 #Useable data
 var amount = 1 setget amount_set
@@ -63,7 +63,7 @@ func CreateUsable(ItemName = '', number = 1):
 func amount_set(value):
 	amount = value
 	if amount <= 0:
-		inventory.erase(id)
+		ResourceScripts.game_res.items.erase(id)
 
 func UseItem(user = null, target = null):
 	var finaltarget
@@ -185,12 +185,12 @@ func CreateGear(ItemName = '', dictparts = {}, bonus = {}):
 func substractitemcost():
 	var itemtemplate = Items.itemlist[itembase]
 	for i in parts:
-		game_res.materials[parts[i]] -= itemtemplate.parts[i]
+		ResourceScripts.game_res.materials[parts[i]] -= itemtemplate.parts[i]
 
 func set_icon(node):
 	var icon_texture
 	if ResourcePreloader.new().has_resource(icon) == false:
-		icon_texture = globals.loadimage(icon)
+		icon_texture = input_handler.loadimage(icon)
 	else:
 		icon_texture = load(icon)
 	
@@ -281,7 +281,7 @@ func repairwithmaterials():
 	durability = maxdurability
 	
 	for i in materialsdict:
-		game_res.materials[i] -= materialsdict[i]
+		ResourceScripts.game_res.materials[i] -= materialsdict[i]
 
 func canrepairwithmaterials(): #checks if item can be repaired at present state and returns the problem
 	var canrepair = true
@@ -289,7 +289,7 @@ func canrepairwithmaterials(): #checks if item can be repaired at present state 
 	var materialsdict = counterepairmaterials()
 	
 	for i in materialsdict:
-		if game_res.materials[i] < materialsdict[i]:
+		if ResourceScripts.game_res.materials[i] < materialsdict[i]:
 			canrepair = false
 			text += tr("NOTENOUGH") + ' [color=yellow]' + Items.materiallist[i].name + '[/color]'
 	

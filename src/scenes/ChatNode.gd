@@ -14,15 +14,15 @@ var storedlines = []
 
 func add_new_chatter(character, line):
 	var newnode = input_handler.DuplicateContainerTemplate($VBoxContainer)
-	var data = {name = character.get_short_name(), text = character.translate(line), time = str(game_globals.date) + "-" + str(game_globals.hour) + ":00"}
+	var data = {name = character.get_short_name(), text = character.translate(line), time = str(ResourceScripts.game_globals.date) + "-" + str(ResourceScripts.game_globals.hour) + ":00"}
 	newnode.get_node("Icon").texture = character.get_icon()
 	newnode.get_node("Text").text = data.text
 	newnode.get_node("Name").text = data.name
-	core_animations.UnfadeAnimation(newnode,0.3)
+	ResourceScripts.core_animations.UnfadeAnimation(newnode,0.3)
 	input_handler.PlaySound("chat_click")
 	storedlines.append(data)
 	yield(get_tree().create_timer(10),"timeout")
-	core_animations.FadeAnimation(newnode, 1)
+	ResourceScripts.core_animations.FadeAnimation(newnode, 1)
 	yield(get_tree().create_timer(1),"timeout")
 	newnode.hide()
 

@@ -89,7 +89,7 @@ func start_combat(newplayergroup, newenemygroup, background, music = 'battle1', 
 	hide()
 	$ItemPanel/debugvictory.visible = debug
 	if variables.combat_tests == false:
-		core_animations.BlackScreenTransition(0.5)
+		ResourceScripts.core_animations.BlackScreenTransition(0.5)
 		yield(get_tree().create_timer(0.5), 'timeout')
 	input_handler.emit_signal("CombatStarted", encountercode)
 	input_handler.ActivateTutorial("combat")
@@ -337,7 +337,7 @@ func victory():
 	
 	$Rewards.visible = true
 	$Rewards.modulate.a = 0
-	core_animations.UnfadeAnimation($Rewards)
+	ResourceScripts.core_animations.UnfadeAnimation($Rewards)
 	$Rewards.set_meta("result", 'victory')
 	$Rewards/gold/Label.text = str("+") + str(rewardsdict.gold)
 	for i in rewardsdict.materials:
@@ -347,7 +347,7 @@ func victory():
 		newbutton.texture = item.icon
 		newbutton.get_node("name").text = item.name
 		newbutton.get_node("amount").text = str(rewardsdict.materials[i])
-		game_res.materials[i] += rewardsdict.materials[i]
+		ResourceScripts.game_res.materials[i] += rewardsdict.materials[i]
 		globals.connectmaterialtooltip(newbutton, item)
 	for i in rewardsdict.items:
 		var newnode = input_handler.DuplicateContainerTemplate($Rewards/ScrollContainer/HBoxContainer)
@@ -355,7 +355,7 @@ func victory():
 		newnode.texture = load(i.icon)
 		globals.AddItemToInventory(i)
 		newnode.get_node("name").text = i.name
-		globals.connectitemtooltip(newnode, game_res.items[globals.get_item_id_by_code(i.itembase)])
+		globals.connectitemtooltip(newnode, ResourceScripts.game_res.items[globals.get_item_id_by_code(i.itembase)])
 		if i.amount == null || i.amount == 0:
 			newnode.get_node("amount").visible = false
 		else:
@@ -745,7 +745,7 @@ func buildplayergroup(group):
 		if int(i) > 6: break
 		if group[i] == null:
 			continue
-		var fighter = game_party.characters[group[i]] 
+		var fighter = ResourceScripts.game_party.characters[group[i]] 
 		fighter.combatgroup = 'ally'
 		battlefield[int(i)] = fighter.id
 		make_fighter_panel(fighter, i)
@@ -792,7 +792,7 @@ func use_skill(skill_code, caster, target):
 	
 	if caster.combatgroup == 'ally':
 		for i in skill.catalysts:
-			game_res.materials[i] -= skill.catalysts[i]
+			ResourceScripts.game_res.materials[i] -= skill.catalysts[i]
 		if skill.charges > 0:
 			if caster.combat_skill_charges.has(skill.code):
 				caster.combat_skill_charges[skill.code] += 1
@@ -1154,7 +1154,7 @@ func Highlight(pos, type):
 	var node = battlefieldpositions[pos].get_node("Character")
 	match type:
 		'selected':
-			core_animations.SelectionGlow(node)
+			ResourceScripts.core_animations.SelectionGlow(node)
 #		'target':
 #			input_handler.TargetGlow(node)
 #		'targetsupport':
@@ -1258,7 +1258,7 @@ func SelectSkill(skill):
 		call_deferred('SelectSkill', 'attack')
 		return
 	for i in skill.catalysts:
-		if game_res.materials[i] < skill.catalysts[i]:
+		if ResourceScripts.game_res.materials[i] < skill.catalysts[i]:
 			input_handler.SystemMessage("Missing catalyst: " + Items.materiallist[i].name)
 			call_deferred('SelectSkill', 'attack');
 			break
@@ -1284,7 +1284,7 @@ func RebuildItemPanel():
 	
 	ClearItemPanel()
 	
-	for i in game_res.items.values():
+	for i in ResourceScripts.game_res.items.values():
 		if i.itemtype == 'usable' && Items.itemlist[i.itembase].has('combat_effect'):
 			array.append(i)
 	
@@ -1307,8 +1307,8 @@ func ActivateItem(item):
 
 func get_weapon_sound(caster):
 	var item = caster.equipment.gear.rhand
-	if game_res.items.has(item):
-		item = game_res.items[item]
+	if ResourceScripts.game_res.items.has(item):
+		item = ResourceScripts.game_res.items[item]
 	else:
 		item = null
 	if item == null:

@@ -25,8 +25,8 @@ func open_character_dislocation():
 	$HomeButton.set_item_metadata($HomeButton.get_item_count()-1, 'mansion')
 	var populatedlocations = []
 	var travelers = []
-	for i in game_party.character_order:
-		var person = game_party.characters[i]
+	for i in ResourceScripts.game_party.character_order:
+		var person = ResourceScripts.game_party.characters[i]
 		if !person.travel.location in ['mansion','travel'] && populatedlocations.has(person.travel.location) == false:
 			populatedlocations.append(person.travel.location)
 		elif person.travel.location == 'travel':
@@ -88,7 +88,7 @@ func update_location_list():
 	
 	$DestinationButton.clear()
 	
-	for i in game_world.areas.values():
+	for i in ResourceScripts.game_world.areas.values():
 		if i.unlocked == true:
 			array.append(i)
 	
@@ -100,7 +100,7 @@ func update_location_list():
 	
 	array.clear()
 	
-	for i in game_world.areas[destination_area].locations.values() + game_world.areas[destination_area].questlocations.values():
+	for i in ResourceScripts.game_world.areas[destination_area].locations.values() + ResourceScripts.game_world.areas[destination_area].questlocations.values():
 		array.append(i)
 	
 	if dislocation_area != 'mansion':
@@ -112,17 +112,17 @@ func update_location_list():
 	
 	if destination_area != 'plains':
 		var newbutton = input_handler.DuplicateContainerTemplate($DestinationContainer/VBoxContainer)
-		var text = tr(game_world.areas[destination_area].capital_name)
+		var text = tr(ResourceScripts.game_world.areas[destination_area].capital_name)
 		newbutton.get_node("Label").text = text
-		newbutton.connect('pressed', self, 'select_destination', [game_world.areas[destination_area].capital_name])
-		newbutton.name = game_world.areas[destination_area].capital_name
+		newbutton.connect('pressed', self, 'select_destination', [ResourceScripts.game_world.areas[destination_area].capital_name])
+		newbutton.name = ResourceScripts.game_world.areas[destination_area].capital_name
 	
 	for i in array:
 		if i.id == dislocation_area:
 			continue
 		var newbutton = input_handler.DuplicateContainerTemplate($DestinationContainer/VBoxContainer)
 		var text = i.name
-		if game_world.areas[destination_area].questlocations.has(i.id):
+		if ResourceScripts.game_world.areas[destination_area].questlocations.has(i.id):
 			text = "Q:" + text
 		newbutton.get_node("Label").text = text
 		newbutton.connect('pressed', self, 'select_destination', [i.id])
@@ -143,14 +143,14 @@ func sort_dislocation(first, second):
 func update_character_dislocation():
 	var char_array = []
 	input_handler.ClearContainer($ScrollContainer/VBoxContainer)
-	for i in game_party.character_order:
-		var person = game_party.characters[i]
+	for i in ResourceScripts.game_party.character_order:
+		var person = ResourceScripts.game_party.characters[i]
 		if person.check_location(dislocation_area):
 			char_array.append(i)
 	#char_array.sort_custom(self, 'sort_dislocation')
 	for i in char_array:
 		var newbutton = input_handler.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
-		var person = game_party.characters[i]
+		var person = ResourceScripts.game_party.characters[i]
 		newbutton.get_node("Label").text = person.get_full_name()
 		var obed_text = str(person.get_stat('obedience'))
 		var obed_color
@@ -174,7 +174,7 @@ func update_character_dislocation():
 	elif destination == 'mansion':
 		text += "\n\nTarget Location: " + tr("MANSION")
 		if selected_travel_characters.size() > 0 :
-			text += "\nTravel Time: " + str(ceil(globals.calculate_travel_time(dislocation_area, 'mansion').time / game_party.characters[selected_travel_characters[0]].travel_per_tick())) + " hours."
+			text += "\nTravel Time: " + str(ceil(globals.calculate_travel_time(dislocation_area, 'mansion').time / ResourceScripts.game_party.characters[selected_travel_characters[0]].travel_per_tick())) + " hours."
 	else:
 		var location = world_gen.get_location_from_code(destination)
 		text += "\n\nTarget Location: \n[color=yellow]" + location.name + "[/color]" 
@@ -189,8 +189,8 @@ func update_character_dislocation():
 				pass
 		if selected_travel_characters.size() > 0 :
 			var travel_time = globals.calculate_travel_time(destination, dislocation_area) 
-			text += "\n\nTravel Time: " + str(ceil(travel_time.time/ game_party.characters[selected_travel_characters[0]].travel_per_tick())) + " hours."
-			obed_cost = ceil(travel_time.obed_cost/game_party.characters[selected_travel_characters[0]].travel_per_tick())
+			text += "\n\nTravel Time: " + str(ceil(travel_time.time/ ResourceScripts.game_party.characters[selected_travel_characters[0]].travel_per_tick())) + " hours."
+			obed_cost = ceil(travel_time.obed_cost/ResourceScripts.game_party.characters[selected_travel_characters[0]].travel_per_tick())
 			text += "\nObedience Cost: " + str(obed_cost)
 	
 	var can_travel = true
@@ -199,7 +199,7 @@ func update_character_dislocation():
 		can_travel = false
 	else:
 		for i in selected_travel_characters:
-			var person = game_party.characters[i]
+			var person = ResourceScripts.game_party.characters[i]
 			if person.is_controllable():
 				continue
 			if person.get_stat('obedience') < obed_cost:
@@ -219,7 +219,7 @@ func set_travel_character(id):
 
 func travel_confirm():
 	for i in selected_travel_characters:
-		var person = game_party.characters[i]
+		var person = ResourceScripts.game_party.characters[i]
 		person.remove_from_task(true)
 		person.process_event(variables.TR_MOVE)
 		var travel_cost = globals.calculate_travel_time(destination,dislocation_area)

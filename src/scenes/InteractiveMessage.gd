@@ -32,10 +32,10 @@ func open(scene, not_save = false):
 	$RichTextLabel.modulate.a = 0
 	$ScrollContainer.modulate.a = 0
 	if scene.tags.has("blackscreen_transition_common"):
-		core_animations.BlackScreenTransition(1)
+		ResourceScripts.core_animations.BlackScreenTransition(1)
 		yield(get_tree().create_timer(1), "timeout")
 	elif scene.tags.has("blackscreen_transition_slow"):
-		core_animations.BlackScreenTransition(2)
+		ResourceScripts.core_animations.BlackScreenTransition(2)
 		yield(get_tree().create_timer(2), "timeout")
 	
 	if scene.has("character") == false:
@@ -48,7 +48,7 @@ func open(scene, not_save = false):
 			#$ImagePanel/SceneImage.texture = load("res://assets/images/scenes/image_wip.png")
 	else:
 		if $CharacterImage.texture == images.sprites[scene.character] == false:
-			core_animations.UnfadeAnimation($CharacterImage,0.5)
+			ResourceScripts.core_animations.UnfadeAnimation($CharacterImage,0.5)
 		$ImagePanel.hide()
 		$CharacterImage.texture = images.sprites[scene.character]
 		$CharacterImage.show()
@@ -56,7 +56,7 @@ func open(scene, not_save = false):
 	
 	if self.visible == false:
 		self.visible = true
-		core_animations.UnfadeAnimation(self, 0.2)
+		ResourceScripts.core_animations.UnfadeAnimation(self, 0.2)
 		$RichTextLabel.bbcode_text = ''
 		previous_text = ''
 		yield(get_tree().create_timer(0.2), "timeout")
@@ -72,8 +72,8 @@ func open(scene, not_save = false):
 			i.previous_dialogue_option = [i.previous_dialogue_option]
 		if (i.has("previous_dialogue_option") && !previous_dialogue_option in i.previous_dialogue_option) || !globals.checkreqs(i.reqs):
 			continue
-		if game_progress.seen_dialogues.has(i.text) == false && not_save == false:
-			game_progress.seen_dialogues.append(i.text)
+		if ResourceScripts.game_progress.seen_dialogues.has(i.text) == false && not_save == false:
+			ResourceScripts.game_progress.seen_dialogues.append(i.text)
 		if i.has("bonus_effects"):
 			globals.common_effects(i.bonus_effects)
 		newtext += tr(i.text)
@@ -85,16 +85,16 @@ func open(scene, not_save = false):
 		scenetext = scenetext.replace("[areaname]", input_handler.active_area.name)
 		scenetext = scenetext.replace("[locationtypename]", input_handler.active_location.classname)
 	if scene.tags.has("master_translate"):
-		if game_party.get_master() == null:
+		if ResourceScripts.game_party.get_master() == null:
 			print("master_not_found")
 			return
-		scenetext = game_party.get_master().translate(scenetext)
+		scenetext = ResourceScripts.game_party.get_master().translate(scenetext)
 	if scene.tags.has("active_character_translate"):
 		scenetext = input_handler.active_character.translate(scenetext)
 	if scene.tags.has("scene_character_translate"):
 		scenetext = input_handler.scene_characters[0].translate(scenetext.replace("[scnchar","["))
-	core_animations.UnfadeAnimation($RichTextLabel,1)
-	core_animations.UnfadeAnimation($ScrollContainer,1)
+	ResourceScripts.core_animations.UnfadeAnimation($RichTextLabel,1)
+	ResourceScripts.core_animations.UnfadeAnimation($ScrollContainer,1)
 	input_handler.ClearContainer($ScrollContainer/VBoxContainer)
 	if scene.tags.has("scene_characters_sell"):#
 		var counter = 0
@@ -112,7 +112,7 @@ func open(scene, not_save = false):
 	var options = scene.options
 	for i in options:
 		#yield(get_tree(), 'idle_frame')
-		if i.has('remove_after_first_use') && game_progress.selected_dialogues.has(i.text):
+		if i.has('remove_after_first_use') && ResourceScripts.game_progress.selected_dialogues.has(i.text):
 			continue
 		var disable = false
 		if globals.checkreqs(i.reqs) == false:
@@ -154,7 +154,7 @@ func open(scene, not_save = false):
 			match i.type:
 				'next_dialogue':
 					newbutton.get_node("Label").bbcode_text = globals.TextEncoder("{color=yellow|"+newbutton.get_node("Label").bbcode_text +"}")
-		if game_progress.selected_dialogues.has(i.text):
+		if ResourceScripts.game_progress.selected_dialogues.has(i.text):
 			newbutton.get_node("Label").bbcode_text = globals.TextEncoder("{color=gray_text_dialogue|"+newbutton.get_node("Label").bbcode_text +"}")
 		
 		if i.has('disabled') && i.disabled == true:
@@ -244,7 +244,7 @@ func select_option(number):
 			button.emit_signal("pressed")
 
 func close(transition = false):
-	core_animations.FadeAnimation(self, 0.2)
+	ResourceScripts.core_animations.FadeAnimation(self, 0.2)
 	yield(get_tree().create_timer(0.2), "timeout")
 	hide()
 	if transition == false:
@@ -267,8 +267,8 @@ func recruit_from_scene(order = 0):
 	recruit()
 
 func recruit():
-	if game_party.characters.size() >= game_res.get_pop_cap():
-		if game_res.get_pop_cap() < variables.max_population_cap:
+	if ResourceScripts.game_party.characters.size() >= ResourceScripts.game_res.get_pop_cap():
+		if ResourceScripts.game_res.get_pop_cap() < variables.max_population_cap:
 			input_handler.SystemMessage("You don't have enough rooms")
 		else:
 			input_handler.SystemMessage("Population limit reached")
@@ -290,26 +290,26 @@ func inspect_active_character():
 	#input_handler.get_spec_node(input_handler.NODE_SLAVEPANEL, [input_handler.active_character])
 
 func inspect_character_child():
-	input_handler.ShowSlavePanel(game_party.babies[input_handler.active_character.pregnancy.baby])
+	input_handler.ShowSlavePanel(ResourceScripts.game_party.babies[input_handler.active_character.pregnancy.baby])
 	#input_handler.get_spec_node(input_handler.NODE_SLAVEPANEL, [state.babies[input_handler.active_character.pregnancy.baby]])
 
 func keepbaby():
 	var node = input_handler.get_spec_node(input_handler.NODE_TEXTEDIT) #input_handler.GetTextEditNode()
-	var person = game_party.babies[input_handler.active_character.pregnancy.baby]
+	var person = ResourceScripts.game_party.babies[input_handler.active_character.pregnancy.baby]
 	person.get_random_name()
 	node.open(self, 'set_baby_name', person.name)
 
 func removebaby():
 	close()
-	game_party.babies[input_handler.active_character.pregnancy.baby].is_active = false
-	game_party.babies.erase(input_handler.active_character.pregnancy.baby)
+	ResourceScripts.game_party.babies[input_handler.active_character.pregnancy.baby].is_active = false
+	ResourceScripts.game_party.babies.erase(input_handler.active_character.pregnancy.baby)
 	input_handler.active_character.pregnancy.baby = null
 
 func set_baby_name(text):
-	var person = game_party.babies[input_handler.active_character.pregnancy.baby]
+	var person = ResourceScripts.game_party.babies[input_handler.active_character.pregnancy.baby]
 	person.name = text
 	person.surname = input_handler.active_character.surname
-	game_party.add_slave(person, true)
+	ResourceScripts.game_party.add_slave(person, true)
 	var mother = characters_pool.get_char_by_id(person.relatives.mother)
 	if mother == null:
 		person.set_slave_category('slave')

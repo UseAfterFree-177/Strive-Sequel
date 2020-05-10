@@ -10,7 +10,7 @@ func _ready():
 	yield(get_tree().create_timer(0.3), "timeout")
 	if variables.unlock_all_upgrades == true:
 		for i in upgradedata.upgradelist.values():
-			game_res.upgrades[i.code] = i.levels.keys().back()
+			ResourceScripts.game_res.upgrades[i.code] = i.levels.keys().back()
 	hide()
 	
 
@@ -48,22 +48,22 @@ func open():
 			#newbutton.get_node("icon").texture = i.levels[currentupgradelevel-1].icon
 		#else:
 			#newbutton.get_node("icon").texture = i.levels[currentupgradelevel].icon
-		if game_res.upgrade_progresses.has(i.code):
+		if ResourceScripts.game_res.upgrade_progresses.has(i.code):
 			newbutton.get_node("progress").visible = true
-			newbutton.get_node("progress").value = game_res.upgrade_progresses[i.code].progress
+			newbutton.get_node("progress").value = ResourceScripts.game_res.upgrade_progresses[i.code].progress
 			newbutton.get_node("progress").max_value = i.levels[currentupgradelevel+1].taskprogress
-		if game_res.selected_upgrade.code == i.code:
+		if ResourceScripts.game_res.selected_upgrade.code == i.code:
 			text += " - Current Upgrade"
 		newbutton.get_node("name").text = text
 		newbutton.set_meta('upgrade', i)
 		newbutton.connect("pressed", self, "selectupgrade", [i])
 	
-	if game_res.selected_upgrade.code != '':
-		var tempupgrade = upgradedata.upgradelist[game_res.selected_upgrade.code]
-		var tempupgradelevel = game_res.selected_upgrade.level
+	if ResourceScripts.game_res.selected_upgrade.code != '':
+		var tempupgrade = upgradedata.upgradelist[ResourceScripts.game_res.selected_upgrade.code]
+		var tempupgradelevel = ResourceScripts.game_res.selected_upgrade.level
 		$ActiveUpgrade.show()
 		$ActiveUpgrade/Label.text = "Active Upgrade: " + tempupgrade.name
-		$ActiveUpgrade/ProgressBar.value = game_res.upgrade_progresses[tempupgrade.code].progress
+		$ActiveUpgrade/ProgressBar.value = ResourceScripts.game_res.upgrade_progresses[tempupgrade.code].progress
 		$ActiveUpgrade/ProgressBar.max_value = tempupgrade.levels[tempupgradelevel].taskprogress
 	else:
 		$ActiveUpgrade.hide()
@@ -112,11 +112,11 @@ func selectupgrade(upgrade):
 			var newnode = input_handler.DuplicateContainerTemplate($UpgradeDescript/HBoxContainer)
 			newnode.get_node("icon").texture = item.icon
 			var value1 = upgrade.levels[currentupgradelevel].cost[i]
-			if game_res.upgrade_progresses.has(upgrade.code):
+			if ResourceScripts.game_res.upgrade_progresses.has(upgrade.code):
 				value1 = 0
-			newnode.get_node("Label").text = str(game_res.materials[i]) + "/"+ str(value1)
+			newnode.get_node("Label").text = str(ResourceScripts.game_res.materials[i]) + "/"+ str(value1)
 			globals.connectmaterialtooltip(newnode, item)
-			if game_res.materials[i] >= upgrade.levels[currentupgradelevel].cost[i]:
+			if ResourceScripts.game_res.materials[i] >= upgrade.levels[currentupgradelevel].cost[i]:
 				newnode.get_node('Label').set("custom_colors/font_color", Color(0.2,0.8,0.2))
 			else:
 				newnode.get_node('Label').set("custom_colors/font_color", Color(0.8,0.2,0.2))
@@ -125,9 +125,9 @@ func selectupgrade(upgrade):
 		$UpgradeDescript/Time.hide()
 		canpurchase = false
 	
-	if game_res.upgrade_progresses.has(upgrade.code) && game_res.selected_upgrade.code == upgrade.code:
+	if ResourceScripts.game_res.upgrade_progresses.has(upgrade.code) && ResourceScripts.game_res.selected_upgrade.code == upgrade.code:
 		canpurchase = false
-	if variables.free_upgrades == true || game_res.upgrade_progresses.has(upgrade.code):
+	if variables.free_upgrades == true || ResourceScripts.game_res.upgrade_progresses.has(upgrade.code):
 		canpurchase = true
 	
 	
@@ -136,8 +136,8 @@ func selectupgrade(upgrade):
 
 func findupgradelevel(upgrade):
 	var rval = 0
-	if game_res.upgrades.has(upgrade.code):
-		rval = game_res.upgrades[upgrade.code]
+	if ResourceScripts.game_res.upgrades.has(upgrade.code):
+		rval = ResourceScripts.game_res.upgrades[upgrade.code]
 	return int(rval)
 
 
@@ -145,22 +145,22 @@ func unlockupgrade():
 	var upgrade = selectedupgrade
 	var currentupgradelevel = findupgradelevel(upgrade) + 1
 	
-	if game_res.upgrade_progresses.has(upgrade.code):
-		game_res.selected_upgrade = {code = upgrade.code, level = currentupgradelevel}
+	if ResourceScripts.game_res.upgrade_progresses.has(upgrade.code):
+		ResourceScripts.game_res.selected_upgrade = {code = upgrade.code, level = currentupgradelevel}
 	else:
 		if variables.free_upgrades == false:
 			for i in upgrade.levels[currentupgradelevel].cost:
-				game_res.materials[i] -= upgrade.levels[currentupgradelevel].cost[i]
+				ResourceScripts.game_res.materials[i] -= upgrade.levels[currentupgradelevel].cost[i]
 		var upgradecode = upgrade.code
 		
 		if variables.instant_upgrades == false:
-			game_res.upgrade_progresses[upgrade.code] = {level = currentupgradelevel, progress = 0}
-			game_res.selected_upgrade = {code = upgradecode, level = currentupgradelevel}
+			ResourceScripts.game_res.upgrade_progresses[upgrade.code] = {level = currentupgradelevel, progress = 0}
+			ResourceScripts.game_res.selected_upgrade = {code = upgradecode, level = currentupgradelevel}
 		else:
-			if game_res.upgrades.has(upgrade.code):
-				game_res.upgrades[upgrade.code] += 1
+			if ResourceScripts.game_res.upgrades.has(upgrade.code):
+				ResourceScripts.game_res.upgrades[upgrade.code] += 1
 			else:
-				game_res.upgrades[upgrade.code] = 1
+				ResourceScripts.game_res.upgrades[upgrade.code] = 1
 	open()
 	#input_handler.emit_signal("UpgradeUnlocked", upgrade)
 	#animation

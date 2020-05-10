@@ -80,10 +80,10 @@ func start_game():
 	input_handler.get_spec_node(input_handler.NODE_CONFIRMPANEL, [self, 'start_game_confirm', 'Start this Game?'])
 
 func start_game_confirm():
-	game_world.make_world()
+	ResourceScripts.game_world.make_world()
 	$VBoxContainer/newgamebutton.disabled = true
 	globals.start_new_game = true
-	game_globals.newgame = true
+	ResourceScripts.game_globals.newgame = true
 	get_node("/root").remove_child(self)
 	input_handler.ChangeScene('mansion')
 	yield(globals, 'scene_changed')
@@ -138,5 +138,5 @@ func start_preset_set(button):
 	
 	$NewGamePanel/RichTextLabel.bbcode_text = text
 	
-	game_globals.starting_preset = data.code
+	ResourceScripts.game_globals.starting_preset = data.code
 

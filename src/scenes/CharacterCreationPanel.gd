@@ -180,7 +180,7 @@ func open(type = 'slave', newguild = 'none'):
 	$CancelButton.visible = input_handler.CurrentScreen == 'mansion'
 	$introduction.bbcode_text = introduction_text[type]
 	if type == 'slave':
-		$introduction.bbcode_text += " " + str(game_party.characters.size())
+		$introduction.bbcode_text += " " + str(ResourceScripts.game_party.characters.size())
 	selected_class = ''
 	
 	person = Slave.new()
@@ -510,7 +510,7 @@ func confirm_return():
 func cancel_creation():
 	input_handler.CurrentScene.queue_free()
 	input_handler.GameStartNode.queue_free()
-	state.revert()#remake
+	ResourceScripts.revert_gamestate()
 	input_handler.ChangeScene('menu')
 	#get_parent().queue_free()
 
@@ -532,7 +532,7 @@ func finish_character():
 	else:
 		person.set_slave_category('master')
 		person.set_stat('consent', 1000)
-	game_party.add_slave(person)
+	ResourceScripts.game_party.add_slave(person)
 	self.hide()
 	input_handler.emit_signal("CharacterCreated")
 

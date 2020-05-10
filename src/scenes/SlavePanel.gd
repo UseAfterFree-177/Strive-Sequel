@@ -87,16 +87,16 @@ func _ready():
 	$HirePanel/HireButton.connect("pressed", self, "hire_character")
 
 func hire_character():
-	if game_party.characters.size() >= game_party.get_pop_cap():
-		if game_party.get_pop_cap() < variables.max_population_cap:
+	if ResourceScripts.game_party.characters.size() >= ResourceScripts.game_party.get_pop_cap():
+		if ResourceScripts.game_party.get_pop_cap() < variables.max_population_cap:
 			input_handler.SystemMessage("You don't have enough rooms")
 		else:
 			input_handler.SystemMessage("Population limit reached")
 		return
-	game_res.money -= person.calculate_price()
+	ResourceScripts.game_res.money -= person.calculate_price()
 	input_handler.PlaySound("money_spend")
 	person.set_stat('is_hirable', false)
-	game_party.add_slave(person)
+	ResourceScripts.game_party.add_slave(person)
 	hide()
 	
 	if input_handler.scene_characters.has(person):
@@ -154,7 +154,7 @@ func open(tempperson):
 
 func hide():
 	.hide()
-	if game_party.active_tasks.size() > 0:
+	if ResourceScripts.game_party.active_tasks.size() > 0:
 		input_handler.ActivateTutorial('tasklist')
 
 var authority_lines = {
@@ -168,7 +168,7 @@ func update():
 	if person == null:return
 	for i in get_tree().get_nodes_in_group("hide_master") + get_tree().get_nodes_in_group("hide_stranger") + get_tree().get_nodes_in_group("hide_traveler")+ get_tree().get_nodes_in_group("hide_servant"):
 		i.visible = true
-	if game_party.characters.has(person.id):
+	if ResourceScripts.game_party.characters.has(person.id):
 		type = 'slave'
 		if person.has_profession('master'):
 			type = 'master'
@@ -332,9 +332,9 @@ func update():
 	$masterlabel.text = person.translate('[master]').capitalize()
 	
 	$HirePanel/RichTextLabel.bbcode_text = person.translate("[center]You can hire [name] for [price] gold.[/center]") 
-	$HirePanel/HireButton.disabled = person.calculate_price() > game_res.money
+	$HirePanel/HireButton.disabled = person.calculate_price() > ResourceScripts.game_res.money
 	$HirePanel.visible = person.get_stat('is_hirable')
-	$HirePanel/Gold/Label.text = str(game_res.money)
+	$HirePanel/Gold/Label.text = str(ResourceScripts.game_res.money)
 	
 	
 	globals.connecttexttooltip($productivity, globals.TextEncoder(text))
@@ -424,7 +424,7 @@ func show_job_details(job):
 	if job.has("worktool"):
 		text += "\n" + tr("WORKTOOL") + ": [color=aqua]" + statdata.worktoolnames[job.worktool] + "[/color]. \n"
 		if person.equipment.gear.tool != null:
-			var item = game_res.items[person.equipment.gear.tool]
+			var item = ResourceScripts.game_res.items[person.equipment.gear.tool]
 			if item.toolcategory.has(job.worktool):
 				text += "[color=green]" + tr("CORRECTTOOLEQUIPPED") +"[/color]"
 	

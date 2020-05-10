@@ -1,5 +1,5 @@
-#extends Reference
-extends Node
+extends Reference
+#extends Node
 
 var questcounter = 0
 
@@ -23,7 +23,10 @@ var stored_events = {
 var completed_locations = {}
 
 func _init():
-	connect("hour_tick", self, 'check_timed_events')
+	globals.connect("hour_tick", self, 'check_timed_events')
+
+func serialize():
+	return inst2dict(self)
 
 #finders
 func get_active_quest(code):
@@ -72,3 +75,4 @@ func update_progress(operant, value):
 			mainprogress -= value
 		'=':
 			mainprogress = value
+

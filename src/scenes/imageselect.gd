@@ -118,11 +118,11 @@ func resort():
 func setslaveimage(path):
 	if mode == 'portrait':
 		person.set_stat('icon_image', path)
-		if $assignboth.pressed && globals.loadimage(path.replace("portraits", 'bodies')) != null:
+		if $assignboth.pressed && input_handler.loadimage(path.replace("portraits", 'bodies')) != null:
 			person.set_stat('body_image', path.replace("portraits",'bodies'))
 	elif mode == 'body':
 		person.set_stat('body_image', path)
-		if $assignboth.pressed && globals.loadimage(path.replace("bodies","portraits")) != null:
+		if $assignboth.pressed && input_handler.loadimage(path.replace("bodies","portraits")) != null:
 			person.set_stat('icon_image', path.replace('bodies',"portraits"))
 	self.visible = false
 	updatepage()
@@ -258,5 +258,5 @@ func _on_scroll(value):
 #				if globals.rules.thumbnails == true:
 #					node.get_node("pic").set_texture(globals.loadimage(node.get_meta("thumbnail")))
 #				else:
-				node.get_node("pic").set_texture(globals.loadimage(node.get_meta("type")))
+				node.get_node("pic").set_texture(input_handler.loadimage(node.get_meta("type")))
 				node.set_meta("loaded", true)

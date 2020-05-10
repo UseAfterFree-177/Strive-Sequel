@@ -129,4 +129,4 @@ func cooldown():
 func hide():
 	parentnode = null
 	set_process(false)
-	core_animations.FadeAnimation(self, 0.2)
+	ResourceScripts.core_animations.FadeAnimation(self, 0.2)

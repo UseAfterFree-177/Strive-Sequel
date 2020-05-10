@@ -100,7 +100,7 @@ func writ_of_exemption_use():
 	var character = person
 	var acceptance_req = 100
 	var acceptance_chance = 0
-	game_res.remove_item("writ_of_exemption", 1)
+	ResourceScripts.game_res.remove_item("writ_of_exemption", 1)
 	input_handler.get_spec_node(input_handler.NODE_INVENTORY, [{mode = 'character', person = person}]).hide()
 	input_handler.scene_characters = [person]
 	if character.get_stat('loyalty') == 100 && character.get_stat('submission') == 100:
@@ -114,7 +114,7 @@ func writ_of_exemption_use():
 		character.add_stat('loyalty', 25)
 	else:
 		input_handler.interactive_message("writ_of_exemption_failure",'char_translate',character)
-		game_party.remove_slave(character)
+		ResourceScripts.game_party.remove_slave(character)
 	input_handler.update_slave_panel()
 	input_handler.rebuild_slave_list()
 

@@ -7,7 +7,7 @@ var characters: = {}
 func get_new_id():
 	var s := "hid%d"
 	var t = randi()
-	while characters.has(s % t) or game_party.characters.has(s % t):
+	while characters.has(s % t) or ResourceScripts.game_party.characters.has(s % t):
 		t += 1
 	return s % t
 
@@ -22,7 +22,7 @@ func add_stored_char(id, ch):
 	characters[id] = ch
 
 func get_char_by_id(id):
-	if game_party.characters.has(id): return game_party.characters[id]
+	if ResourceScripts.game_party.characters.has(id): return ResourceScripts.game_party.characters[id]
 	if characters.has(id): return characters[id]
 
 func cleanup():
@@ -33,47 +33,48 @@ func cleanup():
 #				state.character_order.erase(id)
 #				input_handler.slave_list_node.rebuild()
 			remove_id(id)
-	for id in game_party.characters.keys():
-		if !game_party.characters[id].is_active:
-			game_party.characters[id].clean_effects()
-			game_party.character_order.erase(id)
+	for id in ResourceScripts.game_party.characters.keys():
+		if !ResourceScripts.game_party.characters[id].is_active:
+			ResourceScripts.game_party.characters[id].clean_effects()
+			ResourceScripts.game_party.character_order.erase(id)
 			input_handler.slave_list_node.rebuild()
 			remove_id(id)
 
 func remove_id(id):
-	if game_party.characters.has(id): game_party.characters.erase(id)
+	if ResourceScripts.game_party.characters.has(id): ResourceScripts.game_party.characters.erase(id)
 	else: characters.erase(id)
 
 func move_to_state(id):
 	if !characters.has(id): return
 	var tmp = characters[id]
 	characters.erase(id)
-	game_party.characters[id] = tmp
-	game_party.character_order.append(id)
+	ResourceScripts.game_party.characters[id] = tmp
+	ResourceScripts.game_party.character_order.append(id)
 
 func move_baby_to_state(id):
-	if !game_party.babies.has(id): return
-	var tmp = game_party.babies[id]
-	game_party.babies.erase(id)
-	game_party.characters[id] = tmp
-	game_party.character_order.append(id)
+	if !ResourceScripts.game_party.babies.has(id): return
+	var tmp = ResourceScripts.game_party.babies[id]
+	ResourceScripts.game_party.babies.erase(id)
+	ResourceScripts.game_party.characters[id] = tmp
+	ResourceScripts.game_party.character_order.append(id)
 
 func move_to_pool(id):
-	if !game_party.characters.has(id): return
-	var tmp = game_party.characters[id]
-	game_party.characters.erase(id)
+	if !ResourceScripts.game_party.characters.has(id): return
+	var tmp = ResourceScripts.game_party.characters[id]
+	ResourceScripts.game_party.characters.erase(id)
 	characters[id] = tmp
-	game_party.character_order.erase(id) #not sure about placing this here and not onto a higher level
+	ResourceScripts.game_party.character_order.erase(id) #not sure about placing this here and not onto a higher level
 
 
 func serialize():
 	var tmp = {}
 	for hid in characters.keys():
-		tmp[hid] = inst2dict(characters[hid])
-		characters[hid].fix_serialize(tmp[hid])
+		tmp[hid] = characters[hid].serialize()
+#		characters[hid].fix_serialize(tmp[hid])
 	return tmp
 
 func deserialize(tmp):
 	characters.clear()
 	for hid in tmp.keys():
 		characters[hid] = dict2inst(tmp[hid])
+		characters[hid].fix_serialization()

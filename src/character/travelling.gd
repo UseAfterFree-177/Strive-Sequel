@@ -9,8 +9,8 @@ var initial_travel_time = 0 setget set_travel_time
 
 func travel_per_tick():
 	var value = 1
-	if game_res.upgrades.has('stables'):
-		value = 1 + variables.stable_boost_per_level * game_res.upgrades.stables
+	if ResourceScripts.game_res.upgrades.has('stables'):
+		value = 1 + variables.stable_boost_per_level * ResourceScripts.game_res.upgrades.stables
 	return value
 
 func calculate_estimated_travel_time(t_time):
@@ -34,7 +34,7 @@ func tick():
 			travel_time = 0
 			area = travel_target.area
 			location = travel_target.location
-			game_party.emit_signal("slave_arrived", self)
+			globals.emit_signal("slave_arrived", self)
 			input_handler.PlaySound("ding")
 			if location == 'mansion':
 				parent.return_to_task()
@@ -43,7 +43,7 @@ func tick():
 #					if state.capitals.has(location):
 #						state.text_log_add("travel", get_short_name() + " arrived at location: " + state.areas[state.capitals[location].area].capital_name)
 #					else:
-				globals.text_log_add("travel", parent.get_short_name() + " arrived at location: " + game_world.areas[game_world.location_links[location].area][game_world.location_links[location].category][location].name)
+				globals.text_log_add("travel", parent.get_short_name() + " arrived at location: " + ResourceScripts.game_world.areas[ResourceScripts.game_world.location_links[location].area][ResourceScripts.game_world.location_links[location].category][location].name)
 
 func make_location_description():
 	var text = ''
@@ -52,13 +52,13 @@ func make_location_description():
 	if location == 'travel':
 		if travel_target.location == 'mansion':
 			active_location_name = 'Mansion'
-			active_area_name = game_world.starting_area
+			active_area_name = ResourceScripts.game_world.starting_area
 		else:
-			active_area_name = game_world.areas[game_world.location_links[travel_target.location].area].name
-			active_location_name = game_world.areas[game_world.location_links[travel_target.location].area][game_world.location_links[location].category][travel_target.location].name
+			active_area_name = ResourceScripts.game_world.areas[ResourceScripts.game_world.location_links[travel_target.location].area].name
+			active_location_name = ResourceScripts.game_world.areas[ResourceScripts.game_world.location_links[travel_target.location].area][ResourceScripts.game_world.location_links[location].category][travel_target.location].name
 	else:
-		active_area_name = game_world.areas[game_world.location_links[location].area].name
-		active_location_name = game_world.areas[game_world.location_links[location].area][game_world.location_links[location].category][travel_target.location].name
+		active_area_name = ResourceScripts.game_world.areas[ResourceScripts.game_world.location_links[location].area].name
+		active_location_name = ResourceScripts.game_world.areas[ResourceScripts.game_world.location_links[location].area][ResourceScripts.game_world.location_links[location].category][travel_target.location].name
 	
 	if location == 'travel':
 		text = '[name] currently relocating to [color=yellow]' + active_location_name + "[/color], which is located at [color=aqua]" + active_area_name + "[/color]. [He] will be there in " + str(ceil(travel_time / travel_per_tick())) + ' hours.'
@@ -70,11 +70,11 @@ func return_to_mansion():
 	var active_area
 	var active_location
 	if location == 'travel':
-		active_area = game_world.areas[game_world.location_links[travel_target.location].area]
-		active_location = game_world.areas[game_world.location_links[travel_target.location].area][game_world.location_links[travel_target.location].category][travel_target.location]
+		active_area = ResourceScripts.game_world.areas[ResourceScripts.game_world.location_links[travel_target.location].area]
+		active_location = ResourceScripts.game_world.areas[ResourceScripts.game_world.location_links[travel_target.location].area][ResourceScripts.game_world.location_links[travel_target.location].category][travel_target.location]
 	else:
-		active_area = game_world.areas[game_world.location_links[location].area]
-		active_location = game_world.areas[game_world.location_links[location].area][game_world.location_links[location].category][location]
+		active_area = ResourceScripts.game_world.areas[ResourceScripts.game_world.location_links[location].area]
+		active_location = ResourceScripts.game_world.areas[ResourceScripts.game_world.location_links[location].area][ResourceScripts.game_world.location_links[location].category][location]
 	
 	if active_location.has("group"):
 		for i in active_location.group:

@@ -1,7 +1,5 @@
 extends Node
 
-
-
 func _init():
 	for i in partmaterials:
 		for k in partmaterials[i]:
@@ -2518,3 +2516,10 @@ var recipes = {
 		worktype = 'tailor'
 	},
 }
+
+
+func get_materials_by_grade(grade):
+	var array = []
+	for i in materiallist.values():
+		array.append(i.code)
+	return array

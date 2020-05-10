@@ -4,6 +4,10 @@ const gameversion = '0.2.1'
 
 #time
 signal hour_tick
+signal task_added
+signal slave_added
+signal slave_arrived
+
 var hour_turns_set = 1
 
 #guistate maybe for removing
@@ -74,7 +78,8 @@ func _init():
 func _ready():
 	randomize() #for legacy code sake
 	rng.randomize()
-	
+	ResourceScripts.recreate_singletons()
+	ResourceScripts.revert_gamestate()
 	for i in variables.resists_list:
 		statdata.statdata['resist'+i] = {code = "resist"+i}
 	
@@ -143,7 +148,7 @@ func _ready():
 #	scene.Start(scenes[name], debug, line)
 
 func check_duplicates(item, parts):
-	for i in game_res.items.values():
+	for i in ResourceScripts.game_res.items.values():
 		if str(i.itembase) == str(item) && str(i.parts) == str(parts) && i.owner == null:
 			return i.id
 
@@ -160,28 +165,28 @@ func CreateUsableItem(item, amount = 1):
 	return newitem
 
 func AddItemToInventory(item, dont_duplicate = true):
-	item.inventory = game_res.items
+#	item.inventory = ResourceScripts.game_res.items
 	if dont_duplicate && item.stackable == false:
 		var duplicate = check_duplicates(item.itembase, item.parts)
 		if duplicate != null:
-			game_res.items[duplicate].amount += 1
+			ResourceScripts.game_res.items[duplicate].amount += 1
 			item.amount = 0
 			return
 	if item.stackable == false:
-		item.id = "i" + str(game_res.itemcounter)
-		game_res.items[item.id] = item
-		game_res.itemcounter += 1
+		item.id = "i" + str(ResourceScripts.game_res.itemcounter)
+		ResourceScripts.game_res.items[item.id] = item
+		ResourceScripts.game_res.itemcounter += 1
 	else:
 		var id = get_item_id_by_code(item.itembase)
 		if id != null:
-			game_res.items[id].amount += item.amount
+			ResourceScripts.game_res.items[id].amount += item.amount
 		else:
-			item.id = "i" + str(game_res.itemcounter)
-			game_res.items[item.id] = item
-			game_res.itemcounter += 1
+			item.id = "i" + str(ResourceScripts.game_res.itemcounter)
+			ResourceScripts.game_res.items[item.id] = item
+			ResourceScripts.game_res.itemcounter += 1
 
 func get_item_id_by_code(itembase):
-	return game_res.get_item_id_by_code(itembase)
+	return ResourceScripts.game_res.get_item_id_by_code(itembase)
 
 func connecttexttooltip(node, text):
 	if node.is_connected("mouse_entered",self,'showtexttooltip'):
@@ -254,27 +259,10 @@ func mattooltip(targetnode, material, bonustext = '', type = 'materialowned'):
 	data.item = material
 	data.icon = material.icon
 	data.price = str(material.price)
-	if game_res.materials[material.code] > 0:
-		data.amount = game_res.materials[material.code]
+	if ResourceScripts.game_res.materials[material.code] > 0:
+		data.amount = ResourceScripts.game_res.materials[material.code]
 	
 	node.showup(targetnode, data, type)
-
-func loadimage(path):
-	#var file = File.new()
-	if typeof(path) == TYPE_OBJECT:
-		return path
-	if path == null || path == '':
-		return
-	if path.find('res:') >= 0 :#&& File.new().file_exists(path):
-		return load(path)
-	var image = Image.new()
-	if File.new().file_exists(path):
-		image.load(path)
-	else:
-		return null
-	var temptexture = ImageTexture.new()
-	temptexture.create_from_image(image)
-	return temptexture
 
 
 func TextEncoder(text, node = null):
@@ -339,15 +327,15 @@ func ItemSelect(targetscript, type, function, requirements = true):
 	input_handler.ClearContainer(node.get_node("ScrollContainer/GridContainer"))
 	var array = []
 	if type == 'gear':
-		for i in game_res.items.values():
+		for i in ResourceScripts.game_res.items.values():
 			if i.geartype == requirements && i.task == null && i.owner == null && i.durability > 0:
 				array.append(i)
 	elif type == 'repairable':
-		for i in game_res.items.values():
+		for i in ResourceScripts.game_res.items.values():
 			if i.durability < i.maxdurability:
 				array.append(i)
 	elif type == 'sex_use':
-		for i in game_res.items.values():
+		for i in ResourceScripts.game_res.items.values():
 			if i.interaction_use == true:
 				array.append(i)
 	
@@ -399,12 +387,20 @@ func autosave():
 #	thread.wait_to_finish()
 
 func SaveGame(name):
-	var savedict = state.serialize(); 
+	var savedict = {}#state.serialize(); 
+	savedict.charpool = characters_pool.serialize()
+	savedict.effpool = effects_pool.serialize()
+	
+#	ResourceScripts.game_res.fix_items_inventory(true)
+	for p in ResourceScripts.gamestate:
+		savedict[p] = ResourceScripts.get(p).serialize()
+#	ResourceScripts.game_res.fix_items_inventory(false)
+	
 	file.open(variables.userfolder + 'saves/' + name + '.sav', File.WRITE)
 	file.store_line(to_json(savedict))
 	file.close()
 	var metadata = ConfigFile.new()
-	var config_data = {version = gameversion, time = OS.get_datetime(), master_name = game_party.get_master().get_stat('name'), day = game_globals.date, hour = game_globals.hour, population = game_party.characters.size(), gold = game_res.money, master_icon = game_party.get_master().get_icon(), preset = game_globals.starting_preset}
+	var config_data = {version = gameversion, time = OS.get_datetime(), master_name = ResourceScripts.game_party.get_master().get_stat('name'), day = ResourceScripts.game_globals.date, hour = ResourceScripts.game_globals.hour, population = ResourceScripts.game_party.characters.size(), gold = ResourceScripts.game_res.money, master_icon = ResourceScripts.game_party.get_master().get_icon(true), preset = ResourceScripts.game_globals.starting_preset}
 	for i in config_data:
 		metadata.set_value('details', i, config_data[i])
 	metadata.save(variables.userfolder + "saves/" + name + ".dat")
@@ -415,16 +411,25 @@ func LoadGame(filename):
 		print("no file %s" % (variables.userfolder+'saves/'+ filename + '.sav'))
 		return
 	
-	core_animations.BlackScreenTransition(1)
+	ResourceScripts.core_animations.BlackScreenTransition(1)
 	yield(get_tree().create_timer(1), 'timeout')
 	input_handler.CloseableWindowsArray.clear()
-	state.revert()
+	ResourceScripts.revert_gamestate()
 	
 	file.open(variables.userfolder+'saves/'+ filename + '.sav', File.READ)
 	var savedict = parse_json(file.get_as_text())
 	file.close()
 	
-	state.deserialize(savedict)
+#	state.deserialize(savedict)
+	characters_pool.deserialize(savedict.charpool)
+	for p in ResourceScripts.gamestate:
+		ResourceScripts.set(p, dict2inst(savedict[p]))
+	ResourceScripts.game_res.fix_serialization()
+#	ResourceScripts.game_res.fix_items_inventory(false)
+	ResourceScripts.game_party.fix_serialization()
+	effects_pool.deserialize(savedict.effpool)
+	characters_pool.cleanup()
+	effects_pool.cleanup()
 	
 	#current approach
 	input_handler.CurrentScene.queue_free()
@@ -466,7 +471,8 @@ func fastif(value, result1, result2):
 func return_to_main_menu():
 	input_handler.CurrentScene.queue_free()
 	input_handler.ChangeScene('menu')
-	state.revert()#TO REMAKE
+#	ResourceScripts.revert_gamestate()
+	ResourceScripts.recreate_singletons()
 
 func addrelations(person, person2, value):
 	if person.has_profession("master") || person2.has_profession("master") || person == person2:
@@ -489,31 +495,31 @@ func addrelations(person, person2, value):
 func connectrelatives(person1, person2, way):
 	if person1 == null || person2 == null:
 		return
-	if game_party.relativesdata.has(person1.id) == false:
+	if ResourceScripts.game_party.relativesdata.has(person1.id) == false:
 		createrelativesdata(person1)
-	if game_party.relativesdata.has(person2.id) == false:
+	if ResourceScripts.game_party.relativesdata.has(person2.id) == false:
 		createrelativesdata(person2)
 	if way in ['mother','father']:
-		var entry = game_party.relativesdata[person1.id]
+		var entry = ResourceScripts.game_party.relativesdata[person1.id]
 		entry.children.append(person2.id)
 		for i in entry.children:
 			if i != person2.id:
-				var entry2 = game_party.relativesdata[i]
+				var entry2 = ResourceScripts.game_party.relativesdata[i]
 				connectrelatives(person2, entry2, 'sibling')
-		entry = game_party.relativesdata[person2.id]
+		entry = ResourceScripts.game_party.relativesdata[person2.id]
 		entry[way] = person1.id
 		if typeof(person1) != TYPE_DICTIONARY && typeof(person2) != TYPE_DICTIONARY:
 			addrelations(person1, person2, 200)
 	elif way == 'sibling':
-		var entry = game_party.relativesdata[person1.id]
-		var entry2 = game_party.relativesdata[person2.id]
+		var entry = ResourceScripts.game_party.relativesdata[person1.id]
+		var entry2 = ResourceScripts.game_party.relativesdata[person2.id]
 		if entry.siblings.has(entry2.id) == false: entry.siblings.append(entry2.id)
 		if entry2.siblings.has(entry.id) == false: entry2.siblings.append(entry.id)
 		for i in entry.siblings + entry2.siblings:
-			if !game_party.relativesdata[i].siblings.has(entry.id) && i != entry.id:
-				game_party.relativesdata[i].siblings.append(entry.id)
-			if !game_party.relativesdata[i].siblings.has(entry2.id) && i != entry2.id:
-				game_party.relativesdata[i].siblings.append(entry2.id)
+			if !ResourceScripts.game_party.relativesdata[i].siblings.has(entry.id) && i != entry.id:
+				ResourceScripts.game_party.relativesdata[i].siblings.append(entry.id)
+			if !ResourceScripts.game_party.relativesdata[i].siblings.has(entry2.id) && i != entry2.id:
+				ResourceScripts.game_party.relativesdata[i].siblings.append(entry2.id)
 			if !entry.siblings.has(i) && i != entry.id:
 				entry.siblings.append(i)
 			if !entry2.siblings.has(i) && i != entry2.id:
@@ -525,38 +531,38 @@ func connectrelatives(person1, person2, way):
 
 func createrelativesdata(person):
 	var newdata = {name = person.get_full_name(), id = person.id, race = person.get_stat('race'), sex = person.get_stat('sex'), mother = -1, father = -1, siblings = [], halfsiblings = [], children = []}
-	game_party.relativesdata[person.id] = newdata
+	ResourceScripts.game_party.relativesdata[person.id] = newdata
 
 func clearrelativesdata(id):
 	var entry
-	if game_party.relativesdata.has(id):
-		entry = game_party.relativesdata[id]
+	if ResourceScripts.game_party.relativesdata.has(id):
+		entry = ResourceScripts.game_party.relativesdata[id]
 		
 		for i in ['mother','father']:
-			if game_party.relativesdata.has(entry[i]):
-				var entry2 = game_party.relativesdata[entry[i]]
+			if ResourceScripts.game_party.relativesdata.has(entry[i]):
+				var entry2 = ResourceScripts.game_party.relativesdata[entry[i]]
 				entry2.children.erase(id)
 		for i in entry.siblings:
-			if game_party.relativesdata.has(i):
-				var entry2 = game_party.relativesdata[i]
+			if ResourceScripts.game_party.relativesdata.has(i):
+				var entry2 = ResourceScripts.game_party.relativesdata[i]
 				entry2.siblings.erase(id)
 	
-	game_party.relativesdata.erase(id)
+	ResourceScripts.game_party.relativesdata.erase(id)
 
 func checkifrelatives(person, person2):
 	var result = false
 	var data1 
 	var data2
-	if game_party.relativesdata.has(person.id):
-		data1 = game_party.relativesdata[person.id]
+	if ResourceScripts.game_party.relativesdata.has(person.id):
+		data1 = ResourceScripts.game_party.relativesdata[person.id]
 	else:
 		createrelativesdata(person)
-		data1 = game_party.relativesdata[person.id]
-	if game_party.relativesdata.has(person2.id):
-		data2 = game_party.relativesdata[person2.id]
+		data1 = ResourceScripts.game_party.relativesdata[person.id]
+	if ResourceScripts.game_party.relativesdata.has(person2.id):
+		data2 = ResourceScripts.game_party.relativesdata[person2.id]
 	else:
 		createrelativesdata(person2)
-		data2 = game_party.relativesdata[person2.id]
+		data2 = ResourceScripts.game_party.relativesdata[person2.id]
 	for i in ['mother','father']:
 		if str(data1[i]) == str(data2.id) || str(data2[i]) == str(data1.id):
 			result = true
@@ -570,16 +576,16 @@ func getrelativename(person, person2):
 	var result = null
 	var data1 
 	var data2
-	if game_party.relativesdata.has(person.id):
-		data1 = game_party.relativesdata[person.id]
+	if ResourceScripts.game_party.relativesdata.has(person.id):
+		data1 = ResourceScripts.game_party.relativesdata[person.id]
 	else:
 		createrelativesdata(person)
-		data1 = game_party.relativesdata[person.id]
-	if game_party.relativesdata.has(person2.id):
-		data2 = game_party.relativesdata[person2.id]
+		data1 = ResourceScripts.game_party.relativesdata[person.id]
+	if ResourceScripts.game_party.relativesdata.has(person2.id):
+		data2 = ResourceScripts.game_party.relativesdata[person2.id]
 	else:
 		createrelativesdata(person2)
-		data2 = game_party.relativesdata[person2.id]
+		data2 = ResourceScripts.game_party.relativesdata[person2.id]
 	
 	#print(data1, data2)
 	for i in ['mother','father']:
@@ -630,10 +636,10 @@ func check_recipe_resources(temprecipe):
 	if recipe.crafttype == 'basic':
 		var check = true
 		for i in recipe.materials:
-			if game_res.materials[i] < recipe.materials[i]:
+			if ResourceScripts.game_res.materials[i] < recipe.materials[i]:
 				check = false
 		for i in recipe.items:
-			if game_res.if_has_free_items(i, 'gte', recipe.items[i]) == false:
+			if ResourceScripts.game_res.if_has_free_items(i, 'gte', recipe.items[i]) == false:
 				check = false
 		if check == false:
 			return false
@@ -641,7 +647,7 @@ func check_recipe_resources(temprecipe):
 		var item = Items.itemlist[recipe.resultitem]
 		var check = true
 		for i in temprecipe.partdict:
-			if game_res.materials[temprecipe.partdict[i]] < item.parts[i]:
+			if ResourceScripts.game_res.materials[temprecipe.partdict[i]] < item.parts[i]:
 				check = false
 		if check == false:
 			return false
@@ -651,23 +657,23 @@ func spend_resources(temprecipe):
 	var recipe = Items.recipes[temprecipe.code]
 	if recipe.crafttype == 'basic':
 		for i in recipe.materials:
-			game_res.materials[i] -= recipe.materials[i]
+			ResourceScripts.game_res.materials[i] -= recipe.materials[i]
 		for i in recipe.items:
-			game_res.remove_item(i, recipe.items[i])
+			ResourceScripts.game_res.remove_item(i, recipe.items[i])
 	else:
 		var item = Items.itemlist[recipe.resultitem]
 		for i in temprecipe.partdict:
-			game_res.materials[temprecipe.partdict[i]] -= item.parts[i]
+			ResourceScripts.game_res.materials[temprecipe.partdict[i]] -= item.parts[i]
 	temprecipe.resources_taken = true
 
 func make_item(temprecipe):
 	var recipe = Items.recipes[temprecipe.code]
 	temprecipe.resources_taken = false
 	if recipe.resultitemtype == 'material':
-		game_res.materials[recipe.resultitem] += recipe.resultamount
+		ResourceScripts.game_res.materials[recipe.resultitem] += recipe.resultamount
 	else:
 		var item = Items.itemlist[recipe.resultitem]
-		game_res.text_log_add("crafting", "Item created: " + item.name)
+		ResourceScripts.game_res.text_log_add("crafting", "Item created: " + item.name)
 		if item.type == 'usable':
 			AddItemToInventory(CreateUsableItem(item.code))
 		elif item.type == 'gear':
@@ -679,16 +685,16 @@ func make_item(temprecipe):
 	if temprecipe.repeats > 0:
 		temprecipe.repeats -= 1
 		if temprecipe.repeats == 0:
-			game_res.craftinglists[Items.recipes[temprecipe.code].worktype].erase(temprecipe)
+			ResourceScripts.game_res.craftinglists[Items.recipes[temprecipe.code].worktype].erase(temprecipe)
 
 func text_log_add(label, text):
-	log_storage.append({type = label, text = text, time = str(game_globals.date) + ":" + str(round(game_globals.hour))})
+	log_storage.append({type = label, text = text, time = str(ResourceScripts.game_globals.date) + ":" + str(round(ResourceScripts.game_globals.hour))})
 	if log_node != null && weakref(log_node) != null:
 		var newfield = log_node.get_node("ScrollContainer/VBoxContainer/field").duplicate()
 		newfield.show()
 		newfield.get_node("label").bbcode_text = label
 		newfield.get_node("text").bbcode_text = text
-		newfield.get_node("date").bbcode_text = '[right]'+ str(game_globals.date) + " - " + str(round(game_globals.hour)) + ":00[/right]"
+		newfield.get_node("date").bbcode_text = '[right]'+ str(ResourceScripts.game_globals.date) + " - " + str(round(ResourceScripts.game_globals.hour)) + ":00[/right]"
 		log_node.get_node("ScrollContainer/VBoxContainer").add_child(newfield)
 		yield(get_tree(), 'idle_frame')
 		var textfield = newfield.get_node('text')
@@ -798,7 +804,7 @@ func check_location_group():
 	var counter = 0
 	var cleararray = []
 	for i in input_handler.active_location.group:
-		if game_party.characters.has(input_handler.active_location.group[i]): 
+		if ResourceScripts.game_party.characters.has(input_handler.active_location.group[i]): 
 			counter += 1
 		else:
 			cleararray.append(i)
@@ -931,7 +937,7 @@ func remove_location(locationid):
 	return_characters_from_location(locationid)
 	area.locations.erase(location.id)
 	area.questlocations.erase(location.id)
-	game_progress.completed_locations[location.id] = {name = location.name, id = location.id, area = area.code}
+	ResourceScripts.game_progress.completed_locations[location.id] = {name = location.name, id = location.id, area = area.code}
 	input_handler.update_slave_list()
 	if input_handler.active_location == location && input_handler.CurrentScene.get_node("Exploration").is_visible_in_tree():
 		input_handler.CurrentScene.get_node("Exploration").select_location('Aliron')
@@ -940,8 +946,8 @@ func remove_location(locationid):
 func return_characters_from_location(locationid):
 	var location = world_gen.get_location_from_code(locationid)
 	var area = world_gen.get_area_from_location_code(locationid)
-	for id in game_party.character_order:
-		var person = game_party.characters[id]
+	for id in ResourceScripts.game_party.character_order:
+		var person = ResourceScripts.game_party.characters[id]
 		if person.check_location(location.id, true) || person.travel.travel_target.location == location.id:
 			if variables.instant_travel == false:
 				person.trave.location = 'travel'
@@ -960,14 +966,14 @@ func common_effects(effects):
 	for i in effects:
 		match i.code:
 			'money_change':
-				game_res.update_money(i.operant, i.value)
+				ResourceScripts.game_res.update_money(i.operant, i.value)
 			'material_change':
-				game_res.update_materials(i.operant, i.material, i.value)
+				ResourceScripts.game_res.update_materials(i.operant, i.material, i.value)
 			'make_story_character':
 				var newslave = Slave.new()
 				newslave.generate_predescribed_character(world_gen.pregen_characters[i.value])
 				#newslave.set_slave_category(newslave.slave_class)
-				game_party.add_slave(newslave)
+				ResourceScripts.game_party.add_slave(newslave)
 			'add_timed_event':
 				var newevent = {reqs = [], code = i.value}
 				for k in i.args:
@@ -978,16 +984,16 @@ func common_effects(effects):
 						'fixed_date':
 							var newreq = [{type = 'date', operant = 'eq', value = k.date}, {type = 'hour', operant = 'eq', value = k.hour}]
 							newevent.reqs += newreq
-				game_progress.stored_events.timed_events.append(newevent)
+				ResourceScripts.game_progress.stored_events.timed_events.append(newevent)
 			'remove_timed_events':
 				var array = []
-				for k in game_progress.stored_events.timed_events:
+				for k in ResourceScripts.game_progress.stored_events.timed_events:
 					if k.code in i.value:
 						array.append(k)
 				for k in array:
-					game_progress.stored_events.timed_events.erase(k)
+					ResourceScripts.game_progress.stored_events.timed_events.erase(k)
 			'unique_character_changes':
-				var character = game_party.get_unique_slave(i.value)
+				var character = ResourceScripts.game_party.get_unique_slave(i.value)
 				for k in i.args:
 					if k.code == 'sextrait':
 						match k.operant:
@@ -1005,7 +1011,7 @@ func common_effects(effects):
 			'start_event':
 				input_handler.interactive_message(i.data, 'start_event', i.args)
 			'spend_money_for_scene_character':
-				game_res.update_money('-', input_handler.scene_characters[i.value].calculate_price())
+				ResourceScripts.game_res.update_money('-', input_handler.scene_characters[i.value].calculate_price())
 #				money -= input_handler.scene_characters[i.value].calculate_price()
 #				text_log_add('money',"Gold used: " + str(input_handler.scene_characters[i.value].calculate_price()))
 			'mod_scene_characters':
@@ -1060,38 +1066,38 @@ func common_effects(effects):
 			'create_character':
 				input_handler.get_spec_node(input_handler.NODE_CHARCREATE, ['slave', i.type])
 			'main_progress':
-				game_progress.update_progress(i.operant, i.value)
+				ResourceScripts.game_progress.update_progress(i.operant, i.value)
 			'progress_quest':
 				var quest_exists = false
-				for k in game_progress.active_quests:
+				for k in ResourceScripts.game_progress.active_quests:
 					if k.code == i.value:
 						quest_exists = true
 						k.stage = i.stage
 						text_log_add("quests", "Quest Updated: " + tr(scenedata.quests[k.code].stages[k.stage].name) + ". ")
 				if quest_exists == false:
-					game_progress.active_quests.append({code = i.value, stage = i.stage})
+					ResourceScripts.game_progress.active_quests.append({code = i.value, stage = i.stage})
 					text_log_add("quests", "Quest Received: " + tr(scenedata.quests[i.value].stages[i.stage].name) + ". ")
 			'complete_quest':
-				for k in game_progress.active_quests:
+				for k in ResourceScripts.game_progress.active_quests:
 					if k.code == i.value:
-						game_progress.active_quests.erase(k)
+						ResourceScripts.game_progress.active_quests.erase(k)
 						text_log_add("quests","Quest Completed: " + tr(scenedata.quests[k.code].stages[k.stage].name) + ". ")
 						break
-				game_progress.completed_quests.append(i.value)
+				ResourceScripts.game_progress.completed_quests.append(i.value)
 			'complete_active_location':
 				input_handler.remove_location(input_handler.active_location.id)
 			'complete_event':
 				pass
 			'reputation':
 				var data = world_gen.get_faction_from_code(i.name)
-				var guild = game_world.areas[data.area].factions[data.code]
+				var guild = ResourceScripts.game_world.areas[data.area].factions[data.code]
 				guild.reputation = input_handler.math(i.operant, guild.reputation, i.value)
 				guild.totalreputation = input_handler.math(i.operant, guild.totalreputation, i.value)
 			'decision':
-				if !game_progress.decisions.has(i.value):
-					game_progress.decisions.append(i.value)
+				if !ResourceScripts.game_progress.decisions.has(i.value):
+					ResourceScripts.game_progress.decisions.append(i.value)
 			'screen_black_transition':
-				core_animations.BlackScreenTransition(i.value)
+				ResourceScripts.core_animations.BlackScreenTransition(i.value)
 			'start_combat':
 				input_handler.current_enemy_group = i.value
 				input_handler.get_spec_node(input_handler.NODE_COMBATPOSITIONS)
@@ -1122,54 +1128,54 @@ func valuecheck(dict):
 		"no_check":
 			return true
 		"has_money":
-			return game_res.if_has_money(dict['value'])
+			return ResourceScripts.game_res.if_has_money(dict['value'])
 #		"has_property":
 #			return if_has_property(dict['prop'], dict['value'])
 		"has_hero":
-			return game_party.if_has_hero(dict['name'])
+			return ResourceScripts.game_party.if_has_hero(dict['name'])
 		"has_material":
-			return game_res.if_has_material(dict['material'], dict.operant, dict['value'])
+			return ResourceScripts.game_res.if_has_material(dict['material'], dict.operant, dict['value'])
 		"date":
 			if variables.no_event_wait_time: return true
-			return input_handler.operate(dict.operant, game_globals.date, dict.value)
+			return input_handler.operate(dict.operant, ResourceScripts.game_globals.date, dict.value)
 		'hour':
 			if variables.no_event_wait_time: return true
-			return input_handler.operate(dict.operant, game_globals.hour, dict.value)
+			return input_handler.operate(dict.operant, ResourceScripts.game_globals.hour, dict.value)
 		"gamestart":
-			return game_globals.newgame
+			return ResourceScripts.game_globals.newgame
 		"has_upgrade":
-			return game_res.if_has_upgrade(dict.name, dict.value)
+			return ResourceScripts.game_res.if_has_upgrade(dict.name, dict.value)
 		"main_progress":
-			return game_progress.if_has_progress(dict.value, dict.operant)
+			return ResourceScripts.game_progress.if_has_progress(dict.value, dict.operant)
 		"area_progress":
-			return game_progress.if_has_area_progress(dict.value, dict.operant, dict.area)
+			return ResourceScripts.game_progress.if_has_area_progress(dict.value, dict.operant, dict.area)
 		"decision":
-			return game_progress.decisions.has(dict.name) == dict.value
+			return ResourceScripts.game_progress.decisions.has(dict.name) == dict.value
 		"has_multiple_decisions": 
 			var counter = 0
 			for i in dict.decisions:
-				if game_progress.decisions.has(i):
+				if ResourceScripts.game_progress.decisions.has(i):
 					counter += 1
 			return input_handler.operate(dict.operant, counter, dict.value)
 		"quest_stage":
-			return game_progress.if_quest_stage(dict.name, dict.value, dict.operant)
+			return ResourceScripts.game_progress.if_quest_stage(dict.name, dict.value, dict.operant)
 		"quest_completed":
-			return game_progress.completed_quests.has(dict.name)
+			return ResourceScripts.game_progress.completed_quests.has(dict.name)
 		"party_level":
-			return game_party.if_party_level(dict.operant, dict.value)
+			return ResourceScripts.game_party.if_party_level(dict.operant, dict.value)
 		"hero_level":
-			if game_party.if_has_hero(dict.name) == false:
+			if ResourceScripts.game_party.if_has_hero(dict.name) == false:
 				return false
 			else:
-				return game_party.if_hero_level(dict.name, dict.operant, dict.value)
+				return ResourceScripts.game_party.if_hero_level(dict.name, dict.operant, dict.value)
 		"has_items":
-			return game_res.if_has_items(dict.name, dict.operant, dict.value)
+			return ResourceScripts.game_res.if_has_items(dict.name, dict.operant, dict.value)
 		"has_free_items":
-			return game_res.if_has_free_items(dict.name, dict.operant, dict.value)
+			return ResourceScripts.game_res.if_has_free_items(dict.name, dict.operant, dict.value)
 		'disabled':
 			return false
 		'master_check':
-			var master_char = game_party.get_master()
+			var master_char = ResourceScripts.game_party.get_master()
 			if master_char == null:
 				return false
 			else:
@@ -1179,43 +1185,42 @@ func valuecheck(dict):
 			if character == null:return false
 			return character.checkreqs(dict.value)
 		'master_is_beast':
-			return game_party.if_master_is_beast(dict.value)
+			return ResourceScripts.game_party.if_master_is_beast(dict.value)
 		'unique_character_at_mansion':
-			var character = game_party.get_unique_slave(dict.value)
+			var character = ResourceScripts.game_party.get_unique_slave(dict.value)
 			if character == null:return false
 			return character.checkreqs([{code = 'is_free', check = true}])
 		'has_money_for_scene_slave':
-			return game_res.money >= input_handler.scene_characters[dict.value].calculate_price()
+			return ResourceScripts.game_res.money >= input_handler.scene_characters[dict.value].calculate_price()
 		'random':
 			return globals.rng.randf()*100 <= dict.value
 		'dialogue_seen':
-			return input_handler.operate(dict.operant, game_progress.seen_dialogues.has(dict.value), true)
+			return input_handler.operate(dict.operant, ResourceScripts.game_progress.seen_dialogues.has(dict.value), true)
 		'dialogue_selected':
-			return input_handler.operate(dict.operant, game_progress.selected_dialogues.has(dict.value), true)
+			return input_handler.operate(dict.operant, ResourceScripts.game_progress.selected_dialogues.has(dict.value), true)
 		'active_quest_stage':
-			if game_progress.get_active_quest(dict.value) == null || dict.has('stage') == false:
+			if ResourceScripts.game_progress.get_active_quest(dict.value) == null || dict.has('stage') == false:
 				if dict.has('state') && dict.state == false:
 					return true
 				else:
 					return false
 			if dict.has('state') && dict.state == false:
-				return game_progress.get_active_quest(dict.value).stage != dict.stage
+				return ResourceScripts.game_progress.get_active_quest(dict.value).stage != dict.stage
 			else:
-				return game_progress.get_active_quest(dict.value).stage == dict.stage
+				return ResourceScripts.game_progress.get_active_quest(dict.value).stage == dict.stage
 		'faction_reputation':
 			var data = world_gen.get_faction_from_code(dict.code)
-			var guild = game_world.areas[data.area].factions[data.code]
+			var guild = ResourceScripts.game_world.areas[data.area].factions[data.code]
 			return input_handler.operate(dict.operant, guild.totalreputation, dict.value)
 		'group_size':#not sure about this implementation instead of area - party approach
 			var counter = 0
-			for i in game_party.characters.values():
+			for i in ResourceScripts.game_party.characters.values():
 				if i.location == input_handler.active_location.id:
 					counter += 1
 			return input_handler.operate(dict.operant, counter, dict.value)
 		'location_has_specific_slaves': 
 			var counter = 0
-			for i in game_party.characters.values():
+			for i in ResourceScripts.game_party.characters.values():
 				if i.check_location(dict.location) && i.checkreqs(dict.reqs) == true && !i.has_profession('master'):
 					counter += 1
 			return counter >= dict.value
-

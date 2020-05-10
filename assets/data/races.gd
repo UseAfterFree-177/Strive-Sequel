@@ -15,7 +15,7 @@ func get_progress_task(character, temptask, tempsubtask, count_crit = false):
 	var value = call(subtask.progress_function, character)
 	var item
 	if character.equipment.gear.tool != null:
-		item = game_res.items[character.equipment.gear.tool]
+		item = ResourceScripts.game_res.items[character.equipment.gear.tool]
 	if item != null && task.has('worktool') && task.worktool in item.toolcategory:
 		if item.bonusstats.has("task_efficiency_tool"):
 			value = value + value*item.bonusstats.task_efficiency_tool
@@ -78,13 +78,13 @@ func tailor_progress(character):
 	return 1 + (1*(character.get_stat('wits')/66+character.get_stat('physics')/150))
 
 func forge_progress(character):
-	return 1 + (1*(character.get_stat('wits')/66+character.get_stat('physics')/150)) * (1+0.25*game_res.upgrades.forgeworkshop)
+	return 1 + (1*(character.get_stat('wits')/66+character.get_stat('physics')/150)) * (1+0.25*ResourceScripts.game_res.upgrades.forgeworkshop)
 
 func alchemy_progress(character):
 	return 1 + (1*(character.get_stat('wits')/50))
 
 func building_progress(character):
-	return (1 + character.get_stat('wits')/100 + character.get_stat('physics')/50) * (1+0.25*game_res.upgrades.forgeworkshop)
+	return (1 + character.get_stat('wits')/100 + character.get_stat('physics')/50) * (1+0.25*ResourceScripts.game_res.upgrades.forgeworkshop)
 
 #i added to task tamplates link to a corresponding productivity modifier. rewiev these values and fix them if needed 
 #also tried to fix cooking but not sure if all was made

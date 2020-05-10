@@ -3,7 +3,7 @@ extends Panel
 
 #warning-ignore-all:return_value_discarded
 func _ready():
-	game_party.connect("slave_added",self,"rebuild")
+	globals.connect("slave_added",self,"rebuild")
 	globals.connect("hour_tick", self, "update")
 	input_handler.slave_list_node = self
 	#rebuild()
@@ -12,8 +12,8 @@ func _ready():
 func rebuild():
 	input_handler.get_spec_node(input_handler.NODE_SLAVETOOLTIP).hide()
 	input_handler.ClearContainer($ScrollContainer/VBoxContainer)
-	for i in game_party.character_order:
-		var person = game_party.characters[i]
+	for i in ResourceScripts.game_party.character_order:
+		var person = ResourceScripts.game_party.characters[i]
 		var newbutton = input_handler.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
 		newbutton.set_meta('slave', person)
 		newbutton.connect('pressed', self, 'open_slave_tab', [person])
@@ -22,7 +22,7 @@ func rebuild():
 		newbutton.target_node = self
 		newbutton.target_function = 'rebuild'
 		newbutton.arraydata = i
-		newbutton.parentnodearray = game_party.character_order
+		newbutton.parentnodearray = ResourceScripts.game_party.character_order
 
 func update():
 	for i in $ScrollContainer/VBoxContainer.get_children():
@@ -35,7 +35,6 @@ func update_button(newbutton):
 	newbutton.get_node("HBoxContainer/icon").texture = person.get_icon()
 	newbutton.get_node("HBoxContainer/name").text = person.get_full_name()
 	newbutton.get_node("HBoxContainer/sex").texture = images.sexicons[person.get_stat('sex')]
-	
 	
 	newbutton.get_node("HBoxContainer/stats/hp").max_value = person.get_stat('hpmax')
 	newbutton.get_node("HBoxContainer/stats/hp").value = person.hp
@@ -69,7 +68,7 @@ func update_button(newbutton):
 		if person.check_location('travel'):
 			newbutton.get_node('HBoxContainer/job').text = 'Relocating: in ' + str(ceil(person.travel.travel_time / person.travel_per_tick())) + " hours. " 
 		else:
-			newbutton.get_node('HBoxContainer/job').text = 'Positioned: ' + game_world.areas[game_world.location_links[person.travel.location].area].name
+			newbutton.get_node('HBoxContainer/job').text = 'Positioned: ' + ResourceScripts.game_world.areas[ResourceScripts.game_world.location_links[person.travel.location].area].name
 	var icon
 	if person.has_profession("master"):
 		icon = load("res://assets/images/gui/gui icons/icon_master.png")
@@ -108,15 +107,10 @@ func get_fear_texture(tempchar):
 		rval = 'med'
 	return fear_textures[rval]
 
-var stateicons = {
-	work = load('res://assets/images/gui/gui icons/workicon.png'),
-	rest = load('res://assets/images/gui/gui icons/sleepicon.png'),
-	joy = load('res://assets/images/gui/gui icons/joyicon.png'),
-}
 func get_state_texture(tempchar):
 	return
 	var rval = tempchar.last_tick_assignement
 	
-	rval = stateicons[rval]
+	rval = images.stateicons[rval]
 	return rval
 

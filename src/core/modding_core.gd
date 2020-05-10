@@ -157,13 +157,13 @@ func process_data_file(path : String, file: String, tablename : String):
 	process_dir(tablename, 'statdata', statdata.statdata)
 	#tutorial data is not avaliable for now
 	#process_dir(tablename, 'effects', .effect_table)
-	process_dir(tablename, 'w_factions', world_gen.factiondata)
-	process_dir(tablename, 'w_guilds', world_gen.guild_upgrades)
-	process_dir(tablename, 'w_lands', world_gen.lands)
-	process_dir(tablename, 'w_locations', world_gen.locations)
-	process_dir(tablename, 'w_locationnames', world_gen.locationnames)
-	process_dir(tablename, 'w_quests', world_gen.questdata)
-	process_dir(tablename, 'w_dungeons', world_gen.dungeons)
+	process_dir(tablename, 'w_factions', worlddata.factiondata)
+	process_dir(tablename, 'w_guilds', worlddata.guild_upgrades)
+	process_dir(tablename, 'w_lands', worlddata.lands)
+	process_dir(tablename, 'w_locations', worlddata.locations)
+	process_dir(tablename, 'w_locationnames', worlddata.locationnames)
+	process_dir(tablename, 'w_quests', worlddata.questdata)
+	process_dir(tablename, 'w_dungeons', worlddata.dungeons)
 	
 	#incomplete
 
@@ -209,10 +209,10 @@ func fix_main_data_preload():#fixing incomplete data in core files, mostly moved
 		i.name = tr("TRAIT" + i.code.to_upper())
 		i.descript = tr("TRAIT" + i.code.to_upper() + "DESCRIPT")
 	
-	for i in world_gen.dungeons.values():
+	for i in worlddata.dungeons.values():
 		i.classname = tr("LOCATIONNAME" + i.code.to_upper())
 	
-	for i in world_gen.locations.values():
+	for i in worlddata.locations.values():
 		i.classname = tr(i.code.to_upper())
 	
 	for i in Enemydata.enemies.values():

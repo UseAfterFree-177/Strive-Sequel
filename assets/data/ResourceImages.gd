@@ -16,6 +16,9 @@ var backgrounds = {
 	market = load("res://assets/images/backgrounds/market.png"),
 	hall = load("res://assets/images/backgrounds/townhall.png"),
 	
+	aliron = load("res://assets/images/backgrounds/Aliron.png"),
+	elf_capital = load("res://assets/images/backgrounds/elf_capital.png"),
+	
 	cave_1 = load("res://assets/images/backgrounds/cave1.png"),
 	cave_2 = load("res://assets/images/backgrounds/cave2.png"),
 	cave_3 = load("res://assets/images/backgrounds/cave3.png"),
@@ -116,6 +119,16 @@ var gui = {
 	alt_back = load("res://assets/images/gui/text scene/textfieldpanel.png"), #stub
 };
 
+var icondict = {
+	food = "res://assets/images/gui/inventory/icon_food1.png",
+	material = "res://assets/images/gui/inventory/icon_res1.png",
+	'tool' : "res://assets/images/gui/inventory/icon_craft1.png",
+	weapon = "res://assets/images/gui/inventory/icon_weap1.png",
+	armor = "res://assets/images/gui/inventory/icon_armor1.png",
+	costume = "res://assets/images/gui/inventory/icon_cosm1.png",
+	usable = "res://assets/images/gui/inventory/icon_potion1.png",
+	
+}
 
 var icons = {
 	quest_dungeon = load('res://assets/images/gui/quest_dungeon.png'),
@@ -188,6 +201,12 @@ var sexicons = {
 	male = load("res://assets/images/sexicons/male.png"),
 	female = load("res://assets/images/sexicons/female.png"),
 	futa = load("res://assets/images/sexicons/futa.png"),
+}
+
+var stateicons = {
+	work = load('res://assets/images/gui/gui icons/workicon.png'),
+	rest = load('res://assets/images/gui/gui icons/sleepicon.png'),
+	joy = load('res://assets/images/gui/gui icons/joyicon.png'),
 }
 
 var quest_icons = {

@@ -14,7 +14,7 @@ func election_quest_text():
 	var text = ''
 	var counter = 0
 	for i in ['servants_election_support','fighters_election_support','workers_election_support','mages_election_support']:
-		if game_progress.decisions.has(i):
+		if ResourceScripts.game_progress.decisions.has(i):
 			counter += 1
 			text += elect_support_dict[i] + "\n"
 	

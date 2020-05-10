@@ -42,10 +42,10 @@ func _ready():
 
 func return_to_mansion():
 	input_handler.PlaySound("door_open")
-	core_animations.BlackScreenTransition()
+	ResourceScripts.core_animations.BlackScreenTransition()
 	yield(get_tree().create_timer(0.5), 'timeout')
 	hide()
-	core_animations.StopBackgroundSound()
+	ResourceScripts.core_animations.StopBackgroundSound()
 	input_handler.SetMusicRandom("mansion")
 	input_handler.CurrentScreen = 'mansion'
 
@@ -64,16 +64,16 @@ func testcombat():
 	var newitem = globals.CreateGearItem("bow", {WeaponHandle = 'wood', BowBase = 'obsidian'})
 	globals.AddItemToInventory(newitem)
 	test_slave.equip(newitem)
-	game_res.materials.unstable_concoction = 5
-	game_res.materials.bandage = 2
+	ResourceScripts.game_res.materials.unstable_concoction = 5
+	ResourceScripts.game_res.materials.bandage = 2
 	globals.AddItemToInventory(globals.CreateUsableItem("lifegem", 3))
 	globals.AddItemToInventory(globals.CreateUsableItem("lifeshard", 3))
-	game_party.add_slave(test_slave)
+	ResourceScripts.game_party.add_slave(test_slave)
 	test_slave.speed = 100
 	test_slave.wits = 100.0
 	var test_slave2 = Slave.new()
 	test_slave2.create('BeastkinWolf', 'male', 'random')
-	game_party.add_slave(test_slave2)
+	ResourceScripts.game_party.add_slave(test_slave2)
 	input_handler.active_location.group = {1:test_slave.id, 4:test_slave2.id}
 	globals.StartCombat('wolves_skirmish')
 
@@ -85,7 +85,7 @@ func show_explore_spells(position):
 		$Positions/itemusepanel.show()
 		$Positions/itemusepanel.rect_global_position.y = get_node(positiondict[position] + "/Image").rect_global_position.y - $Positions/itemusepanel.rect_size.y
 		input_handler.ClearContainer($LocationGui/Positions/itemusepanel/GridContainer)
-		var character = game_party.characters[active_location.group['pos'+str(position)]]
+		var character = ResourceScripts.game_party.characters[active_location.group['pos'+str(position)]]
 		for i in character.combat_skills:
 			var skill = Skilldata.Skilllist[i]
 			if skill.tags.has('exploration') == false:
@@ -97,7 +97,7 @@ func show_explore_spells(position):
 			if skill.manacost > 0:
 				newbutton.hint_tooltip += "\nMana Cost: " + str(skill.manacost)
 			for k in skill.catalysts:
-				if game_res.materials[k] < skill.catalysts[k]:
+				if ResourceScripts.game_res.materials[k] < skill.catalysts[k]:
 					newbutton.disabled = true
 					newbutton.material = load("res://assets/sfx/bw_shader.tres")
 					newbutton.hint_tooltip += "\nMissing catalyst: " + Items.materiallist[k].name
@@ -156,8 +156,8 @@ func build_accessible_locations():
 	
 	var location_array = []
 	var travelers = []
-	for i in game_party.character_order:
-		var person = game_party.characters[i]
+	for i in ResourceScripts.game_party.character_order:
+		var person = ResourceScripts.game_party.characters[i]
 		if !person.travel.location in ['mansion','travel'] && location_array.has(person.travel.location) == false:
 			location_array.append(person.travel.location)
 	
@@ -189,13 +189,13 @@ func select_location(location):
 	for i in $NavigationPanel/NavigationContainer/AreaSelection.get_children():
 		if i.has_meta("data"):
 			i.pressed = i.get_meta('data') == location
-	if location in game_world.capitals:
+	if location in ResourceScripts.game_world.capitals:
 		open_city(location)
 	else:
 		var data = world_gen.get_location_from_code(location)
 		var presented_characters = []
-		for id in game_party.character_order:
-			var i = game_party.characters[id]
+		for id in ResourceScripts.game_party.character_order:
+			var i = ResourceScripts.game_party.characters[id]
 			if i.check_location(data.id, true):
 				presented_characters.append(i)
 		if presented_characters.size() == 0:
@@ -209,9 +209,9 @@ var city_options = {
 }
 
 func open_city(city):
-	core_animations.BlackScreenTransition()
+	ResourceScripts.core_animations.BlackScreenTransition()
 	yield(get_tree().create_timer(0.5), 'timeout')
-	active_area = game_world.areas[game_world.location_links[city].area]
+	active_area = ResourceScripts.game_world.areas[ResourceScripts.game_world.location_links[city].area]
 	active_location = {}
 	input_handler.active_area = active_area
 	selected_location = city
@@ -225,7 +225,7 @@ func open_city(city):
 	$FactionDetailsPanel.hide()
 	$SlaveSelectionPanel.hide()
 	$VideoPlayer.hide()
-	$TextureRect.texture = world_gen.backgrounds[active_area.capital_background]
+	$TextureRect.texture = images.backgrounds[active_area.capital_background]
 	if active_area.has('capital_background_noise'):
 		input_handler.PlayBackgroundSound(active_area.capital_background_noise)
 	if active_area.has('capital_background_music'):
@@ -283,7 +283,7 @@ var faction_actions = {
 }
 
 func enter_guild(guild):
-	active_area = game_world.areas[guild.area]
+	active_area = ResourceScripts.game_world.areas[guild.area]
 	active_faction = guild
 	$ShopPanel.hide()
 	input_handler.active_faction = guild
@@ -366,7 +366,7 @@ func select_category(category):
 				newbutton = input_handler.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
 				newbutton.text = i.name
 				var presented_characters = []
-				for k in game_party.characters.values():
+				for k in ResourceScripts.game_party.characters.values():
 					if k.travel.area == active_area.code && k.check_location(i.id, true):
 						presented_characters.append(k)
 				if presented_characters.size() > 0:
@@ -377,7 +377,7 @@ func select_category(category):
 				newbutton = input_handler.DuplicateContainerTemplate($ScrollContainer/VBoxContainer)
 				newbutton.text = i.name
 				var presented_characters = []
-				for k in game_party.characters.values():
+				for k in ResourceScripts.game_party.characters.values():
 					if k.travel.area == active_area.code && k.check_location(i.id, true):
 						presented_characters.append(k)
 				if presented_characters.size() > 0:
@@ -409,7 +409,7 @@ func open_shop(shop):
 var tempitems = []
 
 func update_shop_list():
-	$ShopPanel/Gold.text = str(game_res.money)
+	$ShopPanel/Gold.text = str(ResourceScripts.game_res.money)
 	input_handler.ClearContainer($ShopPanel/ScrollContainer/VBoxContainer)
 	tempitems.clear()
 	match shopcategory:
@@ -459,8 +459,8 @@ func update_shop_list():
 						newbutton.get_node("amount").text = str(amount)
 						newbutton.get_node("amount").show()
 		'sell':
-			for i in game_res.materials:
-				if game_res.materials[i] <= 0:
+			for i in ResourceScripts.game_res.materials:
+				if ResourceScripts.game_res.materials[i] <= 0:
 					continue
 				var item = Items.materiallist[i]
 				var newbutton = input_handler.DuplicateContainerTemplate($ShopPanel/ScrollContainer/VBoxContainer)
@@ -468,10 +468,10 @@ func update_shop_list():
 				newbutton.get_node("icon").texture = item.icon
 				newbutton.get_node("price").text = str(item.price)
 				newbutton.get_node("amount").visible = true
-				newbutton.get_node("amount").text = str(game_res.materials[i])
+				newbutton.get_node("amount").text = str(ResourceScripts.game_res.materials[i])
 				newbutton.connect("pressed",self,"item_sell", [item])
 				globals.connectmaterialtooltip(newbutton, item)
-			for item in game_res.items.values():
+			for item in ResourceScripts.game_res.items.values():
 				if item.owner != null:
 					continue
 				var newbutton = input_handler.DuplicateContainerTemplate($ShopPanel/ScrollContainer/VBoxContainer)
@@ -504,15 +504,15 @@ func item_sell(item):
 		price = item.calculateprice()/2
 		sellingamount = item.amount
 	else:
-		sellingamount = game_res.materials[item.code]
+		sellingamount = ResourceScripts.game_res.materials[item.code]
 	$NumberSelection.open(self, 'item_sell_confirm', "Sell $n " + item.name + "? Gained gold: $m", price, 0, sellingamount, false)
 
 func item_puchase_confirm(value):
 	input_handler.PlaySound("money_spend")
 	if typeof(purchase_item) == TYPE_OBJECT:
 		globals.AddItemToInventory(purchase_item)
-		game_res.money -= purchase_item.calculateprice()
-		$ShopPanel/Gold.text = str(game_res.money)
+		ResourceScripts.game_res.money -= purchase_item.calculateprice()
+		$ShopPanel/Gold.text = str(ResourceScripts.game_res.money)
 		input_handler.get_spec_node(input_handler.NODE_ITEMTOOLTIP).hide()
 		for i in active_shop:
 			if purchase_item.itembase == i && str(purchase_item.parts) == str(active_shop[i]):
@@ -521,13 +521,13 @@ func item_puchase_confirm(value):
 		update_shop_list()
 	else:
 		if Items.materiallist.has(purchase_item.code):
-			game_res.set_material(purchase_item.code, '+', value)
-			game_res.money -= purchase_item.price*value
-			$ShopPanel/Gold.text = str(game_res.money)
+			ResourceScripts.game_res.set_material(purchase_item.code, '+', value)
+			ResourceScripts.game_res.money -= purchase_item.price*value
+			$ShopPanel/Gold.text = str(ResourceScripts.game_res.money)
 			if typeof(active_shop) == TYPE_DICTIONARY:
 				active_shop[purchase_item.code] -= value
 		elif Items.itemlist.has(purchase_item.code):
-			game_res.money -= purchase_item.price*value
+			ResourceScripts.game_res.money -= purchase_item.price*value
 			if typeof(active_shop) == TYPE_DICTIONARY:
 				active_shop[purchase_item.code] -= value
 			while value > 0:
@@ -538,19 +538,19 @@ func item_puchase_confirm(value):
 						globals.AddItemToInventory(globals.CreateGearItem(purchase_item.code, {}))
 				
 				value -= 1
-			$ShopPanel/Gold.text = str(game_res.money)
+			$ShopPanel/Gold.text = str(ResourceScripts.game_res.money)
 		update_shop_list()
 
 func item_sell_confirm(value):
 	input_handler.PlaySound("money_spend")
 	var price = purchase_item.price
 	if Items.materiallist.has(purchase_item.code):
-		game_res.set_material(purchase_item.code, '-', value)
+		ResourceScripts.game_res.set_material(purchase_item.code, '-', value)
 	else:
 		price = round(purchase_item.calculateprice()/2)
 		purchase_item.amount -= value
-	game_res.money += price*value
-	$ShopPanel/Gold.text = str(game_res.money)
+	ResourceScripts.game_res.money += price*value
+	$ShopPanel/Gold.text = str(ResourceScripts.game_res.money)
 	update_shop_list()
 
 func faction_hire():
@@ -576,9 +576,9 @@ func faction_sellslaves():
 	$HirePanel.show()
 	$HirePanel/RichTextLabel.bbcode_text = ""
 	input_handler.ClearContainer($HirePanel/ScrollContainer/VBoxContainer)
-	for i in game_party.characters:
+	for i in ResourceScripts.game_party.characters:
 		var tchar = characters_pool.get_char_by_id(i)
-		if tchar == game_party.get_master() || tchar.valuecheck({code = 'is_free'}) == false:
+		if tchar == ResourceScripts.game_party.get_master() || tchar.valuecheck({code = 'is_free'}) == false:
 			continue
 		var newbutton = input_handler.DuplicateContainerTemplate($HirePanel/ScrollContainer/VBoxContainer)
 		newbutton.get_node("name").text = tchar.name
@@ -598,7 +598,7 @@ func select_slave_in_guild(person = Slave):
 			var text = 'Hire ' + person.name + " for " + str(person.calculate_price()) + " gold? "
 			$HirePanel/RichTextLabel.bbcode_text = text
 			$HirePanel/Button.show()
-			$HirePanel/Button.disabled = (game_res.money < person.calculate_price())
+			$HirePanel/Button.disabled = (ResourceScripts.game_res.money < person.calculate_price())
 		'sell':
 			for i in $HirePanel/ScrollContainer/VBoxContainer.get_children():
 				if i.name == "Button":
@@ -631,8 +631,8 @@ func guild_hire_slave():
 #			input_handler.PlaySound("money_spend")
 #			faction_hire()
 		'sell':
-			game_res.money += round(selectedperson.calculate_price()/2)
-			game_party.remove_slave(selectedperson)
+			ResourceScripts.game_res.money += round(selectedperson.calculate_price()/2)
+			ResourceScripts.game_party.remove_slave(selectedperson)
 			active_faction.slaves.append(selectedperson.id)
 			selectedperson.is_players_character = false
 			input_handler.PlaySound("money_spend")
@@ -644,8 +644,8 @@ func sell_slave(person):
 	input_handler.get_spec_node(input_handler.NODE_CONFIRMPANEL, [self, 'sell_slave_confirm', selectedperson.translate("Sell [name]?")])
 
 func sell_slave_confirm():
-	game_res.money += round(selectedperson.calculate_price()/2)
-	game_party.remove_slave(selectedperson)
+	ResourceScripts.game_res.money += round(selectedperson.calculate_price()/2)
+	ResourceScripts.game_party.remove_slave(selectedperson)
 	active_faction.slaves.append(selectedperson.id)
 	selectedperson.is_players_character = false
 	input_handler.PlaySound("money_spend")
@@ -767,17 +767,17 @@ func see_quest_info(quest):
 				newbutton.get_node("amount").show()
 				globals.connectmaterialtooltip(newbutton, material)
 			'gold':
-				var value = round(i.value + i.value * variables.master_charm_quests_gold_bonus[int(game_party.get_master().get_stat('charm_factor'))])
+				var value = round(i.value + i.value * variables.master_charm_quests_gold_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])
 				newbutton.texture = load('res://assets/images/iconsitems/gold.png')
 				newbutton.get_node("amount").text = str(value)
 				newbutton.get_node("amount").show()
-				newbutton.hint_tooltip = "Gold: " + str(i.value) + " + " + str(round(i.value * variables.master_charm_quests_gold_bonus[int(game_party.get_master().get_stat('charm_factor'))])) + "(Master Charm Bonus)"
+				newbutton.hint_tooltip = "Gold: " + str(i.value) + " + " + str(round(i.value * variables.master_charm_quests_gold_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])) + "(Master Charm Bonus)"
 			'reputation':
-				var value = round(i.value + i.value * variables.master_charm_quests_rep_bonus[int(game_party.get_master().get_stat('charm_factor'))])
+				var value = round(i.value + i.value * variables.master_charm_quests_rep_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])
 				newbutton.texture = images.quest_icons[i.code]
 				newbutton.get_node("amount").text = str(value)
 				newbutton.get_node("amount").show()
-				newbutton.hint_tooltip = "Reputation (" + quest.source + "): " + str(i.value) + " + " + str(round(i.value * variables.master_charm_quests_rep_bonus[int(game_party.get_master().get_stat('charm_factor'))]))+ "(Master Charm Bonus)"
+				newbutton.hint_tooltip = "Reputation (" + quest.source + "): " + str(i.value) + " + " + str(round(i.value * variables.master_charm_quests_rep_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))]))+ "(Master Charm Bonus)"
 	
 	text += "\n\n{color=yellow|Requester: " + active_area.factions[quest.source].name + "}"
 	
@@ -785,7 +785,7 @@ func see_quest_info(quest):
 	$QuestPanel/time/Label.text = "Limit: " + str(quest.time_limit) + " days."
 
 func accept_quest():
-	world_gen.take_quest(selectedquest, active_area)
+	ResourceScripts.game_world.take_quest(selectedquest, active_area)
 	for i in selectedquest.requirements:
 		if i.code in ['complete_dungeon','complete_location']:
 			#input_handler.get_spec_node(input_handler.NODE_POPUP, ["You've received a new quest location.", 'Confirm'])
@@ -903,7 +903,7 @@ func location_purchase():
 		var newbutton = input_handler.DuplicateContainerTemplate($CityGui/ScrollContainer/VBoxContainer)
 		newbutton.text = i.classname + ": " + str(i.puchase_price) + " gold"
 		newbutton.connect("pressed", self, 'purchase_location', [i])
-		if game_res.money < i.puchase_price:
+		if ResourceScripts.game_res.money < i.puchase_price:
 			newbutton.disabled = true
 	var newbutton = input_handler.DuplicateContainerTemplate($CityGui/ScrollContainer/VBoxContainer)
 	newbutton.text = "Leave"
@@ -911,7 +911,7 @@ func location_purchase():
 
 func purchase_location(purchasing_location):
 	if purchasing_location.has('purchase_area'):
-		active_area = game_world.areas[purchasing_location.purchase_area]
+		active_area = ResourceScripts.game_world.areas[purchasing_location.purchase_area]
 	if active_area.locations.size() < 8:
 		var randomlocation = []
 		for i in active_area.locationpool:
@@ -921,8 +921,8 @@ func purchase_location(purchasing_location):
 		input_handler.active_location = randomlocation
 		input_handler.active_area = active_area
 		active_area.locations[randomlocation.id] = randomlocation
-		game_world.location_links[randomlocation.id] = {area = active_area.code, category = 'locations'} 
-		game_res.money -= purchasing_location.puchase_price
+		ResourceScripts.game_world.location_links[randomlocation.id] = {area = active_area.code, category = 'locations'} 
+		ResourceScripts.game_res.money -= purchasing_location.puchase_price
 		input_handler.interactive_message('purchase_dungeon_location', 'location_purchase_event', {})
 	else:
 		input_handler.SystemMessage("Can't purchase anymore")
@@ -952,7 +952,7 @@ func build_area_description():
 
 func open_location(data):
 	if active_location != data:
-		core_animations.BlackScreenTransition(0.7)
+		ResourceScripts.core_animations.BlackScreenTransition(0.7)
 		yield(get_tree().create_timer(0.7), 'timeout')
 	input_handler.StopBackgroundSound()
 	$LocationGui.show()
@@ -964,7 +964,7 @@ func open_location(data):
 	$FactionDetailsPanel.hide()
 	$SlaveSelectionPanel.hide()
 	active_location = data
-	active_area = game_world.areas[game_world.location_links[data.id].area]
+	active_area = ResourceScripts.game_world.areas[ResourceScripts.game_world.location_links[data.id].area]
 	input_handler.active_area = active_area
 	input_handler.active_location = active_location
 	if active_location.has('progress'):
@@ -982,8 +982,8 @@ func open_location(data):
 	#check if anyone is present
 	build_location_group()
 	var presented_characters = []
-	for id in game_party.character_order:
-		var i = game_party.characters[id]
+	for id in ResourceScripts.game_party.character_order:
+		var i = ResourceScripts.game_party.characters[id]
 		if i.travel.area == active_area.code && i.check_location(active_location.id, true):
 			presented_characters.append(i)
 	if presented_characters.size() > 0 || variables.allow_remote_intereaction == true:
@@ -1048,7 +1048,7 @@ var icons = {
 func build_location_group():
 	#clear_groups()
 	for i in positiondict:
-		if active_location.group.has('pos'+str(i)) && game_party.characters.has(active_location.group['pos'+str(i)]) == false:
+		if active_location.group.has('pos'+str(i)) && ResourceScripts.game_party.characters.has(active_location.group['pos'+str(i)]) == false:
 			active_location.group.erase('pos'+str(i))
 			get_node(positiondict[i]+"/Image").dragdata = null
 			get_node(positiondict[i]+"/Image").texture = null
@@ -1056,8 +1056,8 @@ func build_location_group():
 			get_node(positiondict[i]).self_modulate.a = 1
 			get_node(positiondict[i]).character = null
 			continue
-		if active_location.group.has('pos'+str(i)) && game_party.characters[active_location.group['pos'+str(i)]] != null &&  game_party.characters[active_location.group['pos'+str(i)]].check_location(active_location.id):
-			var character = game_party.characters[active_location.group['pos'+str(i)]]
+		if active_location.group.has('pos'+str(i)) && ResourceScripts.game_party.characters[active_location.group['pos'+str(i)]] != null &&  ResourceScripts.game_party.characters[active_location.group['pos'+str(i)]].check_location(active_location.id):
+			var character = ResourceScripts.game_party.characters[active_location.group['pos'+str(i)]]
 			get_node(positiondict[i]+"/Image").texture = character.get_icon()
 			if get_node(positiondict[i]+"/Image").texture == null:
 				if character.has_profession('master'):
@@ -1085,8 +1085,8 @@ func build_location_group():
 			get_node(positiondict[i]).character = null
 	var newbutton
 	input_handler.ClearContainer($LocationGui/PresentedSlavesPanel/ScrollContainer/VBoxContainer)
-	for id in game_party.character_order:
-		var i = game_party.characters[id]
+	for id in ResourceScripts.game_party.character_order:
+		var i = ResourceScripts.game_party.characters[id]
 		if i.check_location(active_location.id, true):
 			newbutton = input_handler.DuplicateContainerTemplate($LocationGui/PresentedSlavesPanel/ScrollContainer/VBoxContainer)
 			newbutton.dragdata = i
@@ -1127,7 +1127,7 @@ func switch_panel():
 func build_item_panel():
 	input_handler.ClearContainer($LocationGui/ItemUsePanel/ScrollContainer/VBoxContainer)
 	var tutorial_items = false
-	for i in game_res.items.values():
+	for i in ResourceScripts.game_res.items.values():
 		if Items.itemlist[i.itembase].has('explor_effect') == false:
 			continue
 		var newnode = input_handler.DuplicateContainerTemplate($LocationGui/ItemUsePanel/ScrollContainer/VBoxContainer)
@@ -1142,8 +1142,8 @@ func build_item_panel():
 
 func build_spell_panel():
 	input_handler.ClearContainer($LocationGui/ItemUsePanel/SpellContainer/VBoxContainer)
-	for id in game_party.character_order:
-		var person = game_party.characters[id]
+	for id in ResourceScripts.game_party.character_order:
+		var person = ResourceScripts.game_party.characters[id]
 		if person.check_location(active_location.id, true):
 			for i in person.skills.combat_skills:
 				var skill = Skilldata.Skilllist[i]
@@ -1160,8 +1160,8 @@ func build_spell_panel():
 				if skill.catalysts.empty() == false:
 					text += '\n\nRequired Catalysts: '
 					for k in skill.catalysts:
-						text += "\n"+ Items.materiallist[k].name + ": " + str(skill.catalysts[k]) + " (" + str(game_res.materials[k]) + ")"
-						if game_res.materials[k] < skill.catalysts[k]:
+						text += "\n"+ Items.materiallist[k].name + ": " + str(skill.catalysts[k]) + " (" + str(ResourceScripts.game_res.materials[k]) + ")"
+						if ResourceScripts.game_res.materials[k] < skill.catalysts[k]:
 							disabled = true
 				globals.connecttexttooltip(newnode, text)
 				newnode.dragdata = {skill = skill, caster = person}
@@ -1181,7 +1181,7 @@ func show_heal_items(position):
 		$LocationGui/Positions/itemusepanel.show()
 		$LocationGui/Positions/itemusepanel.rect_global_position.y = get_node(positiondict[position] + "/Image").rect_global_position.y - $LocationGui/Positions/itemusepanel.rect_size.y
 		input_handler.ClearContainer($LocationGui/Positions/itemusepanel/GridContainer)
-		for i in game_res.items.values():
+		for i in ResourceScripts.game_res.items.values():
 			if Items.itemlist[i.itembase].has('explor_effect') == false:
 				continue
 			var newbutton = input_handler.DuplicateContainerTemplate($LocationGui/Positions/itemusepanel/GridContainer)
@@ -1191,7 +1191,7 @@ func show_heal_items(position):
 			#globals.connectitemtooltip(newbutton, i)
 			newbutton.connect("pressed", self, "use_item_on_character", [position, i])
 		
-		var character = game_party.characters[active_location.group['pos'+str(position)]]
+		var character = ResourceScripts.game_party.characters[active_location.group['pos'+str(position)]]
 		for i in character.combat_skills:
 			var skill = Skilldata.Skilllist[i]
 			if skill.tags.has('exploration') == false:
@@ -1203,7 +1203,7 @@ func show_heal_items(position):
 			if skill.manacost > 0:
 				newbutton.hint_tooltip += "\nMana Cost: " + str(skill.manacost)
 			for k in skill.catalysts:
-				if game_res.materials[k] < skill.catalysts[k]:
+				if ResourceScripts.game_res.materials[k] < skill.catalysts[k]:
 					newbutton.disabled = true
 					newbutton.material = load("res://assets/sfx/bw_shader.tres")
 					newbutton.hint_tooltip += "\nMissing catalyst: " + Items.materiallist[k].name
@@ -1253,7 +1253,7 @@ func slave_position_selected(pos, character):
 	character = character.id
 	var positiontaken = false
 	var oldheroposition = null
-	if active_location.group.has(pos) && game_party.characters[active_location.group[pos]].check_location(active_location.id, true):
+	if active_location.group.has(pos) && ResourceScripts.game_party.characters[active_location.group[pos]].check_location(active_location.id, true):
 		positiontaken = true
 	
 	for i in active_location.group:
@@ -1280,8 +1280,8 @@ func slave_position_deselect(character):
 #	for i in positiondict.values():
 #		get_node(i+'/Image').hide()
 #
-#	for i in game_party.combatparty:
-#		if game_party.combatparty[i] != null:
+#	for i in ResourceScripts.game_party.combatparty:
+#		if ResourceScripts.game_party.combatparty[i] != null:
 #			get_node(positiondict[i] + "/Image").texture = state.heroes[state.combatparty[i]].portrait()
 #			get_node(positiondict[i] + "/Image").show()
 #	$AreaProgress/ProceedButton.disabled = state.if_party_level('lte', 0)
@@ -1439,16 +1439,16 @@ func StartCombat():
 
 func combat_defeat():
 	for i in active_location.group:
-		if game_party.characters.has(active_location.group[i]) && game_party.characters[active_location.group[i]].hp <= 0:
-			game_party.characters[active_location.group[i]].hp = 1
-			game_party.characters[active_location.group[i]].defeated = false
-			game_party.characters[active_location.group[i]].is_active = true
+		if ResourceScripts.game_party.characters.has(active_location.group[i]) && ResourceScripts.game_party.characters[active_location.group[i]].hp <= 0:
+			ResourceScripts.game_party.characters[active_location.group[i]].hp = 1
+			ResourceScripts.game_party.characters[active_location.group[i]].defeated = false
+			ResourceScripts.game_party.characters[active_location.group[i]].is_active = true
 	enter_level(current_level)
 
 func get_party():
 	var res = []
 	for ch in active_location.group.values():
-		if game_party.characters[ch] != null: res.push_back(game_party.characters[ch])
+		if ResourceScripts.game_party.characters[ch] != null: res.push_back(ResourceScripts.game_party.characters[ch])
 	return res
 
 
@@ -1468,7 +1468,7 @@ func use_e_combat_skill(caster, target, skill):
 #		caster.combat_cooldowns[skill_code] = skill.combatcooldown
 	
 	for i in skill.catalysts:
-		game_res.materials[i] -= skill.catalysts[i]
+		ResourceScripts.game_res.materials[i] -= skill.catalysts[i]
 #	if skill.charges > 0:
 #		if caster.combat_skill_charges.has(skill.code):
 #			caster.combat_skill_charges[skill.code] += 1
