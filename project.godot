@@ -19,26 +19,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/classes/ItemClass.gd"
 }, {
-"base": "Reference",
-"class": "S_Skill",
-"language": "GDScript",
-"path": "res://src/classes/short_skill_new.gd"
-}, {
-"base": "Reference",
-"class": "S_Skill_legacy",
-"language": "GDScript",
-"path": "res://src/classes/short_skill.gd"
-}, {
-"base": "Reference",
-"class": "Slave",
-"language": "GDScript",
-"path": "res://src/character/CharacterClass.gd"
-}, {
-"base": "Reference",
-"class": "ai_base",
-"language": "GDScript",
-"path": "res://src/classes/AI_base.gd"
-}, {
 "base": "base_effect",
 "class": "area_effect",
 "language": "GDScript",
@@ -92,10 +72,6 @@ _global_script_classes=[ {
 _global_script_class_icons={
 "Buff": "",
 "Item": "",
-"S_Skill": "",
-"S_Skill_legacy": "",
-"Slave": "",
-"ai_base": "",
 "area_effect": "",
 "atomic_effect": "",
 "base_effect": "",
@@ -141,11 +117,8 @@ starting_presets="*res://assets/data/starting_presets.gd"
 AI_data="*res://assets/data/ai_data.gd"
 input_handler="*res://src/core/input_handler.gd"
 globals="*res://src/core/globals.gd"
-state="*res://src/core/gamestate.gd"
-world_gen="*res://src/core/world_gen.gd"
 characters_pool="*res://src/core/characters_pool.gd"
 effects_pool="*res://src/core/effects_pool.gd"
-custom_text="*res://src/core/custom_text.gd"
 
 [debug]
 

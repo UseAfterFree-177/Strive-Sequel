@@ -38,7 +38,7 @@ func open_character_dislocation():
 		var newbutton = input_handler.DuplicateContainerTemplate($TravelersContainer/VBoxContainer)
 		newbutton.text = i.get_short_name()
 		if i.travel.travel_target.location != 'mansion':
-			newbutton.text += " - " + world_gen.get_location_from_code(i.travel.travel_target.location).name
+			newbutton.text += " - " + ResourceScripts.world_gen.get_location_from_code(i.travel.travel_target.location).name
 		else:
 			newbutton.text += " - " + tr("MANSION")
 		newbutton.get_node("Progress").value = i.travel.initial_travel_time - i.travel.travel_time
@@ -48,7 +48,7 @@ func open_character_dislocation():
 		newbutton.connect('pressed',self,'cancel_travel', [i])
 	
 	for i in populatedlocations:
-		$HomeButton.add_item(world_gen.get_location_from_code(i).name)
+		$HomeButton.add_item(ResourceScripts.world_gen.get_location_from_code(i).name)
 		$HomeButton.set_item_metadata($HomeButton.get_item_count()-1, i)
 	
 	
@@ -176,7 +176,7 @@ func update_character_dislocation():
 		if selected_travel_characters.size() > 0 :
 			text += "\nTravel Time: " + str(ceil(globals.calculate_travel_time(dislocation_area, 'mansion').time / ResourceScripts.game_party.characters[selected_travel_characters[0]].travel_per_tick())) + " hours."
 	else:
-		var location = world_gen.get_location_from_code(destination)
+		var location = ResourceScripts.world_gen.get_location_from_code(destination)
 		text += "\n\nTarget Location: \n[color=yellow]" + location.name + "[/color]" 
 		match location.type:
 			'dungeon':

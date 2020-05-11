@@ -22,7 +22,7 @@ func serialize():
 	return inst2dict(self)
 
 func make_world():
-	world_gen.build_world()
+	ResourceScripts.world_gen.build_world()
 	areas.plains.unlocked = true
 	areas.forests.unlocked = true
 
@@ -30,10 +30,10 @@ func advance_day():
 	for i in areas.values():
 		update_guilds(i)
 		if int(ResourceScripts.game_globals.date) % variables.shop_restock_days == 0:
-			world_gen.update_area_shop(i)
+			ResourceScripts.world_gen.update_area_shop(i)
 			for k in i.locations.values():
 				if k.has('shop'):
-					world_gen.update_area_shop(k)
+					ResourceScripts.world_gen.update_area_shop(k)
 	update_locations()
 
 func quest_kill_receiver(monstercode):
@@ -64,7 +64,7 @@ func update_guilds_old(area):
 				characters_pool.get_char_by_id(k).is_active = false
 				i.slaves.erase(k)
 		while i.slaves.size() < i.slavenumber:
-			world_gen.make_slave_for_guild(i)
+			ResourceScripts.world_gen.make_slave_for_guild(i)
 	for faction in area.quests.factions:
 		for quest in area.quests.factions[faction].values():
 			if quest.state == 'taken':
@@ -74,7 +74,7 @@ func update_guilds_old(area):
 			else:
 				if randf() >= 0.7 || quest.state == 'complete':
 					area.quests.factions[faction].erase(quest.id)
-				world_gen.fill_faction_quests(faction, area.code)
+				ResourceScripts.world_gen.fill_faction_quests(faction, area.code)
 
 func update_guilds(area):
 	for faction in area.quests.factions:
@@ -97,15 +97,15 @@ func update_guilds(area):
 				characters_pool.get_char_by_id(k).is_active = false
 			i.slaves.clear()
 			while i.slaves.size() < i.slavenumber:
-				world_gen.make_slave_for_guild(i)
+				ResourceScripts.world_gen.make_slave_for_guild(i)
 		for faction in area.quests.factions:
-			world_gen.fill_faction_quests(faction, area.code)
+			ResourceScripts.world_gen.fill_faction_quests(faction, area.code)
 
 func take_quest(quest, area):
 	quest.state = 'taken'
 	for i in quest.requirements:
 		if i.code in ['complete_dungeon', 'complete_location']:
-			var location = world_gen.make_repeatable_quest_location(quest, area, i)
+			var location = ResourceScripts.world_gen.make_repeatable_quest_location(quest, area, i)
 			area.questlocations[location.id] = location
 			location.questid = quest.id
 			i.location = location.id

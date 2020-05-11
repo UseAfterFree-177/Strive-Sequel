@@ -78,7 +78,7 @@ func _ready():
 	$TimeNode/Date.text = "Day: " + str(ResourceScripts.game_globals.date) + ", Hour: " + str(ResourceScripts.game_globals.hour) + ":00"
 	if variables.generate_test_chars:
 		ResourceScripts.game_world.make_world()
-		var character = Slave.new()
+		var character = ResourceScripts.scriptdict.class_slave.new()
 		character.create('HalfkinCat', 'male', 'random')
 		character.set_stat('consent', 100)
 		character.set_stat('penis_virgin', true)
@@ -111,7 +111,7 @@ func _ready():
 		globals.impregnate(character, character)
 		#character.pregnancy.duration = 2
 		
-		character = Slave.new()
+		character = ResourceScripts.scriptdict.class_slave.new()
 		character.create('HalfkinCat', 'random', 'random')
 		character.set_stat('consent',100)
 		character.statlist.negative_sex_traits = ['dislike_missionary']
@@ -122,13 +122,13 @@ func _ready():
 		character.set_stat('obedience', 100)
 		character.set_stat('lust',50)
 		character.is_players_character = true
-		character = Slave.new()
+		character = ResourceScripts.scriptdict.class_slave.new()
 		character.create('HalfkinCat', 'random', 'random')
 		characters_pool.move_to_state(character.id)
 		
 #		for i in range(1,20):
 #
-#			character = Slave.new()
+#			character = ResourceScripts.scriptdict.class_slave.new()
 #			character.create('BeastkinCat', 'random', 'random')
 #			characters_pool.move_to_state(character.id)
 		
@@ -143,7 +143,7 @@ func _ready():
 		character.set_stat('physics' ,100)
 		character.set_stat('wits' , 100)
 		
-		var character2 = Slave.new()
+		var character2 = ResourceScripts.scriptdict.class_slave.new()
 		character2.create('HalfkinCat', 'random', 'random')
 		character2.set_stat('charm' , 0)
 		character2.set_stat('physics' ,0)
@@ -193,6 +193,13 @@ func _ready():
 		character.set_slave_category('slave')
 		character.is_players_character = true
 		
+		globals.common_effects([{code = 'make_story_character', value = 'Daisy'}, {code = 'unique_character_changes', value = 'daisy', args = [
+			{code = 'sexuals_factor', value = 1, operant = "+"},
+			{code = 'sextrait', value = 'submissive', operant = 'add'},#for sextrait/add setting, trait is appended to character's traits
+			{code = 'submission', operant = '+', value = 50},
+			{code = 'obedience', operant = '+', value = 30},
+			{code = 'tag', operant = 'remove', value = 'no_sex'},
+			]}])
 		#state.revert()
 		ResourceScripts.game_res.money = 505590
 		for i in Items.materiallist:
@@ -297,8 +304,8 @@ func quest_test():
 func _process(delta):
 	if self.visible == false:
 		return
-	$gold.text = custom_text.transform_number(ResourceScripts.game_res.money)#str(state.money)
-	$food.text = custom_text.transform_number(ResourceScripts.game_res.get_food()) + " - " + str(ResourceScripts.game_party.get_food_consumption())
+	$gold.text = ResourceScripts.custom_text.transform_number(ResourceScripts.game_res.money)#str(state.money)
+	$food.text = ResourceScripts.custom_text.transform_number(ResourceScripts.game_res.get_food()) + " - " + str(ResourceScripts.game_party.get_food_consumption())
 	
 	$population.text = "Population: "+ str(ResourceScripts.game_party.characters.size()) +"/" + str(ResourceScripts.game_res.get_pop_cap())
 	#buildscreen()

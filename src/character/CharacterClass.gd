@@ -1,14 +1,14 @@
 extends Reference
-class_name Slave
+#class_name Slave
 # warning-ignore-all:return_value_discarded
 
-var statlist = load("res://src/character/stats.gd").new()
-var xp_module = load("res://src/character/leveling.gd").new()
-var equipment = load("res://src/character/equip.gd").new()
-var skills = load("res://src/character/skills.gd").new()
-var travel = load("res://src/character/travelling.gd").new()
-var effects = load("res://src/character/effects.gd").new()
-var food = load("res://src/character/food.gd").new()
+var statlist = ResourceScripts.scriptdict.ch_statlist.new()
+var xp_module = ResourceScripts.scriptdict.ch_xp_module.new()
+var equipment = ResourceScripts.scriptdict.ch_equipment.new()
+var skills = ResourceScripts.scriptdict.ch_skills.new()
+var travel = ResourceScripts.scriptdict.ch_travel.new()
+var effects = ResourceScripts.scriptdict.ch_effects.new()
+var food = ResourceScripts.scriptdict.ch_food.new()
 var displaynode = null
 var ai = null
 
@@ -129,7 +129,7 @@ func check_trait(trait):
 func generate_ea_character(gendata, desired_class):
 	var res = desired_class
 	var array = []
-	for i in world_gen.easter_egg_characters.values():
+	for i in worlddata.easter_egg_characters.values():
 		var temprace = gendata.race
 		if races.race_groups.has(temprace):
 			temprace = races.race_groups[temprace][randi()%races.race_groups[temprace].size()]
@@ -158,7 +158,7 @@ func generate_simple_fighter(tempname):
 	var data = Enemydata.enemies[tempname]
 	statlist.generate_simple_fighter(data)
 	skills.setup_skills(data)
-	ai = ai_base.new()
+	ai = ResourceScripts.scriptdict.class_ai_base.new()
 	if data.has('full_ai'):
 		ai.set_simple_ai(data.ai)
 	else:
@@ -168,7 +168,7 @@ func generate_simple_fighter(tempname):
 
 func generate_predescribed_character(data):
 	create(data.race, data.sex, data.age)
-	statlist.process_chardata(data)
+	statlist.process_chardata(data, true)
 
 func create(temp_race, temp_gender, temp_age):
 	id = characters_pool.add_char(self)

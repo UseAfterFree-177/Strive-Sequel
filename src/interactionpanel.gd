@@ -1,8 +1,9 @@
 extends Control
 #warning-ignore-all:function_conflicts_variable
 
-var parser = load("res://src/sexdescriptions.gd").new()
-var member = load("res://src/interaction_member.gd")
+var parser = ResourceScripts.scriptdict.sexinteraction_parser.new()
+var member = ResourceScripts.scriptdict.sexinteraction_member
+var sexdict = ResourceScripts.scriptdict.sexinteraction_sexdict.new()
 
 var participants = [] #members
 var givers = [] #members
@@ -203,7 +204,7 @@ func _input(event):
 var dummycounter = 0
 
 func createtestdummy(type = 'normal'):
-	var person = Slave.new()
+	var person = ResourceScripts.scriptdict.class_slave.new()
 	person.create('BeastkinFox', 'random', 'random')
 	var newmember = member.new()
 	newmember.sceneref = self
@@ -1407,8 +1408,6 @@ rope_dislike = ["Tying me... why?", "Ugh.. This rope is so thick...", "W-what's 
 func startscenecontinue(scenescript):
 	startscene(scenescript, true)
 
-
-var sexdict = load("res://src/newsexdictionary.gd").new()
 
 #centralized output processing
 #category currently assumed to be 'fucking', will expland with further conversions

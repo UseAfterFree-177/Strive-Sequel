@@ -105,7 +105,6 @@ func open(scene, not_save = false):
 			counter += 1
 		scenetext += "\n\n" + text
 	
-	
 	if scene.has("set_enemy"):
 		dialogue_enemy = scene.set_enemy
 	var counter = 1
@@ -160,7 +159,7 @@ func open(scene, not_save = false):
 		if i.has('disabled') && i.disabled == true:
 			disable = true
 		if i.has('bonus_effects'):
-			newbutton.connect('pressed', state, "common_effects", [i.bonus_effects])
+			newbutton.connect('pressed', globals, "common_effects", [i.bonus_effects])
 		newbutton.disabled = disable
 		counter += 1
 	if $RichTextLabel.bbcode_text != '':
@@ -197,7 +196,7 @@ func add_chest_options(scene):
 	var chest_data = input_handler.scene_loot
 	var text = "\n\nChest Lock: " +  str(chest_data.lock.type) 
 	if chest_data.lock.type != 'none':
-		text += "\nDifficulty: " + custom_text.lock_difficulty(chest_data.lock.difficulty)
+		text += "\nDifficulty: " + ResourceScripts.custom_text.lock_difficulty(chest_data.lock.difficulty)
 	scene.text.append({text = text, reqs = []})
 	if chest_data.lock.type == 'none':
 		scene.options.insert(0,{code = 'open_chest', reqs = [], text = "DIALOGUECHESTOPEN"})
@@ -277,7 +276,7 @@ func recruit():
 	close()
 
 func create_location_recruit(args):
-	var newchar = Slave.new()
+	var newchar = ResourceScripts.scriptdict.class_slave.new()
 	input_handler.active_character = newchar
 	newchar.generate_random_character_from_data(input_handler.active_location.races)
 	$RichTextLabel.bbcode_text = newchar.translate($RichTextLabel.bbcode_text)

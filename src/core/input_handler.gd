@@ -76,7 +76,7 @@ var node_data = {
 	NODE_CONFIRMPANEL : {name = 'ConfirmPanel', mode = 'scene', scene = preload("res://src/scenes/ConfirmPanel.tscn"), calls = 'Show'},
 	NODE_SLAVESELECT : {name = 'SlaveSelectMenu', mode = 'scene', scene = preload("res://src/scenes/SlaveSelectMenu.tscn")},
 	NODE_SKILLSELECT : {name = 'SelectSkillMenu', mode = 'scene', scene = preload("res://src/scenes/SkillSelectMenu.tscn")},
-	NODE_EVENT : {name = 'EventNode', mode = 'scene', scene = preload("res://src/scenes/TextSystem.tscn")},
+	#NODE_EVENT : {name = 'EventNode', mode = 'scene', scene = preload("res://src/scenes/TextSystem.tscn")},
 	NODE_MUSIC : {name = 'music', mode = 'node', node = AudioStreamPlayer, args = {'bus':"Music"}},
 	NODE_SOUND : {name = 'sound', mode = 'node', no_return = true, node = AudioStreamPlayer, args = {'bus':"Sound"}},
 	NODE_BACKGROUND_SOUND : {name = 'BGSound', mode = 'node', node = AudioStreamPlayer, args = {'bus':"Sound"}},

@@ -54,7 +54,7 @@ func testcombat():
 	current_stage = 1
 	input_handler.active_location = {stagedenemies = []}
 	#input_handler.active_location.stagedenemies = [{stage = 1, level = 1, enemy = 'rats_easy'}]
-	var test_slave = Slave.new()
+	var test_slave = ResourceScripts.scriptdict.class_slave.new()
 	test_slave.create('BeastkinWolf', 'male', 'random')
 	test_slave.unlock_class("smith")
 	test_slave.unlock_class("apprentice")
@@ -71,7 +71,7 @@ func testcombat():
 	ResourceScripts.game_party.add_slave(test_slave)
 	test_slave.speed = 100
 	test_slave.wits = 100.0
-	var test_slave2 = Slave.new()
+	var test_slave2 = ResourceScripts.scriptdict.class_slave.new()
 	test_slave2.create('BeastkinWolf', 'male', 'random')
 	ResourceScripts.game_party.add_slave(test_slave2)
 	input_handler.active_location.group = {1:test_slave.id, 4:test_slave2.id}
@@ -168,7 +168,7 @@ func build_accessible_locations():
 	
 	for i in location_array:
 		newbutton = input_handler.DuplicateContainerTemplate($NavigationPanel/NavigationContainer/AreaSelection)
-		newbutton.text = world_gen.get_location_from_code(i).name
+		newbutton.text = ResourceScripts.world_gen.get_location_from_code(i).name
 		newbutton.connect("pressed",self,"select_location",[i])
 		newbutton.set_meta("data", i)
 	
@@ -192,7 +192,7 @@ func select_location(location):
 	if location in ResourceScripts.game_world.capitals:
 		open_city(location)
 	else:
-		var data = world_gen.get_location_from_code(location)
+		var data = ResourceScripts.world_gen.get_location_from_code(location)
 		var presented_characters = []
 		for id in ResourceScripts.game_party.character_order:
 			var i = ResourceScripts.game_party.characters[id]
@@ -587,7 +587,7 @@ func faction_sellslaves():
 		newbutton.set_meta("person", tchar)
 		globals.connectslavetooltip(newbutton, tchar)
 
-func select_slave_in_guild(person = Slave):
+func select_slave_in_guild(person):
 	selectedperson = person
 	match hiremode:
 		'hire':
@@ -718,8 +718,8 @@ func see_quest_info(quest):
 				newbutton.get_node("amount").show()
 			'complete_location':
 				newbutton.texture = images.icons.quest_encounter
-				newbutton.hint_tooltip = "Complete quest location: " + world_gen.dungeons[i.type].name
-				text += "\n" + world_gen.dungeons[i.type].name + ": " + world_gen.dungeons[i.type].descript
+				newbutton.hint_tooltip = "Complete quest location: " + ResourceScripts.world_gen.dungeons[i.type].name
+				text += "\n" + ResourceScripts.world_gen.dungeons[i.type].name + ": " + ResourceScripts.world_gen.dungeons[i.type].descript
 			'complete_dungeon':
 				newbutton.texture = images.icons.quest_dungeon
 				newbutton.hint_tooltip = "Complete quest dungeon: "
@@ -811,7 +811,7 @@ func faction_upgrade():
 	
 	$FactionDetailsPanel/totalquestpoints.text = "Total quests: " + str(active_faction.questsetting.total - (active_faction.questsetting.easy + active_faction.questsetting.medium + active_faction.questsetting.hard)) + "/" + str(active_faction.questsetting.total)
 	
-	for i in world_gen.guild_upgrades.values():
+	for i in ResourceScripts.world_gen.guild_upgrades.values():
 		var newnode = input_handler.DuplicateContainerTemplate($FactionDetailsPanel/VBoxContainer)
 		text = i.name + ": " + i.descript
 		var currentupgradelevel
@@ -877,7 +877,7 @@ func enslave():
 	input_handler.ShowSlaveSelectPanel(self, 'enslave_select', reqs)
 	
 
-func enslave_select(character:Slave):
+func enslave_select(character):
 	character.set_slave_category("slave")
 	input_handler.active_character = character
 	var changes = [{code = 'money_change', operant = '-', value = variables.enslavement_price}]
@@ -896,7 +896,7 @@ func free():
 
 func location_purchase():
 	input_handler.ClearContainer($CityGui/ScrollContainer/VBoxContainer)
-	for i in world_gen.dungeons.values():
+	for i in ResourceScripts.world_gen.dungeons.values():
 		if i.type != 'dungeon':
 			continue
 	#for i in purch_location_list.values():
@@ -915,9 +915,9 @@ func purchase_location(purchasing_location):
 	if active_area.locations.size() < 8:
 		var randomlocation = []
 		for i in active_area.locationpool:
-			randomlocation.append(world_gen.dungeons[i].code)
+			randomlocation.append(ResourceScripts.world_gen.dungeons[i].code)
 		#randomlocation = randomlocation[randi()%randomlocation.size()]
-		randomlocation = world_gen.make_location(purchasing_location.code, active_area)
+		randomlocation = ResourceScripts.world_gen.make_location(purchasing_location.code, active_area)
 		input_handler.active_location = randomlocation
 		input_handler.active_area = active_area
 		active_area.locations[randomlocation.id] = randomlocation
@@ -1268,8 +1268,8 @@ func slave_position_selected(pos, character):
 	build_location_group()
 
 func slave_position_deselect(character):
-	if !character is Slave:
-		return
+#	if !character is Slave:
+#		return
 	for i in active_location.group:
 		if active_location.group[i] == character.id:
 			active_location.group.erase(i)
@@ -1481,7 +1481,7 @@ func use_e_combat_skill(caster, target, skill):
 #	elif skill.ability_type == 'spell':
 #		caster.wits += rand_range(0.3,0.5)
 	#caster part of setup
-	var s_skill1 = S_Skill.new()
+	var s_skill1 = ResourceScripts.scriptdict.class_sskill.new()
 	s_skill1.createfromskill(skill.code)
 	s_skill1.setup_caster(caster)
 	#s_skill1.setup_target(target)
@@ -1536,7 +1536,7 @@ func use_e_combat_skill(caster, target, skill):
 				i.resurrect(input_handler.calculate_number_from_string_array(skill.value[0], caster, target)) #not sure
 			else: 
 				#default skill result
-				var s_skill2:S_Skill = s_skill1.clone()
+				var s_skill2 = s_skill1.clone()
 				s_skill2.setup_target(i)
 				#place for non-existing another trigger
 				s_skill2.setup_final()

@@ -15,7 +15,7 @@ var instantanimation = null
 
 var shotanimationarray = [] #supposedanimation = {code = 'code', runnext = false, delayuntilnext = 0}
 
-var CombatAnimations = preload("res://src/combat/CombatAnimations.gd").new()
+var CombatAnimations = ResourceScripts.scriptdict.combat_animation.new()
 
 var debug = false
 
@@ -725,7 +725,7 @@ func buildenemygroup(enemygroup, enemy_stats_mod):
 		if enemygroup[i] == null:
 			continue
 		var tempname = enemygroup[i]
-		var tchar = Slave.new()
+		var tchar = ResourceScripts.scriptdict.class_slave.new()
 		tchar.generate_simple_fighter(tempname)
 		tchar.combatgroup = 'enemy'
 		tchar.position = i
@@ -763,7 +763,7 @@ func summon(montype, limit):
 	if pos.size() == 0: return;
 	var sum_pos = pos[randi() % pos.size()];
 	summons.push_back(sum_pos);
-	var tchar = Slave.new();
+	var tchar = ResourceScripts.scriptdict.class_slave.new();
 	tchar.createfromenemy(montype);
 	tchar.combatgroup = 'enemy'
 	enemygroup[sum_pos] = characters_pool.add_char(tchar)
@@ -804,7 +804,7 @@ func use_skill(skill_code, caster, target):
 		elif skill.ability_type == 'spell':
 			caster.add_stat('wits', rand_range(0.3,0.5))
 	#caster part of setup
-	var s_skill1 = S_Skill.new()
+	var s_skill1 = ResourceScripts.scriptdict.class_sskill.new()
 	s_skill1.createfromskill(skill_code)
 	s_skill1.setup_caster(caster)
 	#s_skill1.setup_target(target)
@@ -867,7 +867,7 @@ func use_skill(skill_code, caster, target):
 			else: 
 				#default skill result
 				#execute_skill(s_skill1, caster, i)
-				var s_skill2:S_Skill = s_skill1.clone()
+				var s_skill2 = s_skill1.clone()
 				s_skill2.setup_target(i)
 				#place for non-existing another trigger
 				s_skill2.setup_final()

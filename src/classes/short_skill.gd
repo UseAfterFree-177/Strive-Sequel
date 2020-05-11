@@ -1,5 +1,5 @@
 extends Reference
-class_name S_Skill_legacy
+#class_name S_Skill_legacy
 
 var code
 var template

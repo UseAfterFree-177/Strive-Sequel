@@ -1,5 +1,5 @@
 extends Reference
-class_name ai_base
+#class_name ai_base
 
 var app_obj  #applied character
 

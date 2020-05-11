@@ -233,7 +233,7 @@ func tooltiptext():
 	if description != null:
 		text += description
 	if !reqs.empty():
-		var tempslave = Slave.new()
+		var tempslave = ResourceScripts.scriptdict.class_slave.new()
 		text += "\n" + tempslave.decipher_reqs(reqs)
 	if itemtype in ['armor','weapon','tool']:
 		text += "\n\n"

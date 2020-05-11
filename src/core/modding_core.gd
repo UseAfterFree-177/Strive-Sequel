@@ -236,7 +236,7 @@ func fix_main_data_preload():#fixing incomplete data in core files, mostly moved
 	for s in Skilldata.Skilllist:
 		var tmp = Skilldata.Skilllist[s]
 		if tmp.has('new_syntax') and tmp.new_syntax == true: continue
-		var ss = S_Skill_legacy.new()
+		var ss = ResourceScripts.scriptdict.class_sskill_legacy.new()
 		ss.createfromskill(s)
 		Skilldata.Skilllist[s] = ss.convert_to_new_template()
 

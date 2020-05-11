@@ -193,7 +193,7 @@ func use_social_skill(s_code, target):
 		targ_all.push_back(ResourceScripts.game_party.characters[h_id])
 	
 	#create s_skill and process triggers
-	var s_skill = S_Skill.new()
+	var s_skill = ResourceScripts.scriptdict.class_sskill.new()
 	s_skill.createfromskill(s_code)
 	s_skill.setup_caster(parent)
 	s_skill.setup_target(target)

@@ -40,9 +40,6 @@ var current_level
 var current_stage
 var current_enemy_group
 
-
-#var images = load("res://src/scripts/ResourceImages.gd").new()
-#var audio = load("res://src/scripts/ResourceAudio.gd").new()
 var scenes = {}
 
 var sex_actions_dict = {}
@@ -293,7 +290,7 @@ func TextEncoder(text, node = null):
 					var character = input_handler.scene_characters[int(data[1])]
 					originaltext = character.translate(input_handler.get_random_chat_line(character, originaltext))
 				'custom_text_function':
-					originaltext = originaltext + custom_text.get_custom_text(data[1])
+					originaltext = originaltext + ResourceScripts.custom_text.get_custom_text(data[1])
 		
 		text = text.replace(newtext, startcode + originaltext + endcode)
 	if node != null:
@@ -621,16 +618,16 @@ func impregnate(father, mother):
 	if (check == false) && (mother.has_profession('breeder') == false):
 		print("Impregnation check failed")
 		return #incompatible races
-	var baby = Slave.new()
+	var baby = ResourceScripts.scriptdict.class_slave.new()
 	baby.setup_baby(mother, father)
 
 func calculate_travel_time(location1, location2):
 	var travel_value1 = 0 #time to travel to location from mansion
 	var travel_value2 = 0 #time to return to mansion from location
 	if location1 != 'mansion':
-		travel_value1 = world_gen.get_area_from_location_code(location1).travel_time + world_gen.get_location_from_code(location1).travel_time
+		travel_value1 = ResourceScripts.world_gen.get_area_from_location_code(location1).travel_time + ResourceScripts.world_gen.get_location_from_code(location1).travel_time
 	if location2 != 'mansion':
-		travel_value2 = world_gen.get_area_from_location_code(location2).travel_time + world_gen.get_location_from_code(location2).travel_time
+		travel_value2 = ResourceScripts.world_gen.get_area_from_location_code(location2).travel_time + ResourceScripts.world_gen.get_location_from_code(location2).travel_time
 	
 	return {time = travel_value1 + travel_value2, obed_cost = travel_value1*1.5}
 
@@ -717,7 +714,7 @@ func character_stat_change(character, data):
 #	character.set(data.code, input_handler.math(data.operant, character.get(data.code), data.value))
 
 func make_local_recruit(args):
-	var newchar = Slave.new()
+	var newchar = ResourceScripts.scriptdict.class_slave.new()
 	if args == null:
 		newchar.generate_random_character_from_data(input_handler.weightedrandom(input_handler.active_location.races))
 	else:
@@ -935,8 +932,8 @@ func makerandomgroup(enemygroup):
 	return combatparty
 
 func remove_location(locationid):
-	var location = world_gen.get_location_from_code(locationid)
-	var area = world_gen.get_area_from_location_code(locationid)
+	var location = ResourceScripts.world_gen.get_location_from_code(locationid)
+	var area = ResourceScripts.world_gen.get_area_from_location_code(locationid)
 	return_characters_from_location(locationid)
 	area.locations.erase(location.id)
 	area.questlocations.erase(location.id)
@@ -947,8 +944,8 @@ func remove_location(locationid):
 		input_handler.CurrentScene.get_node("Exploration").build_accessible_locations()
 
 func return_characters_from_location(locationid):
-	var location = world_gen.get_location_from_code(locationid)
-	var area = world_gen.get_area_from_location_code(locationid)
+	var location = ResourceScripts.world_gen.get_location_from_code(locationid)
+	var area = ResourceScripts.world_gen.get_area_from_location_code(locationid)
 	for id in ResourceScripts.game_party.character_order:
 		var person = ResourceScripts.game_party.characters[id]
 		if person.check_location(location.id, true) || person.travel.travel_target.location == location.id:
@@ -961,8 +958,8 @@ func return_characters_from_location(locationid):
 				person.return_to_task()
 
 func make_story_character(args):
-	var newchar = Slave.new()
-	newchar.generate_predescribed_character(world_gen.pregen_characters[args])
+	var newchar = ResourceScripts.scriptdict.class_slave.new()
+	newchar.generate_predescribed_character(ResourceScripts.world_gen.pregen_characters[args])
 	return newchar
 
 func common_effects(effects):
@@ -973,8 +970,8 @@ func common_effects(effects):
 			'material_change':
 				ResourceScripts.game_res.update_materials(i.operant, i.material, i.value)
 			'make_story_character':
-				var newslave = Slave.new()
-				newslave.generate_predescribed_character(world_gen.pregen_characters[i.value])
+				var newslave = ResourceScripts.scriptdict.class_slave.new()
+				newslave.generate_predescribed_character(worlddata.pregen_characters[i.value])
 				#newslave.set_slave_category(newslave.slave_class)
 				ResourceScripts.game_party.add_slave(newslave)
 			'add_timed_event':
@@ -1042,7 +1039,7 @@ func common_effects(effects):
 					'stat':
 						input_handler.active_character.set(i.name, input_handler.active_character.get(i.name) + i.value)
 			'make_loot':
-				input_handler.scene_loot = world_gen.make_chest_loot(input_handler.weightedrandom(i.pool))
+				input_handler.scene_loot = ResourceScripts.world_gen.make_chest_loot(input_handler.weightedrandom(i.pool))
 			'open_loot':
 				input_handler.get_spec_node(input_handler.NODE_LOOTTABLE).open(input_handler.scene_loot, '[center]Acquired Items:[/center]')
 			'make_scene_character':
@@ -1092,7 +1089,7 @@ func common_effects(effects):
 			'complete_event':
 				pass
 			'reputation':
-				var data = world_gen.get_faction_from_code(i.name)
+				var data = ResourceScripts.world_gen.get_faction_from_code(i.name)
 				var guild = ResourceScripts.game_world.areas[data.area].factions[data.code]
 				guild.reputation = input_handler.math(i.operant, guild.reputation, i.value)
 				guild.totalreputation = input_handler.math(i.operant, guild.totalreputation, i.value)
@@ -1107,7 +1104,7 @@ func common_effects(effects):
 			'start_quest_combat':
 				globals.StartQuestCombat(i.value)
 			'make_quest_location':
-				world_gen.make_quest_location(i.value)
+				ResourceScripts.world_gen.make_quest_location(i.value)
 			'remove_quest_location':
 				input_handler.remove_location(i.value)
 			'set_music':
@@ -1212,7 +1209,7 @@ func valuecheck(dict):
 			else:
 				return ResourceScripts.game_progress.get_active_quest(dict.value).stage == dict.stage
 		'faction_reputation':
-			var data = world_gen.get_faction_from_code(dict.code)
+			var data = ResourceScripts.world_gen.get_faction_from_code(dict.code)
 			var guild = ResourceScripts.game_world.areas[data.area].factions[data.code]
 			return input_handler.operate(dict.operant, guild.totalreputation, dict.value)
 		'group_size':#not sure about this implementation instead of area - party approach

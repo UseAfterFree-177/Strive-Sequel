@@ -97,7 +97,7 @@ func buildinventory():
 		var material = Items.materiallist[i]
 		var type = get_item_category(material)
 		newbutton.get_node('Image').texture = material.icon
-		newbutton.get_node('Number').text = custom_text.transform_number(ResourceScripts.game_res.materials[i])
+		newbutton.get_node('Number').text = ResourceScripts.custom_text.transform_number(ResourceScripts.game_res.materials[i])
 		newbutton.get_node('Number').show()
 		newbutton.set_meta('type', type)
 		newbutton.get_node("Name").text = material.name
@@ -115,7 +115,7 @@ func buildinventory():
 			newnode.get_node("Number").text = str(input_handler.calculatepercent(i.durability, i.maxdurability)) + '%'
 		if i.amount != null:
 			newnode.get_node("Number").show()
-			newnode.get_node("Number").text = custom_text.transform_number(i.amount)
+			newnode.get_node("Number").text = ResourceScripts.custom_text.transform_number(i.amount)
 		else:
 			newnode.get_node("Number").hide()
 		i.set_icon(newnode.get_node("Image"))

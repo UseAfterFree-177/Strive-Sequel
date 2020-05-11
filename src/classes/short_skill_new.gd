@@ -1,5 +1,5 @@
 extends Reference
-class_name S_Skill
+#class_name S_Skill
 
 var code
 var template
@@ -32,7 +32,7 @@ var random_factor
 var random_factor_p
 var tempdur
 
-var sskill_value = load("res://src/classes/short_skill_value.gd") 
+var sskill_value = ResourceScripts.scriptdict.class_sskill_value 
 
 
 func _init():

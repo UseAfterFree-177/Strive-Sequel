@@ -164,7 +164,7 @@ func make_guild(code, area):
 	area.factions[guilddatatemplate.code] = guilddatatemplate
 
 func make_slave_for_guild(guild):
-	var newslave = Slave.new()
+	var newslave = ResourceScripts.scriptdict.class_slave.new()
 	var race = input_handler.weightedrandom(guild.races)
 #	if globals.globalsettings.guilds_any_race:
 #		race = 'random'
