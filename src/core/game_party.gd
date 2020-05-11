@@ -113,14 +113,14 @@ func if_party_level(operant,value):
 	var counter = 0
 	for i in combatparty.values():
 		if i != null:
-			counter += characters[i].level
+			counter += characters[i].get_stat('level')
 	return input_handler.operate(operant, counter, value)
 
 func if_hero_level(name, operant, value):
 	var hero
 	for h in characters.values():
-		if h.name == name: hero = h
-	return input_handler.operate(operant, hero.level, value)
+		if h.get_stat("name") == name: hero = h
+	return input_handler.operate(operant, hero.get_stat("level"), value)
 
 func check_profession_limit(name, value):
 	var counter = 0

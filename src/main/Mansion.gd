@@ -152,7 +152,7 @@ func _ready():
 		var text = ''
 		for i in races.tasklist.values():
 			for k in i.production.values():
-				var value = races.get_progress_task(character, i.code, k.code, true)/k.progress_per_item
+				var value = character.get_progress_task(i.code, k.code, true)/k.progress_per_item
 				if Items.materiallist.has(k.item):
 					pass
 #					var item = Items.materiallist[k.item]
@@ -462,7 +462,7 @@ func update_task_bar():
 			for k in task.workers:
 				if !ResourceScripts.game_party.characters.has(k):
 					continue
-				text += "\n" + ResourceScripts.game_party.characters[k].name
+				text += "\n" + ResourceScripts.game_party.characters[k].get_stat('name')
 			globals.connecttexttooltip(i, text)
 			if task.code in ['alchemy','tailor','cook','smith','cooking']:
 				if ResourceScripts.game_res.craftinglists[task.code].size() <= 0:

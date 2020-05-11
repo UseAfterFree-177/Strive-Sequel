@@ -296,7 +296,7 @@ func keepbaby():
 	var node = input_handler.get_spec_node(input_handler.NODE_TEXTEDIT) #input_handler.GetTextEditNode()
 	var person = ResourceScripts.game_party.babies[input_handler.active_character.pregnancy.baby]
 	person.get_random_name()
-	node.open(self, 'set_baby_name', person.name)
+	node.open(self, 'set_baby_name', person.get_stat('name'))
 
 func removebaby():
 	close()
@@ -306,7 +306,7 @@ func removebaby():
 
 func set_baby_name(text):
 	var person = ResourceScripts.game_party.babies[input_handler.active_character.pregnancy.baby]
-	person.name = text
+	person.set_stat('name', text)
 	person.surname = input_handler.active_character.surname
 	ResourceScripts.game_party.add_slave(person, true)
 	var mother = characters_pool.get_char_by_id(person.relatives.mother)

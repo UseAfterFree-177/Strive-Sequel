@@ -562,7 +562,7 @@ func enemy_turn(pos):
 			target = targ;
 			castskill = fighter.get_skill_by_tag('default')
 	if target == null:
-		print(fighter.name, ' no target found')
+		print(fighter.get_stat('name'), ' no target found')
 		return
 	use_skill(castskill, fighter, target)
 	CombatAnimations.check_start()

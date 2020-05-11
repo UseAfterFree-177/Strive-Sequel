@@ -673,7 +673,7 @@ func make_item(temprecipe):
 		ResourceScripts.game_res.materials[recipe.resultitem] += recipe.resultamount
 	else:
 		var item = Items.itemlist[recipe.resultitem]
-		ResourceScripts.game_res.text_log_add("crafting", "Item created: " + item.name)
+		text_log_add("crafting", "Item created: " + item.name)
 		if item.type == 'usable':
 			AddItemToInventory(CreateUsableItem(item.code))
 		elif item.type == 'gear':
@@ -1021,11 +1021,11 @@ func common_effects(effects):
 			'bool_scene_characters':
 				if i.type == 'all':
 					for k in input_handler.scene_characters:
-						k.set(i.name, i.value)
+						k.set_stat(i.name, i.value)
 			'affect_scene_characters':
 				if i.type == 'all':
 					for k in input_handler.scene_characters:
-						k.set(i.name, i.value)
+						k.set_stat(i.name, i.value)
 			'change_type_scene_characters':
 				if i.type == 'all':
 					for k in input_handler.scene_characters:
@@ -1035,9 +1035,9 @@ func common_effects(effects):
 			'affect_active_character':
 				match i.type:
 					'damage':
-						input_handler.active_character.hp -= i.value
+						input_handler.active_character.deal_damage(i.value)
 					'stat':
-						input_handler.active_character.set(i.name, input_handler.active_character.get(i.name) + i.value)
+						input_handler.active_character.add_stat(i.name, i.value)
 			'make_loot':
 				input_handler.scene_loot = ResourceScripts.world_gen.make_chest_loot(input_handler.weightedrandom(i.pool))
 			'open_loot':

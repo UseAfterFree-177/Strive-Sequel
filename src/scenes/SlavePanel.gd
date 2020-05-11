@@ -228,11 +228,11 @@ func update():
 			i.get_node("Label").text = ResourceScripts.descriptions.factor_descripts[int(floor(person.get_stat(i.name)))]
 			i.get_node("Label").set("custom_colors/font_color", variables.hexcolordict['factor'+str(int(floor(person.get_stat(i.name))))]) 
 		else:
-			i.get_node("Label").text = str(floor(person.get(i.name)))
+			i.get_node("Label").text = str(floor(person.get_stat(i.name)))
 			i.get_node("Label").set("custom_colors/font_color", Color(1,1,1))
 	for i in $base_stats.get_children():
 		i.max_value = person.get_stat(i.name+'max')
-		if i.name != 'lust': i.value = person.get(i.name)
+		if i.name != 'lust': i.value = person.get_stat(i.name)
 		else:i.value = person.get_stat(i.name)
 		i.get_node("Label").text = str(floor(i.value)) + "/" + str(floor(i.max_value))
 	
@@ -430,16 +430,13 @@ func show_job_details(job):
 	
 	$job_panel/job_details/RichTextLabel.bbcode_text = text
 	
-
-	
-
 	for i in job.production.values():
 		if globals.checkreqs(i.reqs) == false:
 			continue
 		var newbutton = input_handler.DuplicateContainerTemplate($job_panel/job_details/ResourceOptions)
 		if Items.materiallist.has(i.item):
 			var number
-			number = races.get_progress_task(person, job.code, i.code)/i.progress_per_item
+			number = person.get_progress_task(job.code, i.code)/i.progress_per_item
 			text = "\n[color=yellow]Expected gain per day: " + str(stepify(number*24,0.1)) + "[/color]"
 #			else:
 #				number = stepify(person.workhours*races.get_progress_task(person, job.code, i.code)/i.progress_per_item*(person.productivity*person.get_stat(job.mod)/100),0.1)
@@ -449,7 +446,7 @@ func show_job_details(job):
 			globals.connectmaterialtooltip(newbutton, Items.materiallist[i.item], text)
 		else:
 			var number
-			number = races.get_progress_task(person, job.code, i.code)/i.progress_per_item
+			number = person.get_progress_task(job.code, i.code)/i.progress_per_item
 			text = "\n[color=yellow]Expected gain per day: " + str(stepify(number*24,0.1)) + "[/color]"
 #			else:
 #				number = stepify(person.workhours*races.get_progress_task(person, job.code, i.code)/i.progress_per_item*(person.productivity*person.get_stat(job.mod)/100),0.1)

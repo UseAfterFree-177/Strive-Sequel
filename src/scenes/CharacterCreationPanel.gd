@@ -135,40 +135,41 @@ func select_diet():
 	$DietPanel.show()
 	var array = ['Neutral', "Like", "Hate"]
 	for i in $DietPanel/VBoxContainer.get_children():
-		i.get_node("OptionButton").set_item_disabled(1, person.food_love != '')
-		if  person.food_love == i.name:
+		i.get_node("OptionButton").set_item_disabled(1, person.get_stat('food_love') != '')
+		if  person.get_stat('food_love') == i.name:
 			i.get_node("OptionButton").selected = 1
-		elif person.food_hate.has(i.name):
+		elif person.get_stat('food_hate').has(i.name):
 			i.get_node("OptionButton").selected = 2
 		else:
 			i.get_node("OptionButton").selected = 0
 	
-	$DietPanel/Button.disabled = !(person.food_love != '' && person.food_hate.size() > 0)
+	$DietPanel/Button.disabled = !(person.get_stat('food_love') != '' && person.get_stat('food_hate').size() > 0)
 
 func select_food_pref(selected_id, type):
+	var food_hate = person.get_stat('food_hate', true)
 	match selected_id:
 		0:
-			if person.food_love == type:
-				person.food_love = ''
-			if person.food_hate.has(type):
-				person.food_hate.erase(type)
+			if person.get_stat('food_love') == type:
+				person.set_stat('food_love', '')
+			if food_hate.has(type):
+				food_hate.erase(type)
 		1:
-			person.food_love = type
-			if person.food_hate.has(type):
-				person.food_hate.erase(type)
+			person.set_stat('food_love', type)
+			if food_hate.has(type):
+				food_hate.erase(type)
 		2:
-			if !person.food_hate.has(type):
-				person.food_hate.append(type)
-			if person.food_love == type:
-				person.food_love = ''
+			if !food_hate.has(type):
+				food_hate.append(type)
+			if person.get_stat('food_love') == type:
+				person.set_stat('food_love', '')
 	select_diet()
 
 func finish_diet_selection():
 	$DietPanel.hide()
-	preservedsettings['food_love'] = person.food_love
-	preservedsettings['food_hate'] = person.food_hate
-	var text = person.food_love + "|"
-	for i in person.food_hate:
+	preservedsettings['food_love'] = person.get_stat('food_love')
+	preservedsettings['food_hate'] = person.get_stat('food_hate')
+	var text = person.get_stat('food_love') + "|"
+	for i in person.get_stat('food_hate'):
 		text += i + " "
 	$bodyparts2/diet.text = text
 	check_confirm_possibility()
@@ -241,8 +242,8 @@ func check_confirm_possibility():
 		$bodyparts2/diet.text = "Select"
 		can_confirm = false
 	else:
-		var text = person.food_love + "|"
-		for i in person.food_hate:
+		var text = person.get_stat('food_love') + "|"
+		for i in person.get_stat('food_hate'):
 			text += i + " "
 		$bodyparts2/diet.text = text
 	
@@ -411,17 +412,17 @@ func build_bodyparts():
 		$bodyparts.get_node(i+'_label').visible = $bodyparts.get_node(i).visible
 	for i in sexbodypartsarray:
 		$bodyparts2.get_node(i).clear()
-		var current_bodypart = person.get(i)
+		var current_bodypart = person.get_stat(i)
 		
 		if preservedsettings.has(i) == false && current_bodypart != '':
 			preservedsettings[i] = current_bodypart
 		
 		
 		if i == 'penis_type' && racedata.has(i) && !racedata[i].has(preservedsettings[i]):
-			person.set(i, racedata[i][randi()%racedata[i].size()])
+			person.set_stat(i, racedata[i][randi()%racedata[i].size()])
 			preservedsettings[i] = person[i]
 		elif i == 'penis_type' && racedata.has(i) == false && preservedsettings[i] != 'human':
-			person.set(i, 'human')
+			person.set_stat(i, 'human')
 			preservedsettings[i] = person[i]
 		
 		
@@ -448,7 +449,7 @@ func build_bodyparts():
 					$bodyparts2.get_node(i).visible = true
 					$bodyparts2.get_node(i + "_label").visible = true
 		
-		if person.sex == 'male':
+		if person.get_stat('sex') == 'male':
 			match i:
 				'penis_size', 'balls_size':
 					for k in short_sizes:
@@ -475,14 +476,14 @@ func build_bodyparts():
 							$bodyparts2.get_node(i).select($bodyparts2.get_node(i).get_item_count()-1)
 		
 		if i == 'penis_type':
-			$bodyparts2.get_node(i).add_item(person.penis_type)
+			$bodyparts2.get_node(i).add_item(person.get_stat('penis_type'))
 		
 		$bodyparts2.get_node(i).disabled = $bodyparts2.get_node(i).get_item_count() == 1
 	
 	for i in ['vaginal_virgin','anal_virgin','penis_virgin']:
-		$bodyparts2.get_node(i).pressed = person.get(i)
+		$bodyparts2.get_node(i).pressed = person.get_stat(i)
 	
-	match person.sex:
+	match person.get_stat('sex'):
 		'male':
 			$bodyparts2/penis_virgin.visible = true
 			$bodyparts2/vaginal_virgin.visible = false

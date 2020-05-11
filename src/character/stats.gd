@@ -369,9 +369,9 @@ func generate_random_character_from_data(races, desired_class = null, adjust_dif
 			continue
 		var classarray = []
 		if randf() >= 0.85:
-			classarray = parent.get_class_list('any', self)
+			classarray = parent.get_class_list('any', parent)
 		else:
-			classarray = parent.get_class_list(slaveclass, self)
+			classarray = parent.get_class_list(slaveclass, parent)
 		if classarray != null && classarray.size() > 0:
 			parent.unlock_class(classarray[randi()%classarray.size()].code, true)
 		classcounter -= 1

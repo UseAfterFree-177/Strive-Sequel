@@ -34,7 +34,7 @@ func tick():
 			travel_time = 0
 			area = travel_target.area
 			location = travel_target.location
-			globals.emit_signal("slave_arrived", self)
+			globals.emit_signal("slave_arrived", parent)
 			input_handler.PlaySound("ding")
 			if location == 'mansion':
 				parent.return_to_task()

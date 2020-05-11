@@ -64,7 +64,7 @@ func unlock_class(prof, satisfy_progress_reqs = false):
 	if satisfy_progress_reqs == true:
 		for i in prof.reqs:
 			if i.code == 'stat' && i.stat in ['physics','wits','charm','sexuals']:
-				self.set(i.stat, i.value)
+				parent.set_stat(i.stat, i.value)
 	if professions.has(prof.code):
 		return "Already has this profession"
 	professions.append(prof.code)
@@ -97,7 +97,7 @@ func assign_to_task(taskcode, taskproduct, iterations = -1):
 	for i in ResourceScripts.game_party.active_tasks:
 		if i.code == taskcode && i.product == taskproduct:
 			taskexisted = true
-			i.workers.append(self.id)
+			i.workers.append(parent.id)
 			work = i.code
 	
 	workproduct = taskproduct
@@ -105,7 +105,7 @@ func assign_to_task(taskcode, taskproduct, iterations = -1):
 		return
 	#make new task if it didn't exist
 	var dict = {code = taskcode, product = taskproduct, progress = 0, threshhold = task.production[taskproduct].progress_per_item, workers = [], iterations = iterations, messages = [], mod = task.mod}
-	dict.workers.append(self.id)
+	dict.workers.append(parent.id)
 	work = taskcode
 	ResourceScripts.game_party.active_tasks.append(dict)
 	globals.emit_signal("task_added")
@@ -114,7 +114,7 @@ func remove_from_task(remember = false):
 	if work != '':
 		for i in ResourceScripts.game_party.active_tasks:
 			if i.code == work:
-				i.workers.erase(self.id)
+				i.workers.erase(parent.id)
 	if remember == true && work != 'travel':
 		previous_work = work
 	work = ''
@@ -129,7 +129,7 @@ func get_work():
 func work_tick():
 	var currenttask
 	for i in ResourceScripts.game_party.active_tasks:
-		if i.workers.has(self.id):
+		if i.workers.has(parent.id):
 			currenttask = i
 	
 	if currenttask == null:
@@ -170,7 +170,7 @@ func work_tick():
 					globals.spend_resources(craftingitem)
 					currenttask.messages.erase("noresources")
 			work_tick_values(currenttask)
-			craftingitem.workunits += races.get_progress_task(self, currenttask.code, currenttask.product)#
+			craftingitem.workunits += get_progress_task(currenttask.code, currenttask.product)#
 			make_item_sequence(currenttask, craftingitem)
 	elif currenttask.product == 'building':
 		if ResourceScripts.game_res.selected_upgrade.code == '':
@@ -182,7 +182,7 @@ func work_tick():
 		else:
 			messages.erase('noupgrade')
 			work_tick_values(currenttask)
-			ResourceScripts.game_res.upgrade_progresses[ResourceScripts.game_res.selected_upgrade.code].progress += races.get_progress_task(self, currenttask.code, currenttask.product, true)#*(productivity/100)
+			ResourceScripts.game_res.upgrade_progresses[ResourceScripts.game_res.selected_upgrade.code].progress += get_progress_task(currenttask.code, currenttask.product, true)#*(productivity/100)
 			if ResourceScripts.game_res.upgrade_progresses[ResourceScripts.game_res.selected_upgrade.code].progress >= upgradedata.upgradelist[ResourceScripts.game_res.selected_upgrade.code].levels[ResourceScripts.game_res.selected_upgrade.level].taskprogress:
 				if ResourceScripts.game_res.upgrades.has(ResourceScripts.game_res.selected_upgrade.code):
 					ResourceScripts.game_res.upgrades[ResourceScripts.game_res.selected_upgrade.code] += 1
@@ -194,7 +194,7 @@ func work_tick():
 				ResourceScripts.game_res.selected_upgrade.code = ''
 	else:
 		work_tick_values(currenttask)
-		currenttask.progress += races.get_progress_task(self, currenttask.code, currenttask.product, true)#*(get_stat('productivity')*get_stat(currenttask.mod)/100)
+		currenttask.progress += get_progress_task(currenttask.code, currenttask.product, true)#*(get_stat('productivity')*get_stat(currenttask.mod)/100)
 		while currenttask.threshhold <= currenttask.progress:
 			currenttask.progress -= currenttask.threshhold
 			if races.tasklist[currenttask.code].production[currenttask.product].item == 'gold':
@@ -205,8 +205,8 @@ func work_tick():
 func work_tick_values(currenttask):
 	var workstat = races.tasklist[currenttask.code].workstat
 	if !parent.has_status('no_working_bonuses'): 
-		set(workstat, get(workstat) + 0.06)
-		base_exp += 1
+		parent.add_stat(workstat, 0.06)
+		self.base_exp += 1
 
 func make_item_sequence(currenttask, craftingitem):
 	if craftingitem.workunits >= craftingitem.workunits_needed:
@@ -223,3 +223,81 @@ func make_item_sequence(currenttask, craftingitem):
 				if currenttask.messages.has('noresources') == false:
 					globals.text_log_add('crafting', parent.get_short_name() + ": " + "Not Enough Resources for craft. ")
 					currenttask.messages.append("noresources")
+
+func get_progress_task(temptask, tempsubtask, count_crit = false):
+	var task = races.tasklist[temptask]
+	var subtask = task.production[tempsubtask]
+	var value = call(subtask.progress_function)
+	var item
+	if parent.equipment.gear.tool != null:
+		item = ResourceScripts.game_res.items[parent.equipment.gear.tool]
+	if item != null && task.has('worktool') && task.worktool in item.toolcategory:
+		if item.bonusstats.has("task_efficiency_tool"):
+			value = value + value*item.bonusstats.task_efficiency_tool
+	value = value * (parent.get_stat('productivity') * parent.get_stat(task.mod)/100.0)#*(productivity*get(currenttask.mod)/100)
+	if item != null && task.has('worktool') && task.worktool in item.toolcategory:
+		if count_crit == true && item.bonusstats.has("task_crit_chance") && randf() <= item.bonusstats.task_crit_chance:
+			value = value*2
+	
+	return value
+
+func hunt_meat():
+	return 1 + (1 * (parent.get_stat('physics')/66))
+
+func fishing():
+	return 1 + (1 * (parent.get_stat('physics')/150 + parent.get_stat('wits')/100))
+
+func farming_veges():
+	return 1 + (1 * (parent.get_stat('physics')/50 + parent.get_stat('wits')/66))
+
+func farming_wheat():
+	return 1 + (1 * (parent.get_stat('physics')/40 + parent.get_stat('wits')/66))
+
+func farming_cloth():
+	return 1 + (1 * (parent.get_stat('physics')/75 + parent.get_stat('wits')/100))
+
+func hunt_leather():
+	return 1 + (1 * (parent.get_stat('physics')/66))
+
+func hunt_leather_hard():
+	return 1 + (1 * (parent.get_stat('physics')/33))
+
+func hunt_leather_mythic():
+	return 1 + (1 * (parent.get_stat('physics')/25))
+
+func woodcutting_lumber():
+	return 1 + (1*(parent.get_stat('physics')/66))
+
+func woodmagiccutting_lumber():
+	return 1 + (1*(parent.get_stat('physics')/30))
+
+func woodironcutting_lumber():
+	return 1 + (1*(parent.get_stat('physics')/25))
+
+func mining_stone():
+	return 1 + (1*(parent.get_stat('physics')/66))
+	
+func mining_iron():
+	return 1 + (1*(parent.get_stat('physics')/33))
+	
+func mining_mythril():
+	return 1 + (1*(parent.get_stat('physics')/30))
+
+func whoring_gold():
+	return (1 + parent.get_stat('sexuals')/40 + parent.get_stat('charm')/80)
+
+func cooking_progress():
+	return 1 + (1 * (parent.get_stat('wits')/50))
+
+func tailor_progress():
+	return 1 + (1 * (parent.get_stat('wits')/66 + parent.get_stat('physics')/150))
+
+func forge_progress():
+	return 1 + (1 * (parent.get_stat('wits')/66 + parent.get_stat('physics')/150)) * (1+0.25*ResourceScripts.game_res.upgrades.forgeworkshop)
+
+func alchemy_progress():
+	return 1 + (1 * (parent.get_stat('wits')/50))
+
+func building_progress():
+	return (1 + parent.get_stat('wits')/100 + parent.get_stat('physics')/50) * (1 + 0.25 * ResourceScripts.game_res.upgrades.forgeworkshop)
+

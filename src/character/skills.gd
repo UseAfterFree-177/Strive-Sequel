@@ -119,7 +119,7 @@ func restore_skill_charge(code):
 func use_social_skill(s_code, target):
 	var template = Skilldata.Skilllist[s_code]
 	if template.has('special'):
-		ResourceScripts.custom_effects.call(template.special, self)
+		ResourceScripts.custom_effects.call(template.special, parent)
 		return
 	if target != null:
 		var check = parent.check_skill_availability(s_code, target)
@@ -139,7 +139,7 @@ func use_social_skill(s_code, target):
 		text = target.translate(text.replace("[target", "["))
 		data.text = text
 		
-		var charges = Skilldata.get_charges(template, self)
+		var charges = Skilldata.get_charges(template, parent)
 		if charges > 0 && variables.social_skill_unlimited_charges == false && !template.has('custom_used_charges'):
 			if social_skills_charges.has(s_code):
 				social_skills_charges[s_code] += 1
@@ -152,7 +152,7 @@ func use_social_skill(s_code, target):
 			else:
 				ResourceScripts.game_party.global_skills_used[template.code] = 1
 		
-		input_handler.active_character = self
+		input_handler.active_character = parent
 		input_handler.target_character = target
 		input_handler.activated_skill = s_code
 		for i in template.dialogue_options:
@@ -161,7 +161,7 @@ func use_social_skill(s_code, target):
 		input_handler.scene_characters.append(target)
 		input_handler.interactive_message_custom(data)
 		return
-	input_handler.last_action_data = {code = 'social_skill', skill = s_code, caster = self, target = target}
+	input_handler.last_action_data = {code = 'social_skill', skill = s_code, caster = parent, target = target}
 	
 	input_handler.PlaySound('page')
 	
@@ -184,7 +184,7 @@ func use_social_skill(s_code, target):
 	
 	#calcuate 'all' receviers
 	var targ_targ = [target]
-	var targ_cast = [self]
+	var targ_cast = [parent]
 	var targ_all = []
 	for h_id in ResourceScripts.game_party.characters:
 		if parent.id == h_id || target != null and target.id == h_id: continue
@@ -331,7 +331,7 @@ func use_social_skill(s_code, target):
 			if parent.check_skill_availability(s_code, target).check == true:
 				data.options[0].disabled = false
 		
-		input_handler.active_character = self
+		input_handler.active_character = parent
 		input_handler.target_character = target
 		input_handler.activated_skill = s_code
 		if input_handler.scene_characters.has(target) == false: input_handler.scene_characters.append(target)
@@ -365,7 +365,7 @@ func use_mansion_item(item):
 			items_used_global[itembase.code] = 1
 	if itembase.tags.has("save_on_use") == false:
 		item.amount -= 1
-	use_social_skill(skill, self)
+	use_social_skill(skill, parent)
 
 func act_prepared():
 	for prep in prepared_act:

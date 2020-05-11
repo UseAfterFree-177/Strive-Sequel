@@ -384,6 +384,8 @@ func play_sfx(code):
 	if displaynode != null:
 		displaynode.process_sfx(code)
 
+func get_progress_task(temptask, tempsubtask, count_crit = false):
+	return xp_module.get_progress_task(temptask, tempsubtask, count_crit)
 
 func act_prepared():
 	skills.act_prepared()

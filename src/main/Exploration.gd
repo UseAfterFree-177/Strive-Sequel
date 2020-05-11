@@ -561,7 +561,7 @@ func faction_hire():
 	for i in active_faction.slaves:
 		var tchar = characters_pool.get_char_by_id(i)
 		var newbutton = input_handler.DuplicateContainerTemplate($HirePanel/ScrollContainer/VBoxContainer)
-		newbutton.get_node("name").text = tchar.name
+		newbutton.get_node("name").text = tchar.get_stat('name')
 		newbutton.get_node("Price").text = str(tchar.calculate_price())
 		#newbutton.connect('signal_RMB_release',input_handler,'ShowSlavePanel', [tchar])
 		newbutton.connect("pressed",input_handler,'ShowSlavePanel', [tchar])#, self, "select_slave_in_guild", [tchar])
@@ -581,7 +581,7 @@ func faction_sellslaves():
 		if tchar.has_profession('master') || tchar.valuecheck({code = 'is_free'}) == false:
 			continue
 		var newbutton = input_handler.DuplicateContainerTemplate($HirePanel/ScrollContainer/VBoxContainer)
-		newbutton.get_node("name").text = tchar.name
+		newbutton.get_node("name").text = tchar.get_stat('name')
 		newbutton.get_node("Price").text = str(round(tchar.calculate_price()/2))
 		newbutton.connect("pressed", self, "sell_slave", [tchar])
 		newbutton.set_meta("person", tchar)
@@ -595,7 +595,7 @@ func select_slave_in_guild(person):
 				if i.name == "Button":
 					continue
 				i.pressed = i.get_meta("person") == person
-			var text = 'Hire ' + person.name + " for " + str(person.calculate_price()) + " gold? "
+			var text = 'Hire ' + person.get_stat('name') + " for " + str(person.calculate_price()) + " gold? "
 			$HirePanel/RichTextLabel.bbcode_text = text
 			$HirePanel/Button.show()
 			$HirePanel/Button.disabled = (ResourceScripts.game_res.money < person.calculate_price())
@@ -604,7 +604,7 @@ func select_slave_in_guild(person):
 				if i.name == "Button":
 					continue
 				i.pressed = i.get_meta("person") == person
-			var text = 'Sell ' + person.name + " for " + str(round(person.calculate_price()/2)) + " gold? "
+			var text = 'Sell ' + person.get_stat('name') + " for " + str(round(person.calculate_price()/2)) + " gold? "
 			$HirePanel/RichTextLabel.bbcode_text = text
 			$HirePanel/Button.show()
 			$HirePanel/Button.disabled = false
@@ -1638,22 +1638,22 @@ func execute_skill(s_skill2): #to update to exploration version
 			elif i.is_drain:
 				var rval = s_skill2.target.deal_damage(i.value, i.damage_type)
 				var rval2 = s_skill2.caster.heal(rval)
-				text += "%s drained %d health from %s and gained %d health." %[s_skill2.caster.name, rval, s_skill2.target.name, rval2]
+				text += "%s drained %d health from %s and gained %d health." %[s_skill2.caster.get_stat('name'), rval, s_skill2.target.get_stat('name'), rval2]
 			elif s_skill2.tags.has('no_log') && !i.is_drain:
 				var rval = s_skill2.target.deal_damage(i.value, i.damage_type)
 			else:
 				var rval = s_skill2.target.deal_damage(i.value, i.damage_type)
-				text += "%s is hit for %d damage. " %[s_skill2.target.name, rval]#, s_skill2.value[i]] 
+				text += "%s is hit for %d damage. " %[s_skill2.target.get_stat('name'), rval]#, s_skill2.value[i]] 
 		elif i.damagestat == 'damage_hp' and i.dmgf == 1: #heal, heal no log
 			if s_skill2.tags.has('no_log'):
 				var rval = s_skill2.target.heal(i.value)
 			else:
 				var rval = s_skill2.target.heal(i.value)
-				text += "%s is healed for %d health." %[s_skill2.target.name, rval]
+				text += "%s is healed for %d health." %[s_skill2.target.get_stat('name'), rval]
 		elif i.damagestat == 'restore_mana' and i.dmgf == 0: #heal, heal no log
 			if !s_skill2.tags.has('no log'):
 				var rval = s_skill2.target.mana_update(i.value)
-				text += "%s restored %d mana." %[s_skill2.target.name, rval] 
+				text += "%s restored %d mana." %[s_skill2.target.get_stat('name'), rval] 
 			else:
 				s_skill2.target.mana_update(i.value)
 		elif i.damagestat == 'restore_mana' and i.dmgf == 1: #drain, damage, damage no log, drain no log
@@ -1661,31 +1661,31 @@ func execute_skill(s_skill2): #to update to exploration version
 			if i.is_drain:
 				var rval2 = s_skill2.caster.mana_update(rval)
 				if !s_skill2.tags.has('no log'):
-					text += "%s drained %d mana from %s and gained %d mana." %[s_skill2.caster.name, rval, s_skill2.target.name, rval2]
+					text += "%s drained %d mana from %s and gained %d mana." %[s_skill2.caster.get_stat('name'), rval, s_skill2.target.name, rval2]
 			if !s_skill2.tags.has('no log'):
-				text += "%s lost %d mana." %[s_skill2.target.name, rval] 
+				text += "%s lost %d mana." %[s_skill2.target.get_stat('name'), rval] 
 		else: 
 			var mod = i.dmgf
 			var stat = i.damagestat
 			if mod == 0:
 				var rval = s_skill2.target.stat_update(stat, i.value)
 				if !s_skill2.tags.has('no log'):
-					text += "%s restored %d %s." %[s_skill2.target.name, rval, tr(stat)] 
+					text += "%s restored %d %s." %[s_skill2.target.get_stat('name'), rval, tr(stat)] 
 			elif mod == 1:
 				var rval = s_skill2.target.stat_update(stat, -i.value)
 				if i.is_drain:
 					var rval2 = s_skill2.caster.stat_update(stat, -rval)
 					if !s_skill2.tags.has('no log'):
-						text += "%s drained %d %s from %s." %[s_skill2.caster.name, i.value, tr(stat),  s_skill2.target.name]
+						text += "%s drained %d %s from %s." %[s_skill2.caster.get_stat('name'), i.value, tr(stat),  s_skill2.target.get_stat('name')]
 				elif !s_skill2.tags.has('no log'):
-					text += "%s loses %d %s." %[s_skill2.target.name, -rval, tr(stat)]
+					text += "%s loses %d %s." %[s_skill2.target.get_stat('name'), -rval, tr(stat)]
 			elif mod == 2:
 				var rval = s_skill2.target.stat_update(stat, i.value, true)
 				if i.is_drain:# use this on your own risk
 					var rval2 = s_skill2.caster.stat_update(stat, -rval)
 					if !s_skill2.tags.has('no log'):
-						text += "%s drained %d %s from %s." %[s_skill2.caster.name, i.value, tr(stat),  s_skill2.target.name]
+						text += "%s drained %d %s from %s." %[s_skill2.caster.get_stat('name'), i.value, tr(stat),  s_skill2.target.get_stat('name')]
 				elif !s_skill2.tags.has('no log'):
-					text += "%s's %s is now %d." %[s_skill2.target.name, tr(stat), i.value] 
+					text += "%s's %s is now %d." %[s_skill2.target.get_stat('name'), tr(stat), i.value] 
 			else: print('error in damagestat %s' % i.damagestat) #obsolete in new format
 
