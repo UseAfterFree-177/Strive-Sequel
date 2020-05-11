@@ -157,6 +157,9 @@ margin_right = 481.235
 margin_bottom = 1068.34
 theme = ExtResource( 9 )
 text = "Sex"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="TravelButton" type="Button" parent="."]
 margin_left = 722.0

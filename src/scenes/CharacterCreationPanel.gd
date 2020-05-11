@@ -84,7 +84,7 @@ func open_class_list():
 		else:
 			array = variables[guild+'_starting_classes']
 	for i in array:
-		var tempclass = Skilldata.professions[i]
+		var tempclass = classesdata.professions[i]
 		if person.checkreqs(tempclass.showupreqs) == false:
 			continue
 		var newbutton = input_handler.DuplicateContainerTemplate($ClassPanel/ScrollContainer/VBoxContainer)
@@ -251,7 +251,7 @@ func check_confirm_possibility():
 		$bodyparts2/class.text = "Select"
 		can_confirm = false
 	else:
-		$bodyparts2/class.text = Skilldata.professions[selected_class].name
+		$bodyparts2/class.text = classesdata.professions[selected_class].name
 	
 	if !can_confirm:
 		$ConfirmButton.disabled = true
@@ -357,7 +357,7 @@ func RebuildStatsContainer():
 	$totalstatlabel.text = 'Free points left: ' + str(counter)
 	
 	#apply_preserved_settings()
-	if selected_class != '' && person.checkreqs(Skilldata.professions[selected_class].reqs) == false:
+	if selected_class != '' && person.checkreqs(classesdata.professions[selected_class].reqs) == false:
 		selected_class = ''
 		check_confirm_possibility()
 

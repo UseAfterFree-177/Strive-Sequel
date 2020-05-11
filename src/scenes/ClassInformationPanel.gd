@@ -5,7 +5,7 @@ func _ready():
 
 
 func open(classcode, person):
-	var tempclass = Skilldata.professions[classcode]
+	var tempclass = classesdata.professions[classcode]
 	show()
 	
 	$TextureRect.texture = tempclass.icon

@@ -241,7 +241,7 @@ func _ready():
 		tmp.anal = 90
 		tmp.petting = 100
 		character.set_stat('sex_skills', tmp)
-		character.xp_module.base_exp = 500
+		character.set_stat('base_exp', 500)
 		#input_handler.get_spec_node(input_handler.NODE_LOOTTABLE).open(world_gen.make_chest_loot('mages_join_reward'), 'Teh Loot')
 		#input_handler.get_loot_node().open(world_gen.make_chest_loot('warriors_join_reward'), ' Loot')
 		input_handler.active_location = ResourceScripts.game_world.areas.plains.locations[ResourceScripts.game_world.areas.plains.locations.keys()[3]]#[state.areas.plains.locations.size()-1]]

@@ -17,7 +17,9 @@ var avaliable_modes_list = [] #name, data_file, desc
 
 func _ready():
 	get_mods_list()
+	process_pathes_mods()
 	process_script_mods()
+	ResourceScripts.load_scripts()
 
 func process_data_mods():
 	if data_loaded: return
@@ -29,6 +31,10 @@ func process_data_mods():
 func process_script_mods():
 	for m in mods_list:
 		process_pack(m.path)
+
+func process_pathes_mods():
+	for m in mods_list:
+		process_pathes(m.path)
 
 func get_mods_list():
 	var f := File.new()
@@ -91,6 +97,14 @@ func process_mod(path: String):
 	for table in datafiles:
 		process_data_file(dir, mconf.get_value('Data', table), table)
 
+func process_pathes(path: String):
+	var mconf := ConfigFile.new()
+	mconf.load(path)
+	print("processing pathes from mod %s" % mconf.get_value('General','Name'))
+	var datafiles = mconf.get_section_keys('Pathes')
+	for script in datafiles:
+		ResourceScripts.scriptdict[script] = mconf.get_value('Pathes', script)
+
 
 func process_pack(path: String):
 	var mconf := ConfigFile.new()
@@ -140,7 +154,7 @@ func process_data_file(path : String, file: String, tablename : String):
 	#tasks are not moddable through data because they are linked to functors
 	process_dir(tablename, 'races', races.racelist)
 	process_dir(tablename, 'scenedata', scenedata.scenedict)
-	process_dir(tablename, 'classes', Skilldata.professions)
+	process_dir(tablename, 'classes', classesdata.professions)
 	
 	process_images_dir(tablename, 'i_backgrounds', images.backgrounds)
 	process_images_dir(tablename, 'i_circleportaits', images.circleportraits)
@@ -168,7 +182,7 @@ func process_data_file(path : String, file: String, tablename : String):
 	#incomplete
 
 func fix_main_data_preload():#fixing incomplete data in core files, mostly moved from globals
-	for i in Skilldata.professions.values():
+	for i in classesdata.professions.values():
 		i.name = tr("PROF" + i.code.to_upper())
 		i.descript = tr("PROF" + i.code.to_upper()+"DESCRIPT")
 		if i.has('altname'):
@@ -227,7 +241,7 @@ func fix_main_data_preload():#fixing incomplete data in core files, mostly moved
 		Skilldata.Skilllist[s] = ss.convert_to_new_template()
 
 func fix_main_data_postload():#fixing incomplete data in core files, mostly moved from globals
-	for i in Skilldata.professions.values():
+	for i in classesdata.professions.values():
 		if typeof(i.icon) == TYPE_STRING:
 			if i.icon.is_abs_path(): i.icon = input_handler.load_image_from_path(i.icon)
 			else: i.icon = images.icons[i.icon]

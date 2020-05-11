@@ -96,8 +96,10 @@ func set_stat(stat, value): #for direct access only
 	 self.statlist[stat] = value
 
 #bonus system
-func get_stat(statname):
-	var tmp = custom_stats_get()
+func get_stat(statname, ref = false):
+	var tmp
+	if ref: tmp = statlist
+	else:  tmp = custom_stats_get()
 	if !tmp.has(statname): return null
 	var res = tmp[statname]
 	if variables.bonuses_stat_list.has(statname):
@@ -503,8 +505,8 @@ func create(temp_race, temp_gender, temp_age):
 				apply_custom_bodychange(i, statlist[i])
 #	add_trait('core_trait')
 #	learn_c_skill('attack')
-	statlist.hp = get_stat('hpmax')
-	statlist.mp = get_stat('mpmax')
+	parent.hp = get_stat('hpmax')
+	parent.mp = get_stat('mpmax')
 
 func get_racial_features():
 	var race_template = races.racelist[statlist.race]
@@ -625,20 +627,25 @@ func get_icon_path():
 	return statlist.icon_image
 
 func get_body_image():
-	if ResourcePreloader.new().has_resource(statlist.body_image) == false && statlist.body_image != 'default':
-		return input_handler.loadimage(statlist.body_image)
-	else:
-		if statlist.body_image == 'default':
-			var text = statlist.race.to_lower().replace('halfkin','beastkin')
-			if statlist.sex == 'male':
-				text += "_m"
-			else:
-				text += "_f"
-			if images.shades.has(text):
-				return images.shades[text]
-			else:
-				return null
-		return load(statlist.body_image)
+	var tmp = input_handler.loadimage(statlist.body_image)
+	if tmp != null: return tmp
+	if statlist.body_image == 'default':
+		var text = statlist.race.to_lower().replace('halfkin','beastkin')
+		if statlist.sex == 'male':
+			text += "_m"
+		else:
+			text += "_f"
+		if images.shades.has(text):
+			return images.shades[text]
+		else:
+			return null
+	return load(statlist.body_image)
+
+func get_all_sex_traits():
+	return sex_traits + negative_sex_traits
+
+func get_nagative_sex_traits():
+	return negative_sex_traits
 
 func baby_transform():
 	var mother = ResourceScripts.game_party.characters[statlist.relatives.mother]

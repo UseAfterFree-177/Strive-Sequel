@@ -27,10 +27,10 @@ func showup(node, person):
 	
 	$icon.texture = person.get_icon()
 	$RichTextLabel.bbcode_text = text
-	$exp.text = str(floor(person.xp_module.base_exp))
+	$exp.text = str(floor(person.get_stat('base_exp')))
 	
 	var exp_color = Color(1,1,1)
-	if person.get_next_class_exp() <= person.xp_module.base_exp:
+	if person.get_next_class_exp() <= person.get_stat('base_exp'):
 		exp_color = Color(0.2,1,0.2)
 	$exp.set("custom_colors/font_color", exp_color)
 	
@@ -82,8 +82,8 @@ func showup(node, person):
 		$GridContainer/Button/Label.show()
 	for i in person.xp_module.professions:
 		var newnode = input_handler.DuplicateContainerTemplate($GridContainer)
-		newnode.texture = Skilldata.professions[i].icon
-		newnode.get_node("Label").text = Skilldata.professions[i].name
+		newnode.texture = classesdata.professions[i].icon
+		newnode.get_node("Label").text = classesdata.professions[i].name
 	
 	$VBoxContainer.visible = person.is_players_character
 	$rightclick.visible = !person.is_players_character

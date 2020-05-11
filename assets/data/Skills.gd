@@ -1,6 +1,6 @@
 extends Node
 
-var professions = load("res://assets/data/classes.gd").new().professions
+#var professions = load("res://assets/data/classes.gd").new().professions
 
 var Skilllist = {
 	praise = { 

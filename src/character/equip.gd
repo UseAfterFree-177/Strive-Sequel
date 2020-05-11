@@ -34,6 +34,9 @@ func check_gear_equipped(gearname, param = 'itembase'):
 			return true
 	return false
 
+func get_gear(slot):
+	return gear[slot]
+
 func equip(item, item_prev_id = null):
 	var duplicate = globals.check_duplicates(item.itembase, item.parts)
 	#if duplicate != null:

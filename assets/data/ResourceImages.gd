@@ -203,6 +203,27 @@ var sexicons = {
 	futa = load("res://assets/images/sexicons/futa.png"),
 }
 
+var statsicons = {#not used at all O_o
+lub1 = load("res://assets/images/sexicons/lub1.png"),
+lub2 = load("res://assets/images/sexicons/lub2.png"),
+lub3 = load("res://assets/images/sexicons/lub3.png"),
+lub4 = load("res://assets/images/sexicons/lub4.png"),
+lub5 = load("res://assets/images/sexicons/lub5.png"),
+lust1 = load("res://assets/images/sexicons/lust1.png"),
+lust2 = load("res://assets/images/sexicons/lust2.png"),
+lust3 = load("res://assets/images/sexicons/lust3.png"),
+lust4 = load("res://assets/images/sexicons/lust4.png"),
+lust5 = load("res://assets/images/sexicons/lust5.png"),
+sens1 = load("res://assets/images/sexicons/sens1.png"),
+sens2 = load("res://assets/images/sexicons/sens2.png"),
+sens3 = load("res://assets/images/sexicons/sens3.png"),
+sens4 = load("res://assets/images/sexicons/sens4.png"),
+sens5 = load("res://assets/images/sexicons/sens5.png"),
+stress1 = load("res://assets/images/gui/obed_bad.png"),
+stress2 = load("res://assets/images/gui/obed_med.png"),
+stress3 = load("res://assets/images/gui/obed_good.png")
+}
+
 var stateicons = {
 	work = load('res://assets/images/gui/gui icons/workicon.png'),
 	rest = load('res://assets/images/gui/gui icons/sleepicon.png'),

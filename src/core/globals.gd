@@ -471,26 +471,29 @@ func fastif(value, result1, result2):
 func return_to_main_menu():
 	input_handler.CurrentScene.queue_free()
 	input_handler.ChangeScene('menu')
-#	ResourceScripts.revert_gamestate()
-	ResourceScripts.recreate_singletons()
+	ResourceScripts.revert_gamestate()
+#	ResourceScripts.recreate_singletons()
 
 func addrelations(person, person2, value):
+	var rel = person.get_stat('relations', true)
+	var rel2 = person2.get_stat('relations', true)
 	if person.has_profession("master") || person2.has_profession("master") || person == person2:
 		return
-	if person.relations.has(person2.id) == false:
-		person.relations[person2.id] = 0
-	if person2.relations.has(person.id) == false:
-		person2.relations[person.id] = 0
-	if person.relations[person2.id] > 500 && value > 0 && checkifrelatives(person, person2):
+	if rel.has(person2.id) == false:
+		rel[person2.id] = 0
+	if rel2.has(person.id) == false:
+		rel2[person.id] = 0
+	if rel[person2.id] > 500 && value > 0 && checkifrelatives(person, person2):
 		value = value/1.5
-	elif person.relations[person2.id] < -500 && value < 0 && checkifrelatives(person,person2):
+	elif rel[person2.id] < -500 && value < 0 && checkifrelatives(person,person2):
 		value = value/1.5
-	person.relations[person2.id] += value
-	person.relations[person2.id] = clamp(person.relations[person2.id], -1000, 1000)
-	person2.relations[person.id] = person.relations[person2.id]
-	if person.relations[person2.id] < -200 && value < 0:
-		person.stress += rand_range(4,8)
-		person2.stress += rand_range(4,8)
+	rel[person2.id] += value
+	rel[person2.id] = clamp(rel[person2.id], -1000, 1000)
+	rel2[person.id] = rel[person2.id]
+	#for no stress attribute
+#	if person.relations[person2.id] < -200 && value < 0:
+#		person.stress += rand_range(4,8)
+#		person2.stress += rand_range(4,8)
 
 func connectrelatives(person1, person2, way):
 	if person1 == null || person2 == null:

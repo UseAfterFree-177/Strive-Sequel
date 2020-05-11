@@ -153,8 +153,8 @@ func _on_removeportrait_pressed():
 	updatepage()
 
 func _on_reverseportrait_pressed():
-	var tmp = person.get_stat('unique')
-	if tmp != null and !(tmp in ['dog', 'horse']):
+	var tmp = person.get_stat('unique') 
+	if tmp != null and !(tmp in ['dog', 'horse']): #not working for thjere is no imageportait attribute
 		person.imageportait = globals.characters.characters[tmp].imageportait
 #		if person.unique == 'Cali':
 #			person.imageportait = globals.characters.characters.Cali.imageportait

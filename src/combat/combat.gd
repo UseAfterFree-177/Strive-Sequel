@@ -304,7 +304,7 @@ func victory():
 	for i in playergroup.values():
 		var tchar = characters_pool.get_char_by_id(i)
 		var gained_exp = exp_per_character * tchar.get_stat('exp_mod')
-		tchar.xp_module.base_exp += gained_exp
+		tchar.xp_module.add_stat('base_exp', gained_exp)
 		var newbutton = input_handler.DuplicateContainerTemplate($Rewards/ScrollContainer2/HBoxContainer)
 		newbutton.texture = tchar.get_icon()
 		newbutton.get_node("name").text = tchar.get_short_name()

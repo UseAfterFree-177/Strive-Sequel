@@ -218,10 +218,10 @@ func update():
 		else:
 			i.text += "/100"
 	for i in $factors.get_children():
-		if i.name in ['base_exp']:
-			i.get_node("Label").text = str(floor(person.xp_module.get(i.name)))
-			continue
-		if i.name in ['food_consumption']:
+#		if i.name in ['base_exp']:
+#			i.get_node("Label").text = str(floor(person.xp_module.get(i.name)))
+#			continue
+		if i.name in ['food_consumption', 'base_exp']:
 			i.get_node("Label").text = str(floor(person.get_stat(i.name)))
 			continue
 		if input_handler.globalsettings.factors_as_words:
@@ -237,7 +237,7 @@ func update():
 		i.get_node("Label").text = str(floor(i.value)) + "/" + str(floor(i.max_value))
 	
 	var exp_color = Color(1,1,1)
-	if person.get_next_class_exp() <= person.xp_module.base_exp:
+	if person.get_next_class_exp() <= person.get_stat('base_exp'):
 		exp_color = Color(0.2,1,0.2)
 	$factors/base_exp/Label.set("custom_colors/font_color", exp_color)
 	$factors/base_exp/Label.hint_tooltip = tr("NEXTCLASSEXP") + str(person.get_next_class_exp()) 
@@ -294,7 +294,7 @@ func update():
 		$professions/Button/Label.show()
 	for i in person.xp_module.professions:
 		var newnode = input_handler.DuplicateContainerTemplate($professions)
-		var prof = Skilldata.professions[i]
+		var prof = classesdata.professions[i]
 		var name = ResourceScripts.descriptions.get_class_name(prof, person)
 		newnode.get_node("Label").text = name
 		newnode.texture = prof.icon

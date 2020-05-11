@@ -43,7 +43,7 @@ func update_button(newbutton):
 	newbutton.get_node("HBoxContainer/stats").hint_tooltip = "HP: " + str(round(person.hp)) + "/" + str(round(person.get_stat('hpmax'))) + "\nMP: " + str(round(person.mp)) + "/" + str(round(person.get_stat('mpmax')))
 	#newbutton.get_node("HBoxContainer/stats/hplabel").text = str(round(person.hp)) + "/" + str(round(person.hpmax))
 	#newbutton.get_node("HBoxContainer/stats/mplabel").text = str(round(person.mp)) + "/" + str(round(person.mpmax))
-	newbutton.get_node("HBoxContainer/explabel").text = str(round(person.xp_module.base_exp))
+	newbutton.get_node("HBoxContainer/explabel").text = str(round(person.get_stat('base_exp')))
 	if person.get_work() == '':
 		newbutton.get_node("HBoxContainer/job").text = tr("TASKREST")
 	else:
@@ -60,7 +60,7 @@ func update_button(newbutton):
 	else:
 		newbutton.get_node("HBoxContainer/obed").text = "∞"
 	
-	if person.get_next_class_exp() <= person.xp_module.base_exp:
+	if person.get_next_class_exp() <= person.get_stat('base_exp'):
 		newbutton.get_node("HBoxContainer/explabel").set("custom_colors/font_color", Color(variables.hexcolordict.levelup_text_color))
 	else:
 		newbutton.get_node("HBoxContainer/explabel").set("custom_colors/font_color", Color(1,1,1))

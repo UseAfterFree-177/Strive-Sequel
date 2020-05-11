@@ -19,9 +19,9 @@ var scriptdict = {
 
 var singletones = ['descriptions','custom_effects', "core_animations"]
 #singletones
-var descriptions = load("res://assets/data/descriptions.gd").new()
-var custom_effects = load("res://src/core/custom_effects.gd").new()
-var core_animations = null
+var descriptions
+var custom_effects
+var core_animations
 
 var gamestate = ['game_globals', 'game_party', 'game_progress', 'game_res', 'game_world']
 #gamestate
@@ -31,14 +31,18 @@ var game_progress
 var game_res
 var game_world
 
+func load_scripts():
+	for s in scriptdict:
+		scriptdict[s] = load(scriptdict[s])
+
 func recreate_singletons():
 	for n in get_children():
 		remove_child(n)
 		n.free()
 	for s in singletones:
-		set(s, load(scriptdict[s]).new())
+		set(s, scriptdict[s].new())
 		add_child(get(s))
 
 func revert_gamestate():
 	for s in gamestate:
-		set(s, load(scriptdict[s]).new())
+		set(s, scriptdict[s].new())

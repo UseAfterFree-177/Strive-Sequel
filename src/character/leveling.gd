@@ -18,6 +18,16 @@ func base_exp_set(value):
 		input_handler.ActivateTutorial("levelup")
 	base_exp = value
 
+func update_exp(value, is_set):
+	if is_set: 
+		self.base_exp = value
+		return value
+	else:
+		var tmp = base_exp
+		self.base_exp += value
+		tmp = base_exp - tmp
+		return tmp
+
 #professions
 func get_next_class_exp():
 #	var professions = parent.get_stat('professions')
@@ -42,7 +52,7 @@ func get_next_class_exp():
 
 func get_class_list(category, person):
 	var array = []
-	for i in Skilldata.professions.values():
+	for i in classesdata.professions.values():
 		if (category != 'any' && i.categories.has(category) == false) || professions.has(i.code) == true:
 			continue
 		if parent.checkreqs(i.reqs, true) == true:
@@ -50,7 +60,7 @@ func get_class_list(category, person):
 	return array
 
 func unlock_class(prof, satisfy_progress_reqs = false):
-	prof = Skilldata.professions[prof]
+	prof = classesdata.professions[prof]
 	if satisfy_progress_reqs == true:
 		for i in prof.reqs:
 			if i.code == 'stat' && i.stat in ['physics','wits','charm','sexuals']:
@@ -69,7 +79,7 @@ func unlock_class(prof, satisfy_progress_reqs = false):
 
 func check_skill_prof(skill):
 	for i in professions:
-		var tempprof = Skilldata.professions[i]
+		var tempprof = classesdata.professions[i]
 		if tempprof.skills.has(skill):
 			return true
 	return false

@@ -22,8 +22,8 @@ func open(tempperson, tempmode = 'normal'):
 	input_handler.ClearContainer($ScrollContainer/GridContainer)
 	
 	var array = []
-	for i in Skilldata.professions.values():
-		if (!i.categories.has(category) && category != 'all') || !person.checkreqs(i.showupreqs) || person.professions.has(i.code):
+	for i in classesdata.professions.values():
+		if (!i.categories.has(category) && category != 'all') || !person.checkreqs(i.showupreqs) || person.has_profession(i.code):
 			continue
 		if !$CheckBox.pressed && person.checkreqs(i.reqs) == false:
 			continue
@@ -61,7 +61,7 @@ func sort_classes(first,second):
 		return true
 
 func open_class(classcode):
-	var tempclass = Skilldata.professions[classcode]
+	var tempclass = classesdata.professions[classcode]
 	var text = ResourceScripts.descriptions.get_class_details(person, tempclass)
 	current_class = classcode
 	$ClassPanel.open(classcode,person)
@@ -70,10 +70,10 @@ func open_class(classcode):
 		$ClassPanel/Unlock.hide()
 		$ClassPanel/ExpLabel.set("custom_colors/font_color", Color(1,1,1))
 	else:
-		text = tr("EXPREQUIRED")+": " + str(person.get_next_class_exp()) + "/" +  str(floor(person.base_exp)) 
-		$ClassPanel/Unlock.disabled = person.base_exp < person.get_next_class_exp()
+		text = tr("EXPREQUIRED")+": " + str(person.get_next_class_exp()) + "/" +  str(floor(person.get_stat('base_exp'))) 
+		$ClassPanel/Unlock.disabled = person.get_stat('base_exp') < person.get_next_class_exp()
 		$ClassPanel/Unlock.show()
-		if person.base_exp < person.get_next_class_exp():
+		if person.get_stat('base_exp') < person.get_next_class_exp():
 			$ClassPanel/ExpLabel.set("custom_colors/font_color", variables.hexcolordict.red)
 		else:
 			$ClassPanel/ExpLabel.set("custom_colors/font_color", variables.hexcolordict.green)
@@ -85,11 +85,11 @@ func unlock_class():
 	$ClassPanel.hide()
 	yield(get_tree().create_timer(0.2),"timeout")
 	.hide()
-	person.base_exp -= person.get_next_class_exp()
+	person.add_stat('base_exp', -person.get_next_class_exp())
 	person.unlock_class(current_class)
 	yield(get_tree().create_timer(0.2),"timeout")
 	input_handler.ShowSlavePanel(person)
 	#input_handler.get_spec_node(input_handler.NODE_SLAVEPANEL, [person])
-	globals.text_log_add("class", person.translate("[name] has acquired new Class: " + Skilldata.professions[current_class].name))
+	globals.text_log_add("class", person.translate("[name] has acquired new Class: " + classesdata.professions[current_class].name))
 	input_handler.PlaySound("ding")
 	input_handler.update_slave_list()

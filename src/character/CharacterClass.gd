@@ -50,12 +50,18 @@ func rebuild_parents():
 func base_exp_set(value):
 	xp_module.base_exp = value
 
-func get_stat(statname):
+func get_stat(statname, ref = false):
 	if statname in ['hp', 'mp', 'shield']:
 		return get(statname)
-	return statlist.get_stat(statname)
+	if statname == 'base_exp':
+		return xp_module.base_exp
+	return statlist.get_stat(statname, ref)
 
 func set_stat(stat, value):
+	if stat in ['hp', 'mp', 'shield']:
+		set(stat, value)
+	if stat == 'base_exp':
+		xp_module.base_exp = value
 	statlist.set_stat(stat, value)
 
 func add_stat_bonuses(ls:Dictionary):
@@ -68,6 +74,10 @@ func add_bonus(b_rec:String, value, revert = false):
 	statlist.add_bonus(b_rec, value, revert)
 
 func add_stat(statname, value, revert = false):
+	if statname in ['hp', 'mp', 'shield']:
+		set(statname, get(statname) + value)
+	if statname == 'base_exp':
+		xp_module.base_exp += value
 	statlist.add_stat(statname, value, revert)
 
 func mul_stat(statname, value, revert = false):
@@ -361,9 +371,19 @@ func get_body_image():
 func get_stat_data():
 	return statlist.get_stat_data()
 
+func get_all_sex_traits():
+	return statlist.get_all_sex_traits()
+
+func get_negative_sex_traits():
+	return statlist.get_negative_sex_traits()
+
+func get_gear(slot):
+	return equipment.get_gear(slot)
+
 func play_sfx(code):
 	if displaynode != null:
 		displaynode.process_sfx(code)
+
 
 func act_prepared():
 	skills.act_prepared()
@@ -560,9 +580,9 @@ func decipher_single(ch):
 					text2 += "or lower"
 		'has_profession':
 			if i.check == true:
-				text2 += 'Has Class: ' + Skilldata.professions[i.profession].name
+				text2 += 'Has Class: ' + classesdata.professions[i.profession].name
 			else:
-				text2 += 'Has NO Class: ' + Skilldata.professions[i.profession].name
+				text2 += 'Has NO Class: ' + classesdata.professions[i.profession].name
 		'has_any_profession':
 			text2 += "Has any of Classes: "
 			for k in i.value:
@@ -581,7 +601,7 @@ func decipher_single(ch):
 		'gear_equiped': #to fix non-default param
 			text2 += 'Must have ' + Items.itemlist[i.value].name + "."
 		'global_profession_limit':
-			text2 += 'Only ' + str(i.value) + " " + Skilldata.professions[i.profession].name + " allowed."
+			text2 += 'Only ' + str(i.value) + " " + classesdata.professions[i.profession].name + " allowed."
 		'one_of_races':
 			text2 += "Only for: "
 			for k in i.value:
@@ -932,6 +952,8 @@ func stat_update(stat, value, is_set = false): #for permanent changes
 		return heal(value)
 	elif stat == 'mp':
 		return mana_update(value)
+	elif stat == 'base_exp':
+		return xp_module.update_exp(value, is_set)
 	else: return statlist.stat_update(stat, value, is_set)
 
 func resurrect(hp_per):

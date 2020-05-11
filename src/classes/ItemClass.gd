@@ -188,11 +188,11 @@ func substractitemcost():
 		ResourceScripts.game_res.materials[parts[i]] -= itemtemplate.parts[i]
 
 func set_icon(node):
-	var icon_texture
-	if ResourcePreloader.new().has_resource(icon) == false:
-		icon_texture = input_handler.loadimage(icon)
-	else:
-		icon_texture = load(icon)
+	var icon_texture = input_handler.loadimage(icon)
+#	if ResourcePreloader.new().has_resource(icon) == false:
+#		icon_texture = input_handler.loadimage(icon)
+#	else:
+#		icon_texture = load(icon)
 	
 	if node.get_class() == "TextureButton":
 		node.texture_normal = icon_texture

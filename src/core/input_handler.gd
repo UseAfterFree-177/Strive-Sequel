@@ -799,11 +799,8 @@ func loadimage(path, type = ""):
 		if lib != null:
 			if lib.has(path): return lib[path]
 	#indexed resource check
-	var tmp = ResourcePreloader.new()
-	if tmp.has_resource(path):
-		tmp.free()
+	if ResourceLoader.exists(path):
 		return load(path)
-	tmp.free()
 	#custom path loader
 	return load_image_from_path(path)
 
