@@ -588,7 +588,7 @@ func decipher_single(ch):
 		'has_any_profession':
 			text2 += "Has any of Classes: "
 			for k in i.value:
-				text2 += Skilldata.professions[k].name + ", "
+				text2 += classesdata.professions[k].name + ", "
 			text2 = text2.substr(0, text2.length()-2)
 		'race':
 			if i.check:

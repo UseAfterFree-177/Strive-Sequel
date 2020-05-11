@@ -1012,7 +1012,6 @@ func startscene(scenescript, cont = false, pretext = ''):
 	else:
 		centralized = true
 		textdict.mainevent += output(scenescript, scenescript.initiate, givers, takers) + output(scenescript, scenescript.ongoing, givers, takers)
-		
 	
 	if centralized == false:
 		if scenescript.has_method('reaction'):
@@ -1150,7 +1149,6 @@ func startscene(scenescript, cont = false, pretext = ''):
 			textdict.repeats += '\n' + temptext
 	textdict.repeats = textdict.repeats.replace("[color=yellow]", '').replace('[color=aqua]', '').replace('[/color]','')
 	
-	
 	for i in ongoingactions:
 		for k in i.givers + i.takers:
 			k.person_sexexp.actions[i.scene.code] += 1
@@ -1180,7 +1178,6 @@ func startscene(scenescript, cont = false, pretext = ''):
 					if i in ['sens','horny']:
 						effects[i] = effects[i]/2
 				member.actioneffect(effects, i)
-	
 	
 	var request
 	
@@ -1221,8 +1218,6 @@ func startscene(scenescript, cont = false, pretext = ''):
 		mandatoryspeech = true
 		mandatoryspeechdict = {character = virgin.character, line = "virgin_" + virgin.type}
 	
-	
-	
 	while x > 0:
 		if mandatoryspeech == true:
 			var charspeech = forced_character_speech(dict, mandatoryspeechdict.character, mandatoryspeechdict.line)
@@ -1233,7 +1228,6 @@ func startscene(scenescript, cont = false, pretext = ''):
 			if charspeech.text != '':
 				textdict.speech += charspeech.character.name + ': ' + decoder(charspeech.text, [charspeech.character], [charspeech.partner]) + '\n'
 		x -= 1
-	
 	
 	var text = textdict.mainevent + "\n" + textdict.repeats + '\n' + textdict.speech + textdict.orgasms
 	
@@ -1530,8 +1524,6 @@ func output(scenescript, valid_lines, givers, takers):
 					linearray += shared_lines[i][j].lines
 		if linearray.size() > 0:
 			output += linearray[randi()%linearray.size()]
-	
-	
 	
 	return decoder(output, givers, takers)
 
