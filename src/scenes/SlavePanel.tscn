@@ -63,6 +63,11 @@
 [ext_resource path="res://src/scenes/imageselect.tscn" type="PackedScene" id=61]
 [ext_resource path="res://assets/images/gui/exclamation.png" type="Texture" id=62]
 
+
+
+
+
+
 [sub_resource type="StyleBoxTexture" id=1]
 texture = ExtResource( 2 )
 region_rect = Rect2( 0, 0, 1178, 860 )
@@ -114,7 +119,6 @@ use_filter = true
 font_data = ExtResource( 32 )
 
 [node name="SlavePanel" type="Panel"]
-visible = false
 margin_left = 10.0
 margin_top = 6.0
 margin_right = 1199.0

@@ -91,6 +91,11 @@ var orgasm_partners = []
 var diff_body_orgasm = 0
 var aphrodisiac_orgasms = []
 var drunk_orgasm = 0
+var dominant = 0
+var punish_actions = []
+var mazo_actions = []
+var deviant_orgasms = 0
+var max_ongoing_actions = 0
 
 var actionshad = {addtraits = [], removetraits = [], samesex = 0, samesexorgasms = 0, oppositesex = 0, oppositesexorgasms = 0, punishments = 0, group = 0}
 

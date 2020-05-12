@@ -811,7 +811,7 @@ func faction_upgrade():
 	
 	$FactionDetailsPanel/totalquestpoints.text = "Total quests: " + str(active_faction.questsetting.total - (active_faction.questsetting.easy + active_faction.questsetting.medium + active_faction.questsetting.hard)) + "/" + str(active_faction.questsetting.total)
 	
-	for i in ResourceScripts.world_gen.guild_upgrades.values():
+	for i in worlddata.guild_upgrades.values():
 		var newnode = input_handler.DuplicateContainerTemplate($FactionDetailsPanel/VBoxContainer)
 		text = i.name + ": " + i.descript
 		var currentupgradelevel

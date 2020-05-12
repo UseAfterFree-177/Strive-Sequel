@@ -124,6 +124,14 @@ func has_profession(profession):
 
 func check_trait(trait):
 	return statlist.check_trait(trait)
+
+func get_class_icon():
+	if has_profession("master"):
+		return load("res://assets/images/gui/gui icons/icon_master.png")
+	elif get_stat('slave_class') == 'servant':
+		return load("res://assets/images/gui/gui icons/icon_servant.png")
+	else:
+		return load("res://assets/images/gui/gui icons/icon_slave.png")
 #end to add
 
 func generate_ea_character(gendata, desired_class):
@@ -377,8 +385,14 @@ func get_all_sex_traits():
 func get_negative_sex_traits():
 	return statlist.get_negative_sex_traits()
 
+func get_unlocked_sex_traits():
+	return statlist.get_unlocked_sex_traits()
+
 func get_gear(slot):
 	return equipment.get_gear(slot)
+
+func get_location():
+	return travel.location
 
 func play_sfx(code):
 	if displaynode != null:

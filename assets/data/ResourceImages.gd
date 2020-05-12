@@ -3,19 +3,7 @@ extends Node
 var backgrounds = {
 	#backgrounds
 	Null = null,
-	castle = load("res://assets/images/backgrounds/castle.png"),
-	castleroom = load('res://assets/images/backgrounds/castleroom.png'),
-	cave = load("res://assets/images/backgrounds/cave.png"),
-	desert = load("res://assets/images/backgrounds/desert.png"),
-	villageday = load("res://assets/images/backgrounds/villageday.png"),
-	villagenight = load("res://assets/images/backgrounds/villagenight.png"),
 	dungeon = load("res://assets/images/backgrounds/dungeon.png"),
-	dungeon1 = load("res://assets/images/backgrounds/dungeoncircle.png"),
-	forest = load("res://assets/images/backgrounds/forest.png"),
-	forge = load("res://assets/images/backgrounds/forge.png"),
-	market = load("res://assets/images/backgrounds/market.png"),
-	hall = load("res://assets/images/backgrounds/townhall.png"),
-	
 	aliron = load("res://assets/images/backgrounds/Aliron.png"),
 	elf_capital = load("res://assets/images/backgrounds/elf_capital.png"),
 	

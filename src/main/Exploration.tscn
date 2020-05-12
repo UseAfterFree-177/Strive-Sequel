@@ -30,9 +30,6 @@
 [ext_resource path="res://src/scenes/NumberSelection.gd" type="Script" id=28]
 [ext_resource path="res://assets/dynamic_backgrounds/dynamic_background.tscn" type="PackedScene" id=29]
 
-
-
-
 [node name="Exploration" type="Panel"]
 self_modulate = Color( 1, 1, 1, 0.74902 )
 margin_right = 1920.0

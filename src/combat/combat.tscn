@@ -1,6 +1,6 @@
 [gd_scene load_steps=35 format=2]
 
-[ext_resource path="res://src/combat/combat.gd" type="Script" id=1]
+[ext_resource path="res://files/scripts/combat.gd" type="Script" id=1]
 [ext_resource path="res://assets/images/backgrounds/cave.png" type="Texture" id=2]
 [ext_resource path="res://assets/images/gui/combat/combat_frame.png" type="Texture" id=3]
 [ext_resource path="res://assets/images/gui/combat/player_frame.png" type="Texture" id=4]
@@ -17,7 +17,7 @@
 [ext_resource path="res://assets/images/gui/inventory/itemicon2.png" type="Texture" id=15]
 [ext_resource path="res://assets/images/iconsskills/WeaponRefine.png" type="Texture" id=16]
 [ext_resource path="res://assets/images/gui/combat/combat_log.png" type="Texture" id=17]
-[ext_resource path="res://src/scenes/CharStatsPanel.tscn" type="PackedScene" id=18]
+[ext_resource path="res://src/CharStatsPanel.tscn" type="PackedScene" id=18]
 [ext_resource path="res://assets/images/gui/combat/victory_frame.png" type="Texture" id=19]
 [ext_resource path="res://assets/textures/generic_button.tres" type="Theme" id=20]
 [ext_resource path="res://assets/images/iconsitems/Wood.png" type="Texture" id=21]
@@ -25,9 +25,6 @@
 [ext_resource path="res://assets/images/iconsitems/gold.png" type="Texture" id=23]
 [ext_resource path="res://assets/images/gui/combat/combat_screen_frame.png" type="Texture" id=24]
 [ext_resource path="res://assets/images/portraits/daisy.png" type="Texture" id=25]
-
-
-
 
 [sub_resource type="DynamicFont" id=1]
 size = 20
@@ -130,8 +127,8 @@ __meta__ = {
 
 [node name="Back" type="VBoxContainer" parent="Panel/PlayerGroup"]
 margin_right = 218.0
-margin_bottom = 693.0
-custom_constants/separation = 18
+margin_bottom = 679.0
+custom_constants/separation = 11
 
 [node name="left" type="Container" parent="Panel/PlayerGroup/Back"]
 margin_right = 218.0
@@ -197,20 +194,20 @@ autowrap = true
 clip_text = true
 
 [node name="hplabel" type="Label" parent="Panel/PlayerGroup/Back/left/Template"]
-margin_left = -75.0659
-margin_top = -17.6523
-margin_right = 104.934
-margin_bottom = 6.34769
+margin_left = -44.5525
+margin_top = -20.6523
+margin_right = 135.447
+margin_bottom = 3.34768
 custom_fonts/font = SubResource( 1 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 text = "10/100"
 align = 1
 
 [node name="mplabel" type="Label" parent="Panel/PlayerGroup/Back/left/Template"]
-margin_left = 101.202
-margin_top = -17.5913
-margin_right = 281.202
-margin_bottom = 6.40869
+margin_left = 73.2019
+margin_top = -20.5913
+margin_right = 253.202
+margin_bottom = 3.40867
 custom_fonts/font = SubResource( 1 )
 custom_colors/font_color_shadow = Color( 0, 0, 0, 1 )
 text = "10/100"
@@ -256,21 +253,21 @@ text = "555"
 align = 1
 
 [node name="mid" type="Container" parent="Panel/PlayerGroup/Back"]
-margin_top = 237.0
+margin_top = 230.0
 margin_right = 218.0
-margin_bottom = 456.0
+margin_bottom = 449.0
 rect_min_size = Vector2( 218, 219 )
 
 [node name="right" type="Container" parent="Panel/PlayerGroup/Back"]
-margin_top = 474.0
+margin_top = 460.0
 margin_right = 218.0
-margin_bottom = 693.0
+margin_bottom = 679.0
 rect_min_size = Vector2( 218, 219 )
 
 [node name="Front" type="VBoxContainer" parent="Panel/PlayerGroup"]
 margin_left = 222.0
 margin_right = 441.0
-margin_bottom = 693.0
+margin_bottom = 679.0
 custom_constants/separation = 11
 
 [node name="left" type="Container" parent="Panel/PlayerGroup/Front"]
@@ -432,6 +429,9 @@ margin_top = 38.0
 margin_right = 1167.0
 margin_bottom = 420.0
 texture = ExtResource( 12 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="ScrollContainer" type="ScrollContainer" parent="ItemPanel"]
 margin_left = 27.0
@@ -479,6 +479,9 @@ margin_top = 14.0
 margin_right = 392.0
 margin_bottom = 44.0
 text = "Victory"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Combatlog" type="Panel" parent="."]
 margin_left = 461.0

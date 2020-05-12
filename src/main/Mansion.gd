@@ -44,8 +44,7 @@ func _ready():
 		variables.skip_combat = false
 		#$UpgradeList._ready()
 		$TestButton.show()
-	
-	
+
 	var speedvalues = [0,1,5]
 	var tooltips = [tr('PAUSEBUTTONTOOLTIP'),tr('NORMALBUTTONTOOLTIP'),tr('FASTBUTTONTOOLTIP')]
 	var counter = 0
@@ -126,11 +125,11 @@ func _ready():
 		character.create('HalfkinCat', 'random', 'random')
 		characters_pool.move_to_state(character.id)
 		
-#		for i in range(1,20):
-#
-#			character = ResourceScripts.scriptdict.class_slave.new()
-#			character.create('BeastkinCat', 'random', 'random')
-#			characters_pool.move_to_state(character.id)
+		for i in range(1,20):
+
+			character = ResourceScripts.scriptdict.class_slave.new()
+			character.create('BeastkinCat', 'random', 'random')
+			characters_pool.move_to_state(character.id)
 		
 		character.set_stat('obedience', 0)
 		#character.fear = 25

@@ -78,7 +78,7 @@ func update_button(newbutton):
 		icon = load("res://assets/images/gui/gui icons/icon_slave.png")
 	newbutton.get_node("HBoxContainer/state").texture = icon
 
-		
+
 
 func open_slave_tab(character):
 	input_handler.ShowSlavePanel(character)

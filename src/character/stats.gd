@@ -647,6 +647,9 @@ func get_all_sex_traits():
 func get_nagative_sex_traits():
 	return negative_sex_traits
 
+func get_unlocked_sex_traits():
+	return unlocked_sex_traits
+
 func baby_transform():
 	var mother = ResourceScripts.game_party.characters[statlist.relatives.mother]
 	statlist.name = 'Child of ' + mother.get_stat('name')
