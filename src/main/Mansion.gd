@@ -54,7 +54,6 @@ func _ready():
 		i.set_meta('value', speedvalues[counter])
 		counter += 1
 	
-	
 	$InventoryButton.connect("pressed",self,'open_inventory')
 	$CraftButton.connect("pressed",self,"open_craft")
 	$ExploreButton.connect("pressed",$Exploration,"open")

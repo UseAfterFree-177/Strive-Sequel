@@ -5,7 +5,7 @@ extends Node
 var modconfig_path = "user://mods.ini"
 var modfolder_path = "user://mods"
 
-var mods_list = [] #name, data_file
+var mods_list = [] #name, data_file, config_file
 var mod_tables = {} #table, mod
 var tables = {} #table, parsed content 
 
@@ -18,6 +18,7 @@ var avaliable_modes_list = [] #name, data_file, desc
 func _ready():
 	get_mods_list()
 	process_pathes_mods()
+	process_extensions_mods()
 	process_script_mods()
 	ResourceScripts.load_scripts()
 
@@ -25,16 +26,20 @@ func process_data_mods():
 	if data_loaded: return
 	for m in mods_list:
 		current_mod = m.name
-		process_mod(m.path)
+		process_mod(m)
 	data_loaded = true
 
 func process_script_mods():
 	for m in mods_list:
-		process_pack(m.path)
+		process_pack(m)
 
 func process_pathes_mods():
 	for m in mods_list:
-		process_pathes(m.path)
+		process_pathes(m)
+
+func process_extensions_mods():
+	for m in mods_list:
+		process_extensions(m)
 
 func get_mods_list():
 	var f := File.new()
@@ -50,9 +55,15 @@ func get_mods_list():
 	f.close()
 	mods_list = parse_json(tres)
 	check_avail()
+	for f in mods_list:
+		var mconf := ConfigFile.new()
+		mconf.load(f.path)
+		f.config = mconf
 
 func save_mod_list():
 	check_avail()
+	for f in mods_list:
+		f.erase('config')
 	var f:= File.new()
 	f.open(modconfig_path, File.WRITE)
 	f.store_line(to_json(mods_list))
@@ -87,31 +98,38 @@ func get_avail_mods():
 		temppath = d.get_next()
 	return res
 
-func process_mod(path: String):
-	var mconf := ConfigFile.new()
-	mconf.load(path)
+func process_mod(data):
+	var mconf = data.config
+#	mconf.load(path)
 	print("processing data tables from mod %s" % mconf.get_value('General','Name'))
 	if !mconf.has_section('Data'): return
 	var datafiles = mconf.get_section_keys('Data')
-	var dir = path.get_base_dir()
+	var dir = data.path.get_base_dir()
 	for table in datafiles:
 		process_data_file(dir, mconf.get_value('Data', table), table)
 
-func process_pathes(path: String):
-	var mconf := ConfigFile.new()
-	mconf.load(path)
+func process_pathes(data):
+	var mconf = data.config
+#	mconf.load(path)
 	print("processing pathes from mod %s" % mconf.get_value('General','Name'))
 	var datafiles = mconf.get_section_keys('Pathes')
 	for script in datafiles:
 		ResourceScripts.scriptdict[script] = mconf.get_value('Pathes', script)
 
+func process_extensions(data):
+	var mconf = data.config
+#	mconf.load(path)
+	print("processing parametrized extension scripts from mod %s" % mconf.get_value('General','Name'))
+	var datafiles = mconf.get_section_keys('CEScripts')
+	for script in datafiles:
+		process_script_extend(script, mconf.get_value('CEScripts', script))
 
-func process_pack(path: String):
-	var mconf := ConfigFile.new()
-	mconf.load(path)
+func process_pack(data):
+	var mconf = data.config
+#	mconf.load(path)
 	print("processing packages from mod %s" % mconf.get_value('General','Name'))
 	var datafiles = mconf.get_section_keys('Packages')
-	var dir = path.get_base_dir()
+	var dir = data.path.get_base_dir()
 	for table in datafiles:
 		print("processing package %s" % table)
 		ProjectSettings.load_resource_pack(dir + '/' + mconf.get_value('Packages', table))
@@ -246,7 +264,6 @@ func fix_main_data_postload():#fixing incomplete data in core files, mostly move
 			if i.icon.is_abs_path(): i.icon = input_handler.load_image_from_path(i.icon)
 			else: i.icon = images.icons[i.icon]
 	
-	
 	for i in Skilldata.Skilllist.values():
 		if typeof(i.icon) == TYPE_STRING:
 			if i.icon.is_abs_path(): i.icon = input_handler.load_image_from_path(i.icon)
@@ -262,7 +279,6 @@ func fix_main_data_postload():#fixing incomplete data in core files, mostly move
 		if typeof(i.icon) == TYPE_STRING:
 			if i.icon.is_abs_path(): i.icon = input_handler.load_image_from_path(i.icon)
 			else: i.icon = images.icons[i.icon]
-	
 
 
 func fix_indexes_array(arr: Array):
@@ -284,8 +300,6 @@ func fix_indexes_dict(dict: Dictionary):
 		if typeof(val) == TYPE_ARRAY: fix_indexes_array(val)
 		if typeof(val) == TYPE_DICTIONARY: fix_indexes_dict(val)
 
-
-
 func process_dir(table_name, dir_name, location_dir):
 	var table = tables[table_name]
 	if !table.has(dir_name): return
@@ -300,7 +314,6 @@ func process_images_dir(table_name, dir_name, location_dir):
 	var dir = table[dir_name]
 	for key in dir.keys(): location_dir[key] = input_handler.load_image_from_path(dir[key])
 
-
 func save_mod(mod_name):
 	var path = mod_tables[mod_name]
 	var mconf := ConfigFile.new()
@@ -312,3 +325,21 @@ func save_mod(mod_name):
 		f.open(dir + "/" + datafiles.get_value('Data', table), File.WRITE)
 		f.store_line(to_json(tables[table]))
 		f.close()
+
+func process_script_extend(name, path):
+	var file = File.new()
+	if !file.file_exists(path):
+		print('ERROR: no file at path %s' % path)
+		return
+	if !path.begins_with('user:'):
+		print('WARNING: possibility of access denial to %s' % path)
+	file.open(path, File.READ_WRITE)
+	var tmp = file.get_as_text()
+	var pars = tmp.split('/n')
+	if pars[0].begins_with("extends"):
+		pars[0] = 'extends "%s"' % ResourceScripts.scriptdict[name]
+	else: file.store_line('extends "%s"' % ResourceScripts.scriptdict[name])
+	for s in pars:
+		file.store_line(s)
+	file.close()
+	ResourceScripts.scriptdict[name] = path
