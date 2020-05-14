@@ -328,6 +328,10 @@ func loadimages():
 		portraits[i] = input_handler.loadimage(portraits[i])
 	for i in sprites:
 		sprites[i] = input_handler.loadimage(sprites[i])
+	for i in cursors:
+		cursors[i] = input_handler.loadimage(cursors[i])
+	for i in GFX:
+		GFX[i] = input_handler.loadimage(GFX[i])
 
 #var statsicons = {#not used at all O_o
 #lub1 = load("res://assets/images/sexicons/lub1.png"),

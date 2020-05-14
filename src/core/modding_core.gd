@@ -114,7 +114,11 @@ func process_pathes(data):
 	print("processing pathes from mod %s" % mconf.get_value('General','Name'))
 	var datafiles = mconf.get_section_keys('Pathes')
 	for script in datafiles:
-		ResourceScripts.scriptdict[script] = mconf.get_value('Pathes', script)
+		var tpath =  mconf.get_value('Pathes', script)
+		if tpath.ends_with('.gd'):
+			ResourceScripts.scriptdict[script] = tpath
+		if tpath.ends_with('.tscn'):
+			ResourceScripts.scenedict[script] = tpath
 
 func process_extensions(data):
 	var mconf = data.config
@@ -172,18 +176,27 @@ func process_data_file(path : String, file: String, tablename : String):
 	#tasks are not moddable through data because they are linked to functors
 	process_dir(tablename, 'races', races.racelist)
 	process_dir(tablename, 'scenedata', scenedata.scenedict)
+	process_dir(tablename, 'dialogues', scenedata.dialogue_inits)
+	process_dir(tablename, 'scene_quests',scenedata.quests)
+	process_dir(tablename, 'classes', classesdata.professions)
+	process_dir(tablename, 'tasklist', races.tasklist)
+	process_dir(tablename, 'upgrades', upgradedata.upgradelist)
 	process_dir(tablename, 'classes', classesdata.professions)
 	
 	process_images_dir(tablename, 'i_backgrounds', images.backgrounds)
-	process_images_dir(tablename, 'i_circleportaits', images.circleportraits)
-	process_images_dir(tablename, 'i_combatfullpictures', images.combatfullpictures)
-	process_images_dir(tablename, 'i_combatportraits', images.combatportraits)
-	process_images_dir(tablename, 'i_gui', images.gui)
-	process_images_dir(tablename, 'i_icons', images.icons)
-	process_images_dir(tablename, 'i_portraits', images.portraits)
-	process_images_dir(tablename, 'i_scenes', images.scenes)
-	process_images_dir(tablename, 'i_shades', images.shades)
-	process_images_dir(tablename, 'i_sprites', images.sprites)
+#	process_images_dir(tablename, 'i_circleportaits', images.circleportraits)
+#	process_images_dir(tablename, 'i_combatfullpictures', images.combatfullpictures)
+#	process_images_dir(tablename, 'i_combatportraits', images.combatportraits)
+#	process_images_dir(tablename, 'i_gui', images.gui)
+	process_dir(tablename, 'i_icons', images.icons)
+	process_dir(tablename, 'i_portraits', images.portraits)
+	process_dir(tablename, 'i_scenes', images.scenes)
+	process_dir(tablename, 'i_bodyportraits', images.shades)
+	process_dir(tablename, 'i_sprites', images.sprites)
+	process_dir(tablename, 'i_cursors',images.cursors)
+	process_dir(tablename, 'i_GFX',images.GFX)
+	process_dir(tablename, 'i_GFX_particles', images.GFX_particles)
+	process_dir(tablename, 'i_GFX_sprites', images.GFX_sprites)
 	#adding audio data is not added
 	#until runtime loading of audio would be tested and fixed
 	process_dir(tablename, 'statdata', statdata.statdata)
@@ -196,6 +209,9 @@ func process_data_file(path : String, file: String, tablename : String):
 	process_dir(tablename, 'w_locationnames', worlddata.locationnames)
 	process_dir(tablename, 'w_quests', worlddata.questdata)
 	process_dir(tablename, 'w_dungeons', worlddata.dungeons)
+	process_dir(tablename, 'w_characters', worlddata.pregen_characters)
+	
+	process_dir(tablename, 'statlist', Statlist_init.template)
 	
 	#incomplete
 
@@ -263,24 +279,29 @@ func fix_main_data_postload():#fixing incomplete data in core files, mostly move
 	
 	for i in classesdata.professions.values():
 		if typeof(i.icon) == TYPE_STRING:
-			if i.icon.is_abs_path(): i.icon = input_handler.load_image_from_path(i.icon)
-			else: i.icon = images.icons[i.icon]
+			i.icon = input_handler.loadimage(i.icon, 'icons')
 	
 	for i in Skilldata.Skilllist.values():
 		if typeof(i.icon) == TYPE_STRING:
-			if i.icon.is_abs_path(): i.icon = input_handler.load_image_from_path(i.icon)
-			else: i.icon = images.icons[i.icon]
+			i.icon = input_handler.loadimage(i.icon, 'icons')
 		if i.has('charges') and typeof(i.charges) == TYPE_REAL: i.charges = int(i.charges)
 	
 	for i in races.racelist.values():
 		if typeof(i.icon) == TYPE_STRING:
-			if i.icon.is_abs_path(): i.icon = input_handler.load_image_from_path(i.icon)
-			else: i.icon = images.icons[i.icon]
+			i.icon = input_handler.loadimage(i.icon, 'icons')
 	
 	for i in Traitdata.traits.values():
 		if typeof(i.icon) == TYPE_STRING:
-			if i.icon.is_abs_path(): i.icon = input_handler.load_image_from_path(i.icon)
-			else: i.icon = images.icons[i.icon]
+			i.icon = input_handler.loadimage(i.icon, 'icons')
+	
+	for i in statdata.statdata.values():
+		if !i.has('baseicon'): continue
+		if typeof(i.baseicon) == TYPE_STRING:
+			i.baseicon = input_handler.loadimage(i.baseicon, 'icons')
+	
+	for i in Enemydata.enemies.values():
+		if typeof(i.icon) == TYPE_STRING:
+			i.icon = input_handler.loadimage(i.icon, 'portraits')
 
 
 func fix_indexes_array(arr: Array):
@@ -308,7 +329,12 @@ func process_dir(table_name, dir_name, location_dir):
 	var dir = table[dir_name]
 	for key in dir.keys(): 
 		var patch = dir[key]
-		for k in patch: location_dir[key][k] = patch[k]
+		if patch == null:
+			location_dir.erase(key)
+		elif typeof(patch) == TYPE_DICTIONARY:
+			for k in patch: location_dir[key][k] = patch[k]
+		else:
+			location_dir[key] = patch
 
 func process_images_dir(table_name, dir_name, location_dir):
 	var table = tables[table_name]

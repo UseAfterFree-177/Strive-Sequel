@@ -351,7 +351,7 @@ func ItemSelect(targetscript, type, function, requirements = true):
 				newnode.get_node("Percent").text = str(i.amount)
 				connectitemtooltip(newnode, i)
 		newnode.connect('pressed', targetscript, function, [i])
-		newnode.connect('pressed',self,'CloseSelection', [node])
+		newnode.connect('pressed',input_handler,'CloseSelection', [node])
 
 func QuickSave():
 	SaveGame('QuickSave')

@@ -124,11 +124,11 @@ func _ready():
 		character.create('HalfkinCat', 'random', 'random')
 		characters_pool.move_to_state(character.id)
 		
-		for i in range(1,20):
-
-			character = ResourceScripts.scriptdict.class_slave.new()
-			character.create('BeastkinCat', 'random', 'random')
-			characters_pool.move_to_state(character.id)
+#		for i in range(1,20):
+#
+#			character = ResourceScripts.scriptdict.class_slave.new()
+#			character.create('BeastkinCat', 'random', 'random')
+#			characters_pool.move_to_state(character.id)
 		
 		character.set_stat('obedience', 0)
 		#character.fear = 25

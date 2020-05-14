@@ -644,7 +644,7 @@ func get_body_image():
 func get_all_sex_traits():
 	return sex_traits + negative_sex_traits
 
-func get_nagative_sex_traits():
+func get_negative_sex_traits():
 	return negative_sex_traits
 
 func get_unlocked_sex_traits():
