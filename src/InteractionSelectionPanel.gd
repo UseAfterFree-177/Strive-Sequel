@@ -50,7 +50,7 @@ func update_description():
 	text += "\n" + "Interactions per day: " + str(ResourceScripts.game_globals.daily_interactions_left) + "/1"
 	$RichTextLabel.bbcode_text = text
 
-var interaction = load("res://src/interactionpanel.tscn")
+var interaction = load(ResourceScripts.scenedict.interaction)
 
 func start_scene():
 	var newscene = interaction.instance()

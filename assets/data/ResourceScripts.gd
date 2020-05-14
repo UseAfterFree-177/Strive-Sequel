@@ -4,6 +4,11 @@ var scenedict = {
 	menu = "res://src/Menu.tscn",
 	mansion = "res://src/main/Mansion.tscn",
 	loadscreen = "res://src/LoadScreen.tscn",
+	combat = "res://src/combat/combat.tscn",
+	itemselect = "res://ItemSelect.tscn",
+	black = "res://assets/sfx/BlackScreen.tscn",
+	close = "res://src/scenes/CloseButton.tscn",
+	interaction = "res://src/interactionpanel.tscn",
 }
 
 var scriptdict = {
@@ -33,7 +38,38 @@ var scriptdict = {
 	class_ai_base = "res://src/classes/AI_base.gd",
 	world_gen = "res://src/core/world_gen.gd",
 	custom_text = "res://src/core/custom_text.gd",
+	slavelistmodule = "res://GUI_New/Mansion/MansionSlaveListModule.gd",
+	fighternode = "res://src/combat/FighterNode.gd",
+	closingpanel = "res://src/scenes/ClosingPanel.gd",
+	gamestart = "res://src/GameStart.gd",
+	rclickbutton = "res://src/scenes/RightClickReactButton.gd",
 	}
+
+onready var node_data = {
+	input_handler.NODE_CLASSINFO : {name = 'classinfo', mode = 'scene', scene = preload("res://src/scenes/ClassInformationPanel.tscn")},
+	input_handler.NODE_CHAT : {name = 'chatwindow', mode = 'scene', scene = preload("res://src/scenes/ChatNode.tscn")},
+	input_handler.NODE_TUTORIAL : {name = 'tutorial_node', mode = 'scene', scene = preload("res://src/scenes/TutorialNode.tscn")},
+	input_handler.NODE_LOOTTABLE : {name = 'lootwindow', mode = 'scene', scene = preload("res://src/scenes/LootWindow.tscn")},
+	input_handler.NODE_DIALOGUE : {name = 'dialogue', mode = 'scene', scene = preload("res://src/scenes/InteractiveMessage.tscn")},
+	input_handler.NODE_INVENTORY : {name = 'inventory', mode = 'scene', scene = preload("res://src/main/Inventory.tscn"), calls = 'open'},
+	input_handler.NODE_POPUP : {name = 'PopupPanel', mode = 'scene', scene = preload("res://src/scenes/PopupPanel.tscn"), calls = 'open'},
+	input_handler.NODE_CONFIRMPANEL : {name = 'ConfirmPanel', mode = 'scene', scene = preload("res://src/scenes/ConfirmPanel.tscn"), calls = 'Show'},
+	input_handler.NODE_SLAVESELECT : {name = 'SlaveSelectMenu', mode = 'scene', scene = preload("res://src/scenes/SlaveSelectMenu.tscn")},
+	input_handler.NODE_SKILLSELECT : {name = 'SelectSkillMenu', mode = 'scene', scene = preload("res://src/scenes/SkillSelectMenu.tscn")},
+	#NODE_EVENT : {name = 'EventNode', mode = 'scene', scene = preload("res://src/scenes/TextSystem.tscn")},
+	input_handler.NODE_MUSIC : {name = 'music', mode = 'node', node = AudioStreamPlayer, args = {'bus':"Music"}},
+	input_handler.NODE_SOUND : {name = 'sound', mode = 'node', no_return = true, node = AudioStreamPlayer, args = {'bus':"Sound"}},
+	input_handler.NODE_BACKGROUND_SOUND : {name = 'BGSound', mode = 'node', node = AudioStreamPlayer, args = {'bus':"Sound"}},
+	input_handler.NODE_TEXTEDIT : {name = 'texteditnode', mode = 'scene', scene = preload("res://src/scenes/TextEditField.tscn")},
+	input_handler.NODE_SLAVETOOLTIP : {name = 'slavetooltip', mode = 'scene', scene = preload("res://src/scenes/SlaveTooltip.tscn")},
+	input_handler.NODE_SKILLTOOLTIP : {name = 'skilltooltip', mode = 'scene', scene = preload("res://src/scenes/SkillToolTip.tscn")},
+	input_handler.NODE_ITEMTOOLTIP : {name = 'itemtooltip', mode = 'scene', scene = preload("res://src/scenes/Imagetooltip.tscn")},
+	input_handler.NODE_TEXTTOOLTIP : {name = 'texttooltip', mode = 'scene', scene = preload("res://src/scenes/TextTooltipPanel.tscn")},
+	input_handler.NODE_CHARCREATE : {name = 'charcreationpanel', mode = 'scene', scene = preload("res://src/scenes/CharacterCreationPanel.tscn"), calls = 'open'},
+	input_handler.NODE_SLAVEPANEL : {name = 'slavepanel', mode = 'scene', scene = preload("res://src/scenes/SlavePanel.tscn")},
+	input_handler.NODE_COMBATPOSITIONS : {name = 'combatpositions', mode = 'scene', scene = preload("res://src/scenes/PositionSelectMenu.tscn"), calls = 'open'},
+	input_handler.NODE_SYSMESSAGE : {name = 'SysMessage', mode = 'scene', scene = preload("res://src/scenes/SysMessage.tscn") }, 
+}
 
 var singletones = ['descriptions','custom_effects', "core_animations", "world_gen", "custom_text"]
 #singletones

@@ -229,7 +229,7 @@ func SmoothTextureChange(node, newtexture, time = 0.5):
 	NodeCopy.queue_free()
 
 func BlackScreenTransition(duration = 0.5):
-	var blackscreen = load("res://assets/sfx/BlackScreen.tscn").instance()
+	var blackscreen = load(ResourceScripts.scenedict.black).instance()
 	get_tree().get_root().add_child(blackscreen)
 	UnfadeAnimation(blackscreen, duration)
 	FadeAnimation(blackscreen, duration, duration)

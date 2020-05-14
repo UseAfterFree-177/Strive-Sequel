@@ -39,7 +39,7 @@ func givereffect(member):
 
 func takereffect(member):
 	var effects = {sens = 210, horny = 5}
-	member.person.metrics.anal += 1
+	member.person_metrics.anal += 1
 	return effects
 
 #orientation of givers/takers

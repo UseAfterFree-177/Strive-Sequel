@@ -63,7 +63,7 @@ func show_quest_info(quest):
 			var newbutton = input_handler.DuplicateContainerTemplate($reqs)
 			match i.code:
 				'kill_monsters':
-					newbutton.texture = load('res://assets/images/gui/quest_enemy.png')
+					newbutton.texture = images.icons.quest_enemy
 					newbutton.get_node("amount").text = str(i.value)
 					newbutton.get_node("amount").show()
 					newbutton.hint_tooltip = "Hunt Monsters: " + Enemydata.enemies[i.type].name + " - " + str(i.curvalue) + "/" + str(i.value)
@@ -83,11 +83,11 @@ func show_quest_info(quest):
 							for k in i.parts:
 								newbutton.hint_tooltip += "\n"+ tr(Items.Parts[k].name)  + ": " +str(Items.materiallist[i.parts[k]].name)
 				'complete_location':
-					newbutton.texture = images.quest_icons[i.code]
+					newbutton.texture = images.icons[i.code]
 					newbutton.hint_tooltip = "Complete quest event"
 					#print(i.location)
 				'complete_dungeon':
-					newbutton.texture = images.quest_icons[i.code]
+					newbutton.texture = images.icons[i.code]
 					globals.connecttexttooltip(newbutton, "Complete quest dungeon at [color=aqua]" + ResourceScripts.game_world.areas[i.area].name + "[/color]: [color=yellow]" + i.locationname + "[/color]")
 				'random_material':
 					newbutton.texture = Items.materiallist[i.type].icon
@@ -95,7 +95,7 @@ func show_quest_info(quest):
 					newbutton.get_node("amount").text = str(i.value)
 					globals.connectmaterialtooltip(newbutton, Items.materiallist[i.type], '\n\n[color=yellow]Required: ' + str(i.value) + "[/color]")
 				'slave_delivery':
-					newbutton.texture = load("res://assets/images/gui/slavepanel/charm.png")
+					newbutton.texture = images.icons.quest_slave_delivery
 					var tooltiptext = "Slave Required:\n"
 					for k in i.statreqs:
 						if k.code in ['is_master', 'is_free']:
@@ -123,13 +123,13 @@ func show_quest_info(quest):
 					globals.connecttempitemtooltip(newbutton, Items.itemlist[i.item], 'geartemplate')
 				'gold':
 					var value = round(i.value + i.value * variables.master_charm_quests_gold_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])
-					newbutton.texture = load('res://assets/images/iconsitems/gold.png')
+					newbutton.texture = images.icons.quest_gold
 					newbutton.get_node("amount").text = str(value)
 					newbutton.get_node("amount").show()
 					newbutton.hint_tooltip = "Gold: " + str(i.value) + " + " + str(round(i.value * variables.master_charm_quests_gold_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])) + "(Master Charm Bonus)"
 				'reputation':
 					var value = round(i.value + i.value * variables.master_charm_quests_rep_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])
-					newbutton.texture = images.quest_icons[i.code]
+					newbutton.texture = images.icons[i.code]
 					newbutton.get_node("amount").text = str(value)
 					newbutton.get_node("amount").show()
 					newbutton.hint_tooltip = "Reputation (" + quest.source + "): " + str(i.value) + " + " + str(round(i.value * variables.master_charm_quests_rep_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))]))+ "(Master Charm Bonus)"

@@ -5,7 +5,7 @@ signal population_changed
 
 # Preloads
 # const PopulationModule = preload("res://GUI_New/Mansion/MansionPopulationModule.gd")
-const SlaveListModule = preload("res://GUI_New/Mansion/MansionSlaveListModule.gd")
+var SlaveListModule = ResourceScripts.scriptdict.slavelistmodule
 
 # Variables
 onready var slavelist_module = SlaveListModule.new() 

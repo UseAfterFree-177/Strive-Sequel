@@ -34,7 +34,7 @@ func update_button(newbutton):
 	var person = newbutton.get_meta('slave')
 	newbutton.get_node("HBoxContainer/icon").texture = person.get_icon()
 	newbutton.get_node("HBoxContainer/name").text = person.get_full_name()
-	newbutton.get_node("HBoxContainer/sex").texture = images.sexicons[person.get_stat('sex')]
+	newbutton.get_node("HBoxContainer/sex").texture = images.icons[person.get_stat('sex')]
 	
 	newbutton.get_node("HBoxContainer/stats/hp").max_value = person.get_stat('hpmax')
 	newbutton.get_node("HBoxContainer/stats/hp").value = person.hp
@@ -69,14 +69,8 @@ func update_button(newbutton):
 			newbutton.get_node('HBoxContainer/job').text = 'Relocating: in ' + str(ceil(person.travel.travel_time / person.travel_per_tick())) + " hours. " 
 		else:
 			newbutton.get_node('HBoxContainer/job').text = 'Positioned: ' + ResourceScripts.game_world.areas[ResourceScripts.game_world.location_links[person.travel.location].area].name
-	var icon
-	if person.has_profession("master"):
-		icon = load("res://assets/images/gui/gui icons/icon_master.png")
-	elif person.get_stat('slave_class') == 'servant':
-		icon = load("res://assets/images/gui/gui icons/icon_servant.png")
-	else:
-		icon = load("res://assets/images/gui/gui icons/icon_slave.png")
-	newbutton.get_node("HBoxContainer/state").texture = icon
+	
+	newbutton.get_node("HBoxContainer/state").texture = person.get_class_icon()
 
 
 
@@ -84,8 +78,8 @@ func open_slave_tab(character):
 	input_handler.ShowSlavePanel(character)
 	#input_handler.get_spec_node(input_handler.NODE_SLAVEPANEL, [character])
 
-var obed_textures = {high = load("res://assets/images/gui/gui icons/obedience1.png"), med = load("res://assets/images/gui/gui icons/obedience2.png"), low = load("res://assets/images/gui/gui icons/obedience3.png")}
-var fear_textures = {high = load('res://assets/images/gui/gui icons/fear1.png'), med = load("res://assets/images/gui/gui icons/fear2.png"), low = load("res://assets/images/gui/gui icons/fear3.png")}
+var obed_textures = {high = images.icons.obed1, med = images.icons.obed2, low = images.icons.obed3}
+var fear_textures = {high = images.icons.fear1, med = images.icons.fear2, low = images.icons.fear3}
 
 func get_obed_texture(tempchar):
 	var rval 
@@ -111,6 +105,6 @@ func get_state_texture(tempchar):
 	return
 	var rval = tempchar.last_tick_assignement
 	
-	rval = images.stateicons[rval]
+	rval = images.icons[rval]
 	return rval
 

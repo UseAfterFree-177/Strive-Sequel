@@ -8,7 +8,7 @@ var close_played = false
 
 func _ready():
 	rect_pivot_offset = Vector2(rect_size.x/2, rect_size.y/2)
-	closebutton = load("res://src/scenes/CloseButton.tscn").instance()
+	closebutton = load(ResourceScripts.scenedict.close).instance()
 	add_child(closebutton)
 	move_child(closebutton, 0)
 	closebutton.connect("pressed", self, 'hide')

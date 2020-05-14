@@ -82,7 +82,7 @@ func open_class_list():
 		if guild == 'none':
 			array = variables.slave_starting_classes
 		else:
-			array = variables[guild+'_starting_classes']
+			array = variables.get(guild+'_starting_classes')
 	for i in array:
 		var tempclass = classesdata.professions[i]
 		if person.checkreqs(tempclass.showupreqs) == false:

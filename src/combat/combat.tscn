@@ -1,7 +1,7 @@
 [gd_scene load_steps=35 format=2]
 
-[ext_resource path="res://files/scripts/combat.gd" type="Script" id=1]
-[ext_resource path="res://assets/images/backgrounds/cave.png" type="Texture" id=2]
+[ext_resource path="res://src/combat/combat.gd" type="Script" id=1]
+[ext_resource path="res://assets/images/backgrounds/dungeon.png" type="Texture" id=2]
 [ext_resource path="res://assets/images/gui/combat/combat_frame.png" type="Texture" id=3]
 [ext_resource path="res://assets/images/gui/combat/player_frame.png" type="Texture" id=4]
 [ext_resource path="res://assets/images/gui/combat/player_hp1.png" type="Texture" id=5]
@@ -17,7 +17,7 @@
 [ext_resource path="res://assets/images/gui/inventory/itemicon2.png" type="Texture" id=15]
 [ext_resource path="res://assets/images/iconsskills/WeaponRefine.png" type="Texture" id=16]
 [ext_resource path="res://assets/images/gui/combat/combat_log.png" type="Texture" id=17]
-[ext_resource path="res://src/CharStatsPanel.tscn" type="PackedScene" id=18]
+[ext_resource path="res://src/scenes/CharStatsPanel.tscn" type="PackedScene" id=18]
 [ext_resource path="res://assets/images/gui/combat/victory_frame.png" type="Texture" id=19]
 [ext_resource path="res://assets/textures/generic_button.tres" type="Theme" id=20]
 [ext_resource path="res://assets/images/iconsitems/Wood.png" type="Texture" id=21]

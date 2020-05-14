@@ -131,7 +131,7 @@ func buildinventory():
 
 
 func get_item_type_icon(item):
-	return load(images.icondict[get_item_category(item)])
+	return load(images.icons[get_item_category(item)])
 
 func get_item_category(item):
 	var type

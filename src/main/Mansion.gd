@@ -264,7 +264,7 @@ func _ready():
 		globals.start_new_game = false
 		self.visible = false
 		var newgame_node = Node.new()
-		newgame_node.set_script(load("res://src/GameStart.gd"))
+		newgame_node.set_script(ResourceScripts.scriptdict.gamestart)
 		newgame_node.start()
 		input_handler.GameStartNode = newgame_node
 		yield(input_handler, "StartingSequenceComplete")

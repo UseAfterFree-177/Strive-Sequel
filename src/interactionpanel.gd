@@ -304,7 +304,7 @@ func rebuildparticipantslist():
 		newnode.get_node("name").set_text(i.person.translate('[name]'))
 		newnode.get_node("name").connect("pressed",self,"slavedescription",[i])
 		newnode.set_meta("person", i)
-		newnode.get_node("container/sex").set_texture(images.sexicons[i.sex])
+		newnode.get_node("container/sex").set_texture(images.icons[i.sex])
 		newnode.get_node("container/sex").set_tooltip(i.sex)
 		newnode.get_node('container/arousal').value = i.sens
 		newnode.get_node("portrait").texture = i.person.get_icon()

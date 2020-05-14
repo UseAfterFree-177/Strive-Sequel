@@ -23,7 +23,7 @@ func showup(node, person):
 	
 	var text = person.get_short_name() + person.translate(" [race] [age]")
 	
-	$sex.texture = images.sexicons[person.get_stat('sex')]
+	$sex.texture = images.icons[person.get_stat('sex')]
 	
 	$icon.texture = person.get_icon()
 	$RichTextLabel.bbcode_text = text

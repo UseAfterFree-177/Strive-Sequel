@@ -72,34 +72,10 @@ var dynamic_backgrounds = {
 	aliron = load("res://assets/dynamic_backgrounds/aliron.ogv"),
 	elf_capital = load("res://assets/dynamic_backgrounds/elf_capital.ogv"),
 	furry_capital = load("res://assets/dynamic_backgrounds/furry_camp.ogv"),
-	
 }
 
 var portraits = {
-}
-
-var combatportraits = {
-	
-	##enemies
-	rat = load("res://assets/images/enemies/RatIcon2.png"),
-	ent = load("res://assets/images/enemies/EntIcon.png"),
-	bigent = load("res://assets/images/enemies/BigEntIcon.png"),
-	golem = load("res://assets/images/enemies/GolemIcon.png"),
-	golemalt = load("res://assets/images/enemies/GolemAltIcon.png"),
-	spider = load("res://assets/images/enemies/SpiderIcon.png"),
-	}
-
-var combatfullpictures = {
-	rat = load("res://assets/images/enemies/RatFull.png"),
-	ent = load("res://assets/images/enemies/EntFull.png"),
-	bigent = load("res://assets/images/enemies/BigEntFull.png"),
-	golem = load("res://assets/images/enemies/Golem.png"),
-	golemalt = load("res://assets/images/enemies/GolemAlt.png"),
-	spider = load("res://assets/images/enemies/Spider.png"),
-}
-
-var circleportraits = {
-	
+	daisy = 'res://assets/images/portraits/daisy.png'
 }
 
 var gui = {
@@ -107,7 +83,8 @@ var gui = {
 	alt_back = load("res://assets/images/gui/text scene/textfieldpanel.png"), #stub
 };
 
-var icondict = {
+
+var icons = {
 	food = "res://assets/images/gui/inventory/icon_food1.png",
 	material = "res://assets/images/gui/inventory/icon_res1.png",
 	'tool' : "res://assets/images/gui/inventory/icon_craft1.png",
@@ -116,15 +93,143 @@ var icondict = {
 	costume = "res://assets/images/gui/inventory/icon_cosm1.png",
 	usable = "res://assets/images/gui/inventory/icon_potion1.png",
 	
-}
-
-var icons = {
 	quest_dungeon = load('res://assets/images/gui/quest_dungeon.png'),
 	quest_char = load("res://assets/images/gui/quest_char.png"),
 	quest_encounter = load("res://assets/images/gui/quest_encounter.png"),
 	quest_enemy = load("res://assets/images/gui/quest_enemy.png"),
 	quest_reputation = load("res://assets/images/gui/quest_reputation.png"),
 	
+	upgrade_farm = 'res://assets/images/buildings/upgrade_farm.png',
+	
+	stat_exp = "res://assets/images/gui/gui icons/base_exp.png",
+	stat_gf = "res://assets/images/gui/gui icons/growth_factor.png",
+	stat_pf = "res://assets/images/gui/gui icons/physics_factor.png",
+	stat_wit = "res://assets/images/gui/gui icons/wit.png",
+	stat_charm = "res://assets/images/gui/gui icons/charm.png",
+	stat_sf = "res://assets/images/gui/gui icons/sex.png", 
+	stat_mf = "res://assets/images/gui/gui icons/magic_factor.png",
+	stat_tf = "res://assets/images/gui/gui icons/tame_factor.png",
+	stat_df = "res://assets/images/gui/gui icons/timid_factor.png",
+	stat_bf = "res://assets/images/gui/gui icons/brave_factor.png",
+	stat_obed = "res://assets/images/gui/obed_good.png",
+	stat_fear = "res://assets/images/gui/fear_good.png",
+	stat_cf = "res://assets/images/gui/gui icons/charm_factor.png",
+	stat_food = "res://assets/images/gui/gui icons/food.png",
+	obed_good = "res://assets/images/gui/obed_good.png",
+	obed_bad = "res://assets/images/gui/obed_bad.png",
+	
+	food_love = "res://assets/images/gui/gui icons/food_love.png",
+	food_hate = "res://assets/images/gui/gui icons/food_hate.png",
+	meat = "res://assets/images/gui/gui icons/icon_meat.png",
+	fish = "res://assets/images/gui/gui icons/icon_fish.png",
+	vege = "res://assets/images/gui/gui icons/icon_veg.png",
+	grain = "res://assets/images/gui/gui icons/icon_grain.png",
+	
+	fear1 = "res://assets/images/gui/gui icons/fear1.png",
+	fear2 = "res://assets/images/gui/gui icons/fear2.png",
+	fear3 = "res://assets/images/gui/gui icons/fear3.png",
+	obed1 = "res://assets/images/gui/gui icons/obedience1.png",
+	obed2 = "res://assets/images/gui/gui icons/obedience2.png",
+	obed3 = "res://assets/images/gui/gui icons/obedience3.png",
+	
+	class_master = "res://assets/images/gui/gui icons/icon_master.png",
+	class_servant = "res://assets/images/gui/gui icons/icon_servant.png",
+	class_slave = "res://assets/images/gui/gui icons/icon_slave.png",
+	
+	quest_slave_delivery = "res://assets/images/gui/slavepanel/charm.png",
+	quest_gold = 'res://assets/images/iconsitems/gold.png',
+	complete_location = "res://assets/images/gui/quest_encounter.png",
+	complete_dungeon = "res://assets/images/gui/quest_dungeon.png",
+	reputation = "res://assets/images/gui/quest_reputation.png",
+	
+	craft_time = "res://assets/images/gui/craftgui/Time.png",
+	
+	work = 'res://assets/images/gui/gui icons/workicon.png',
+	rest = 'res://assets/images/gui/gui icons/sleepicon.png',
+	joy = 'res://assets/images/gui/gui icons/joyicon.png',
+	
+	male = load("res://assets/images/sexicons/male.png"),
+	female = load("res://assets/images/sexicons/female.png"),
+	futa = load("res://assets/images/sexicons/futa.png"),
+#	TO COMPLETE AND USE IN DATA TABLES
+#	NEED TO GET RID OF ALL LOAD FUNCTIONS
+#	skill_abuse = "res://assets/images/iconsskills/abuse.png",
+#	"res://assets/images/iconsskills/Acid-spit.png",
+#	"res://assets/images/iconsskills/AcidBomb.png",
+#	"res://assets/images/iconsskills/Aimed-strike.png",
+#	"res://assets/images/iconsskills/arrowshower.png",
+#	"res://assets/images/iconsskills/Attack.png",
+#	skill_attract = "res://assets/images/iconsskills/Attract.png",
+#	skill_authority = "res://assets/images/iconsskills/Authority.png",
+#	"res://assets/images/iconsskills/Barrier.png",
+#	"res://assets/images/iconsskills/BloodMagic.png",
+#	skill_charm = "res://assets/images/iconsskills/Charm.png",
+#	skill_double_attack = "res://assets/images/iconsskills/comboattack.png",
+#	skill_command = "res://assets/images/iconsskills/Command.png",
+#	"res://assets/images/iconsskills/cripple.png",
+#	"res://assets/images/iconsskills/Debilitate.png",
+#	skill_attack = "res://assets/images/iconsskills/defaultattack.png",
+#	skill_discipline = "res://assets/images/iconsskills/Discipline2.png",
+#	skill_hardwork = "res://assets/images/iconsskills/Discipline.png",
+#	skill_distract = "res://assets/images/iconsskills/distract.png",
+#	skill_dragon_might = "res://assets/images/iconsskills/Drain.png",
+#	"res://assets/images/iconsskills/Escape.png",
+#	skill_publicexecution = "res://assets/images/iconsskills/Execution.png",
+#	skill_fear = "res://assets/images/iconsskills/Fear.png",
+#	"res://assets/images/iconsskills/firebolt.png",
+#	"res://assets/images/iconsskills/FireBomb.png",
+#	"res://assets/images/iconsskills/firestorm.png",
+#	skill_greatseduce = "res://assets/images/iconsskills/Great_Seduce.png",
+#	skill_lesser_heal = "res://assets/images/iconsskills/Heal.png",
+#	skill_first_aid = "res://assets/images/iconsskills/HealBandage.png",
+#	"res://assets/images/iconsskills/Heavy-Strike.png",
+#	skill_ranged_attack = "res://assets/images/iconsskills/heavyshot.png",
+#	skill_rserrated_shot = "res://assets/images/iconsskills/heavyshot.png",
+#	"res://assets/images/iconsskills/icon_arrow_explode.png",
+#	"res://assets/images/iconsskills/icon_dark.png",
+#	"res://assets/images/iconsskills/icon_earth.png",
+#	"res://assets/images/iconsskills/icon_eyes.png",
+#	"res://assets/images/iconsskills/icon_ice.png",
+#	"res://assets/images/iconsskills/icon_light.png",
+#	"res://assets/images/iconsskills/icon_lightning.png",
+#	"res://assets/images/iconsskills/icon_plant.png",
+#	"res://assets/images/iconsskills/icon_tiny.png",
+#	skill_innervate = "res://assets/images/iconsskills/Innervate.png",
+#	skill_inspire = "res://assets/images/iconsskills/Inspire.png",
+#	skill_mass_lesser_heal = "res://assets/images/iconsskills/lesserheal.png",
+#	"res://assets/images/iconsskills/Lich-strike.png",
+#	skill_drain = "res://assets/images/iconsskills/LifeDrain.png",
+#	skill_shackles = "res://assets/images/iconsskills/Magic Shackles.png",
+#	skill_drain_mana = "res://assets/images/iconsskills/ManaDrain.png",
+#	"res://assets/images/iconsskills/meditate.png",
+#	"res://assets/images/iconsskills/Mindblast.png",
+#	"res://assets/images/iconsskills/Mindread.png",
+#	skill_mindcontrol = "res://assets/images/iconsskills/Mind_Control.png",
+#	skill_praise = "res://assets/images/iconsskills/Praise.png",
+#	skill_protect = "res://assets/images/iconsskills/Protect.png",
+#	skill_publichumiliation = "res://assets/images/iconsskills/PublicPunish.png",
+#	skill_publicsexhumiliation = "res://assets/images/iconsskills/PublicSex.png",
+#	skill_punish = "res://assets/images/iconsskills/Punish.png",
+#	skill_stopmindcontrol = "res://assets/images/iconsskills/RemoveMindcontrol.png",
+#	skill_reward = "res://assets/images/iconsskills/Reward.png",
+#	skill_rewardsex = "res://assets/images/iconsskills/Reward_with_sex 3.png",
+#	skill_sedate = "res://assets/images/iconsskills/Sedate.png",
+#	"res://assets/images/iconsskills/Sedation.png",
+#	skill_seduce = "res://assets/images/iconsskills/Seduce.png",
+#	skill_serve = "res://assets/images/iconsskills/Serve2.png",
+#	"res://assets/images/iconsskills/Serve.png",
+#	skill_slash = "res://assets/images/iconsskills/Shackle.png",
+#	"res://assets/images/iconsskills/slash.png",
+#	skill_consume_soul = "res://assets/images/iconsskills/soulconsume.png",
+#	skill_greatshavkles = "res://assets/images/iconsskills/Strong Magic Shackles.png",
+#	skill_fire_attack = "res://assets/images/iconsskills/strongattack.png",
+#	"res://assets/images/iconsskills/tackle.png",
+#	"res://assets/images/iconsskills/taunt.png",
+#	skill_trap = "res://assets/images/iconsskills/Trap.png",
+#	skill_make_undead = "res://assets/images/iconsskills/TurnUndead.png",
+#	skill_warn = "res://assets/images/iconsskills/Warn.png",
+#	skill_weaponrefine = "res://assets/images/iconsskills/WeaponRefine.png",
+#	"res://assets/images/iconsskills/windarrow.png"
 }
 
 var shades = {
@@ -185,45 +290,6 @@ var shades = {
 	
 }
 
-var sexicons = {
-	male = load("res://assets/images/sexicons/male.png"),
-	female = load("res://assets/images/sexicons/female.png"),
-	futa = load("res://assets/images/sexicons/futa.png"),
-}
-
-var statsicons = {#not used at all O_o
-lub1 = load("res://assets/images/sexicons/lub1.png"),
-lub2 = load("res://assets/images/sexicons/lub2.png"),
-lub3 = load("res://assets/images/sexicons/lub3.png"),
-lub4 = load("res://assets/images/sexicons/lub4.png"),
-lub5 = load("res://assets/images/sexicons/lub5.png"),
-lust1 = load("res://assets/images/sexicons/lust1.png"),
-lust2 = load("res://assets/images/sexicons/lust2.png"),
-lust3 = load("res://assets/images/sexicons/lust3.png"),
-lust4 = load("res://assets/images/sexicons/lust4.png"),
-lust5 = load("res://assets/images/sexicons/lust5.png"),
-sens1 = load("res://assets/images/sexicons/sens1.png"),
-sens2 = load("res://assets/images/sexicons/sens2.png"),
-sens3 = load("res://assets/images/sexicons/sens3.png"),
-sens4 = load("res://assets/images/sexicons/sens4.png"),
-sens5 = load("res://assets/images/sexicons/sens5.png"),
-stress1 = load("res://assets/images/gui/obed_bad.png"),
-stress2 = load("res://assets/images/gui/obed_med.png"),
-stress3 = load("res://assets/images/gui/obed_good.png")
-}
-
-var stateicons = {
-	work = load('res://assets/images/gui/gui icons/workicon.png'),
-	rest = load('res://assets/images/gui/gui icons/sleepicon.png'),
-	joy = load('res://assets/images/gui/gui icons/joyicon.png'),
-}
-
-var quest_icons = {
-	complete_location = load("res://assets/images/gui/quest_encounter.png"),
-	complete_dungeon = load("res://assets/images/gui/quest_dungeon.png"),
-	reputation = load("res://assets/images/gui/quest_reputation.png"),
-}
-
 var cursors = {
 	default = load("res://assets/images/gui/universal/cursordefault.png"),
 	attack = load("res://assets/images/gui/universal/cursorfight.png"),
@@ -248,3 +314,55 @@ var GFX_sprites = {
 var GFX_particles = {
 	heal = "res://assets/sfx/HealEffect.tscn",
 }
+
+func loadimages():
+	for i in icons:
+		icons[i] = input_handler.loadimage(icons[i])
+	for i in backgrounds:
+		backgrounds[i] = input_handler.loadimage(backgrounds[i])
+	for i in scenes:
+		scenes[i] = input_handler.loadimage(scenes[i])
+	for i in shades:
+		shades[i] = input_handler.loadimage(shades[i])
+	for i in portraits:
+		portraits[i] = input_handler.loadimage(portraits[i])
+	for i in sprites:
+		sprites[i] = input_handler.loadimage(sprites[i])
+
+#var statsicons = {#not used at all O_o
+#lub1 = load("res://assets/images/sexicons/lub1.png"),
+#lub2 = load("res://assets/images/sexicons/lub2.png"),
+#lub3 = load("res://assets/images/sexicons/lub3.png"),
+#lub4 = load("res://assets/images/sexicons/lub4.png"),
+#lub5 = load("res://assets/images/sexicons/lub5.png"),
+#lust1 = load("res://assets/images/sexicons/lust1.png"),
+#lust2 = load("res://assets/images/sexicons/lust2.png"),
+#lust3 = load("res://assets/images/sexicons/lust3.png"),
+#lust4 = load("res://assets/images/sexicons/lust4.png"),
+#lust5 = load("res://assets/images/sexicons/lust5.png"),
+#sens1 = load("res://assets/images/sexicons/sens1.png"),
+#sens2 = load("res://assets/images/sexicons/sens2.png"),
+#sens3 = load("res://assets/images/sexicons/sens3.png"),
+#sens4 = load("res://assets/images/sexicons/sens4.png"),
+#sens5 = load("res://assets/images/sexicons/sens5.png"),
+#stress1 = load("res://assets/images/gui/obed_bad.png"),
+#stress2 = load("res://assets/images/gui/obed_med.png"),
+#stress3 = load("res://assets/images/gui/obed_good.png")
+#}
+#var combatfullpictures = { #not used
+#	rat = load("res://assets/images/enemies/RatFull.png"),
+#	ent = load("res://assets/images/enemies/EntFull.png"),
+#	bigent = load("res://assets/images/enemies/BigEntFull.png"),
+#	golem = load("res://assets/images/enemies/Golem.png"),
+#	golemalt = load("res://assets/images/enemies/GolemAlt.png"),
+#	spider = load("res://assets/images/enemies/Spider.png"),
+#}
+#var combatportraits = {
+#	##enemies
+#	rat = load("res://assets/images/enemies/RatIcon2.png"),
+#	ent = load("res://assets/images/enemies/EntIcon.png"),
+#	bigent = load("res://assets/images/enemies/BigEntIcon.png"),
+#	golem = load("res://assets/images/enemies/GolemIcon.png"),
+#	golemalt = load("res://assets/images/enemies/GolemAltIcon.png"),
+#	spider = load("res://assets/images/enemies/SpiderIcon.png"),
+#	}

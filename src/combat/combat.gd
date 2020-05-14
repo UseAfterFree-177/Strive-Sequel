@@ -352,7 +352,7 @@ func victory():
 	for i in rewardsdict.items:
 		var newnode = input_handler.DuplicateContainerTemplate($Rewards/ScrollContainer/HBoxContainer)
 		#newnode.hide()
-		newnode.texture = load(i.icon)
+		newnode.texture = input_handler.loadimage(i.icon, 'icons')
 		globals.AddItemToInventory(i)
 		newnode.get_node("name").text = i.name
 		globals.connectitemtooltip(newnode, ResourceScripts.game_res.items[globals.get_item_id_by_code(i.itembase)])
@@ -619,7 +619,7 @@ func make_fighter_panel(fighter, spot):
 	panel.get_node('border').material = $Panel/PlayerGroup/Back/left/Template.get_node('border').material.duplicate()
 	fighter.displaynode = panel
 	panel.name = 'Character'
-	panel.set_script(load("res://src/combat/FighterNode.gd"))
+	panel.set_script(ResourceScripts.scriptdict.fighternode)
 	panel.position = int(spot)
 	panel.animation_node = CombatAnimations
 	fighter.position = int(spot)
@@ -1290,7 +1290,7 @@ func RebuildItemPanel():
 	
 	for i in array:
 		var newbutton = input_handler.DuplicateContainerTemplate($ItemPanel/ScrollContainer/GridContainer)
-		newbutton.get_node("Icon").texture = load(i.icon)
+		newbutton.get_node("Icon").texture = input_handler.loadimage(i.icon, 'icons')
 		newbutton.get_node("Label").text = str(i.amount)
 		newbutton.set_meta('skill', i.useskill)
 		newbutton.connect('pressed', self, 'ActivateItem', [i])

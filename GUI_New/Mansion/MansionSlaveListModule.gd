@@ -38,7 +38,7 @@ func update_button(newbutton):
 	var person = newbutton.get_meta('slave')
 	newbutton.get_node("HBoxContainer/icon").texture = person.get_icon()
 	newbutton.get_node("HBoxContainer/name").text = person.get_full_name()
-	newbutton.get_node("HBoxContainer/sex").texture = globals.sexicons[person.get_stat('sex')]
+	newbutton.get_node("HBoxContainer/sex").texture = images.icons[person.get_stat('sex')]
 	
 	newbutton.get_node("HBoxContainer/stats/hp").max_value = person.get_stat('hpmax')
 	newbutton.get_node("HBoxContainer/stats/hp").value = person.hp
@@ -83,8 +83,16 @@ func open_slave_tab(character):
 	input_handler.ShowSlavePanel(character)
 	#input_handler.get_spec_node(input_handler.NODE_SLAVEPANEL, [character])
 
-var obed_textures = {high = load("res://assets/images/gui/gui icons/obedience1.png"), med = load("res://assets/images/gui/gui icons/obedience2.png"), low = load("res://assets/images/gui/gui icons/obedience3.png")}
-var fear_textures = {high = load('res://assets/images/gui/gui icons/fear1.png'), med = load("res://assets/images/gui/gui icons/fear2.png"), low = load("res://assets/images/gui/gui icons/fear3.png")}
+var obed_textures = {
+	high = input_handler.loadimage('obed1', 'icons'), 
+	med = input_handler.loadimage('obed2', 'icons'), 
+	low = input_handler.loadimage('obed3', 'icons'),
+}
+var fear_textures = {
+	high = input_handler.loadimage('fear1', 'icons'),
+	med = input_handler.loadimage('fear2', 'icons'),
+	low = input_handler.loadimage('fear3', 'icons'),
+}
 
 func get_obed_texture(tempchar):
 	var rval 
@@ -115,6 +123,6 @@ func get_state_texture(tempchar):
 	return
 	var rval = tempchar.get_stat('last_tick_assignement')
 	
-	rval = images.stateicons[rval]
+	rval = images.icons[rval]
 	return rval
 

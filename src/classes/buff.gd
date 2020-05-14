@@ -30,10 +30,7 @@ func get_tooltip():
 	return description % args
 
 func get_icon():
-	if icon.is_rel_path() or icon.is_abs_path():
-		return load(icon)
-	else:
-		return images.icons[icon]
+	return input_handler.loadimage(icon, 'icons')
 
 func get_name():
 	return tr(name)

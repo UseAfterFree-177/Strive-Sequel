@@ -314,7 +314,7 @@ func ItemSelect(targetscript, type, function, requirements = true):
 		get_tree().get_root().remove_child(node)
 		get_tree().get_root().add_child(node)
 	else:
-		node = load("res://ItemSelect.tscn").instance()
+		node = load(ResourceScripts.scenedict.itemselect).instance()
 		get_tree().get_root().add_child(node)
 		input_handler.AddPanelOpenCloseAnimation(node)
 		node.name = 'ItemSelect'

@@ -129,14 +129,6 @@ func set_body_opacity(value):
 	for i in [$BodyPanel, $BodyPanel/Body]:
 		i.self_modulate = Color(1,1,1, value/100)
 
-var foodicons = {
-	meat = load("res://assets/images/gui/gui icons/icon_meat.png"),
-	fish = load("res://assets/images/gui/gui icons/icon_fish.png"),
-	vege = load("res://assets/images/gui/gui icons/icon_veg.png"),
-	grain = load("res://assets/images/gui/gui icons/icon_grain.png")
-	
-}
-
 func open(tempperson):
 	if tempperson == null:
 		tempperson = person
@@ -188,7 +180,7 @@ func update():
 		i.visible = type == 'traveler' && person.travel_target.location != 'mansion'
 	var text = ''
 	$name.text = person.get_short_name()
-	$name/sex.texture = images.sexicons[person.get_stat('sex')]
+	$name/sex.texture = images.icons[person.get_stat('sex')]
 #	if person.icon_image == null:
 #		$Portrait.texture = null
 #	else:
@@ -247,9 +239,9 @@ func update():
 	else:
 		$obedlabel.text = "∞"
 	if person.get_stat('obedience') > 0 || person.get_stat('loyalty') >= 100 || person.get_stat('submission') >= 100:
-		$obedlabel/icon.texture = load("res://assets/images/gui/obed_good.png")
+		$obedlabel/icon.texture = images.icons.obed_good
 	else:
-		$obedlabel/icon.texture = load("res://assets/images/gui/obed_bad.png")
+		$obedlabel/icon.texture = images.icons.obed_bad
 	
 	#$loyaltylabel.text = str(person.loyalty) + "/100"
 	#$submissionlabel.text = str(person.submission) + "/100"
@@ -276,13 +268,13 @@ func update():
 	
 	text = ''
 	$factors/food_consumption/Label.text = str(person.get_stat('food_consumption'))
-	$food_love/Button.texture = foodicons[person.food.food_love]
+	$food_love/Button.texture = images.icons[person.food.food_love]
 	$food_love/Button.hint_tooltip = tr("FOODTYPE" +person.food.food_love.to_upper())
 	$food_love/Button.visible = $food_love/Button.texture != null
 	input_handler.ClearContainer($food_hate/Container)
 	for i in person.food.food_hate:
 		var newnode = input_handler.DuplicateContainerTemplate($food_hate/Container)
-		newnode.texture = foodicons[i]
+		newnode.texture = images.icons[i]
 		newnode.hint_tooltip =  tr("FOODTYPE" +i.to_upper())
 	
 	input_handler.ClearContainer($professions)
@@ -539,7 +531,7 @@ func build_skill_panel():
 		else:
 			newbutton.connect('pressed',self,'select_skill_for_position', [i])
 		
-		newbutton.set_script(load("res://src/scenes/RightClickReactButton.gd"))
+		newbutton.set_script(ResourceScripts.scriptdict.rclickbutton)
 		newbutton.connect('signal_RMB_release',self,'select_skill_for_position', [i])
 		if person.skills.active_panel == variables.PANEL_COM:
 			newbutton.texture_disabled = load("res://assets/images/gui/universal/skill_frame.png")

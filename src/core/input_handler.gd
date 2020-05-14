@@ -65,34 +65,6 @@ var musicvalue
 
 enum {NODE_CLASSINFO, NODE_CHAT, NODE_TUTORIAL, NODE_LOOTTABLE, NODE_DIALOGUE, NODE_INVENTORY, NODE_POPUP, NODE_CONFIRMPANEL, NODE_SLAVESELECT, NODE_SKILLSELECT, NODE_EVENT, NODE_MUSIC, NODE_SOUND, NODE_BACKGROUND_SOUND, NODE_TEXTEDIT, NODE_SLAVETOOLTIP, NODE_SKILLTOOLTIP, NODE_ITEMTOOLTIP, NODE_TEXTTOOLTIP, NODE_CHARCREATE, NODE_SLAVEPANEL, NODE_COMBATPOSITIONS, NODE_SYSMESSAGE} #, NODE_TWEEN, NODE_REPEATTWEEN}
 
-var node_data = {
-	NODE_CLASSINFO : {name = 'classinfo', mode = 'scene', scene = preload("res://src/scenes/ClassInformationPanel.tscn")},
-	NODE_CHAT : {name = 'chatwindow', mode = 'scene', scene = preload("res://src/scenes/ChatNode.tscn")},
-	NODE_TUTORIAL : {name = 'tutorial_node', mode = 'scene', scene = preload("res://src/scenes/TutorialNode.tscn")},
-	NODE_LOOTTABLE : {name = 'lootwindow', mode = 'scene', scene = preload("res://src/scenes/LootWindow.tscn")},
-	NODE_DIALOGUE : {name = 'dialogue', mode = 'scene', scene = preload("res://src/scenes/InteractiveMessage.tscn")},
-	NODE_INVENTORY : {name = 'inventory', mode = 'scene', scene = preload("res://src/main/Inventory.tscn"), calls = 'open'},
-	NODE_POPUP : {name = 'PopupPanel', mode = 'scene', scene = preload("res://src/scenes/PopupPanel.tscn"), calls = 'open'},
-	NODE_CONFIRMPANEL : {name = 'ConfirmPanel', mode = 'scene', scene = preload("res://src/scenes/ConfirmPanel.tscn"), calls = 'Show'},
-	NODE_SLAVESELECT : {name = 'SlaveSelectMenu', mode = 'scene', scene = preload("res://src/scenes/SlaveSelectMenu.tscn")},
-	NODE_SKILLSELECT : {name = 'SelectSkillMenu', mode = 'scene', scene = preload("res://src/scenes/SkillSelectMenu.tscn")},
-	#NODE_EVENT : {name = 'EventNode', mode = 'scene', scene = preload("res://src/scenes/TextSystem.tscn")},
-	NODE_MUSIC : {name = 'music', mode = 'node', node = AudioStreamPlayer, args = {'bus':"Music"}},
-	NODE_SOUND : {name = 'sound', mode = 'node', no_return = true, node = AudioStreamPlayer, args = {'bus':"Sound"}},
-	NODE_BACKGROUND_SOUND : {name = 'BGSound', mode = 'node', node = AudioStreamPlayer, args = {'bus':"Sound"}},
-	#NODE_REPEATTWEEN : {name = 'repeatingtween', mode = 'node', node = Tween, args = {'repeat':true}},
-	#NODE_TWEEN : {name = 'tween', mode = 'node', node = Tween},
-	NODE_TEXTEDIT : {name = 'texteditnode', mode = 'scene', scene = preload("res://src/scenes/TextEditField.tscn")},
-	NODE_SLAVETOOLTIP : {name = 'slavetooltip', mode = 'scene', scene = preload("res://src/scenes/SlaveTooltip.tscn")},
-	NODE_SKILLTOOLTIP : {name = 'skilltooltip', mode = 'scene', scene = preload("res://src/scenes/SkillToolTip.tscn")},
-	NODE_ITEMTOOLTIP : {name = 'itemtooltip', mode = 'scene', scene = preload("res://src/scenes/Imagetooltip.tscn")},
-	NODE_TEXTTOOLTIP : {name = 'texttooltip', mode = 'scene', scene = preload("res://src/scenes/TextTooltipPanel.tscn")},
-	NODE_CHARCREATE : {name = 'charcreationpanel', mode = 'scene', scene = preload("res://src/scenes/CharacterCreationPanel.tscn"), calls = 'open'},
-	NODE_SLAVEPANEL : {name = 'slavepanel', mode = 'scene', scene = preload("res://src/scenes/SlavePanel.tscn")},
-	NODE_COMBATPOSITIONS : {name = 'combatpositions', mode = 'scene', scene = preload("res://src/scenes/PositionSelectMenu.tscn"), calls = 'open'},
-	NODE_SYSMESSAGE : {name = 'SysMessage', mode = 'scene', scene = preload("res://src/scenes/SysMessage.tscn") }, 
-}
-
 
 var globalsettings = { 
 	ActiveLocalization = 'en',
@@ -643,7 +615,7 @@ func get_combat_node():
 	if node.has_node('combat'):
 		window = node.get_node('combat')
 	else:
-		window = load("res://src/combat/combat.tscn").instance()
+		window = load(ResourceScripts.scenedict.combat).instance() 
 		window.name = 'combat'
 		node.add_child(window)
 		#node.call_deferred('add_child',window)
@@ -652,7 +624,7 @@ func get_combat_node():
 
 func AddPanelOpenCloseAnimation(node):
 	if node.get_script() == null:
-		node.set_script(load("res://src/scenes/ClosingPanel.gd"))
+		node.set_script(ResourceScripts.scriptdict.closingpanel)
 	node._ready()
 
 func get_person_for_chat(array, event, bonus_args = []):
@@ -709,24 +681,24 @@ func text_cut_excessive_lines(text:String):
 func get_spec_node(type, args = null, raise = true, unhide = true):
 	var window
 	var node = get_tree().get_root()
-	if node.has_node(node_data[type].name) and !node_data[type].has('no_return'):
-		window = node.get_node(node_data[type].name)
+	if node.has_node(ResourceScripts.node_data[type].name) and !ResourceScripts.node_data[type].has('no_return'):
+		window = node.get_node(ResourceScripts.node_data[type].name)
 		#node.remove_child(window)
 	else:
-		match node_data[type].mode:
+		match ResourceScripts.node_data[type].mode:
 			'scene':
-				window = node_data[type].scene.instance()
+				window = ResourceScripts.node_data[type].scene.instance()
 			'node':
-				window = node_data[type].node.new()
-		window.name = node_data[type].name
+				window = ResourceScripts.node_data[type].node.new()
+		window.name = ResourceScripts.node_data[type].name
 		node.add_child(window)
 	if raise: window.raise()
-	if node_data[type].has('args'): 
-		for param in node_data[type].args:
-			window.set(param, node_data[type].args[param])
-	if node_data[type].has('calls'): 
+	if ResourceScripts.node_data[type].has('args'): 
+		for param in ResourceScripts.node_data[type].args:
+			window.set(param, ResourceScripts.node_data[type].args[param])
+	if ResourceScripts.node_data[type].has('calls'): 
 		if args == null: args = []
-		window.callv(node_data[type].calls, args)
+		window.callv(ResourceScripts.node_data[type].calls, args)
 	elif args != null: 
 		for param in args:
 			window.set(param, args[param])

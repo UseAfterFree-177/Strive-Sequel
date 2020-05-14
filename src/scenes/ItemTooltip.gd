@@ -115,7 +115,7 @@ func gear_tooltip(data, item = null):
 		input_handler.itemshadeimage(iconnode, item)
 		text += "\n\n[color=yellow]Hold shift for details[/color]"
 	else:
-		iconnode.texture = load(item.icon)
+		iconnode.texture = input_handler.loadimage(item.icon, 'icons')
 	
 	textnode.bbcode_text = text
 

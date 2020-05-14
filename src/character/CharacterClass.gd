@@ -127,11 +127,11 @@ func check_trait(trait):
 
 func get_class_icon():
 	if has_profession("master"):
-		return load("res://assets/images/gui/gui icons/icon_master.png")
+		return images.icons.class_master
 	elif get_stat('slave_class') == 'servant':
-		return load("res://assets/images/gui/gui icons/icon_servant.png")
+		return images.icons.class_servant
 	else:
-		return load("res://assets/images/gui/gui icons/icon_slave.png")
+		return images.icons.class_slave
 #end to add
 
 func generate_ea_character(gendata, desired_class):

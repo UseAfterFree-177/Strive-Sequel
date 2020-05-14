@@ -259,6 +259,8 @@ func fix_main_data_preload():#fixing incomplete data in core files, mostly moved
 		Skilldata.Skilllist[s] = ss.convert_to_new_template()
 
 func fix_main_data_postload():#fixing incomplete data in core files, mostly moved from globals
+	images.loadimages()
+	
 	for i in classesdata.professions.values():
 		if typeof(i.icon) == TYPE_STRING:
 			if i.icon.is_abs_path(): i.icon = input_handler.load_image_from_path(i.icon)

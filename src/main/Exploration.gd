@@ -729,7 +729,7 @@ func see_quest_info(quest):
 				newbutton.get_node("amount").text = str(i.value)
 				globals.connectmaterialtooltip(newbutton, Items.materiallist[i.type], '\n\n[color=yellow]Required: ' + str(i.value) + "[/color]")
 			'slave_delivery':
-				newbutton.texture = load("res://assets/images/gui/slavepanel/charm.png")
+				newbutton.texture = images.icons.quest_slave_delivery
 				var tooltiptext = "Slave Required:\n"
 				for k in i.statreqs:
 					if k.code in ['is_master', 'is_free']:
@@ -768,13 +768,13 @@ func see_quest_info(quest):
 				globals.connectmaterialtooltip(newbutton, material)
 			'gold':
 				var value = round(i.value + i.value * variables.master_charm_quests_gold_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])
-				newbutton.texture = load('res://assets/images/iconsitems/gold.png')
+				newbutton.texture = images.icons.quest_gold
 				newbutton.get_node("amount").text = str(value)
 				newbutton.get_node("amount").show()
 				newbutton.hint_tooltip = "Gold: " + str(i.value) + " + " + str(round(i.value * variables.master_charm_quests_gold_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])) + "(Master Charm Bonus)"
 			'reputation':
 				var value = round(i.value + i.value * variables.master_charm_quests_rep_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))])
-				newbutton.texture = images.quest_icons[i.code]
+				newbutton.texture = images.icons[i.code]
 				newbutton.get_node("amount").text = str(value)
 				newbutton.get_node("amount").show()
 				newbutton.hint_tooltip = "Reputation (" + quest.source + "): " + str(i.value) + " + " + str(round(i.value * variables.master_charm_quests_rep_bonus[int(ResourceScripts.game_party.get_master().get_stat('charm_factor'))]))+ "(Master Charm Bonus)"
@@ -1040,11 +1040,6 @@ func local_events_search():
 		input_handler.active_location.events.search = 1
 		input_handler.interactive_message('location_event_search', 'event_selection', {})
 
-var icons = {
-	'master' : load("res://assets/images/gui/gui icons/icon_master.png"),
-	servant = load("res://assets/images/gui/gui icons/icon_servant.png"),
-	'slave' : load("res://assets/images/gui/gui icons/icon_slave.png"),
-	}
 func build_location_group():
 	#clear_groups()
 	for i in positiondict:
@@ -1061,11 +1056,11 @@ func build_location_group():
 			get_node(positiondict[i]+"/Image").texture = character.get_icon()
 			if get_node(positiondict[i]+"/Image").texture == null:
 				if character.has_profession('master'):
-					get_node(positiondict[i]+"/Image").texture = icons.master
+					get_node(positiondict[i]+"/Image").texture = images.icons.class_master
 				elif character.get_stat('slave_class') == 'servant':
-					get_node(positiondict[i]+"/Image").texture = icons.servant
+					get_node(positiondict[i]+"/Image").texture = images.icons.class_servant
 				else:
-					get_node(positiondict[i]+"/Image").texture = icons['slave']
+					get_node(positiondict[i]+"/Image").texture = images.icons.class_slave
 			get_node(positiondict[i]+"/Image").show()
 			get_node(positiondict[i]+"/Image/TextureRect").hint_tooltip = "HP: " + str(floor(character.hp)) + '/' + str(floor(character.get_stat('hpmax')))+ "\nMP: " +str(floor(character.mp)) + '/' + str(floor(character.get_stat('mpmax')))
 			get_node(positiondict[i]+"/Image/TextureRect/hp").max_value = character.get_stat('hpmax')
@@ -1093,11 +1088,11 @@ func build_location_group():
 			newbutton.get_node("icon").texture = i.get_icon()
 			if newbutton.get_node('icon').texture == null:
 				if i.has_profession('master'):
-					newbutton.get_node('icon').texture = icons.master
+					newbutton.get_node('icon').texture = images.icons.class_master
 				elif i.get_stat('slave_class') == 'servant':
-					newbutton.get_node('icon').texture = icons.servant
+					newbutton.get_node('icon').texture = images.icons.class_servant
 				else:
-					newbutton.get_node('icon').texture = icons['slave']
+					newbutton.get_node('icon').texture = images.icons.class_slave
 			newbutton.get_node("Label").text = i.get_short_name()
 			newbutton.connect("pressed", self, "return_character", [i])
 			if active_location.group.values().has(i.id):

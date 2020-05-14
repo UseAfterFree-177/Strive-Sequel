@@ -617,7 +617,7 @@ func random_icon():
 func get_icon():
 	if statlist.icon_image in ['', null]:
 		return null
-	return input_handler.loadimage(statlist.icon_image)
+	return input_handler.loadimage(statlist.icon_image, 'portraits')
 
 func get_icon_path():
 	if typeof(statlist.icon_image) != TYPE_STRING:
@@ -627,7 +627,7 @@ func get_icon_path():
 	return statlist.icon_image
 
 func get_body_image():
-	var tmp = input_handler.loadimage(statlist.body_image)
+	var tmp = input_handler.loadimage(statlist.body_image, 'shades')
 	if tmp != null: return tmp
 	if statlist.body_image == 'default' or statlist.body_image == '' or statlist.body_image == null:
 		var text = statlist.race.to_lower().replace('halfkin','beastkin')
